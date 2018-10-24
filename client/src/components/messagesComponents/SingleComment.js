@@ -16,7 +16,8 @@ class SingleComment extends Component {
     render() {
         const { message } = this.props;
         return (
-            <div className="alert alert-dark">
+            <div>
+                <hr/>
                 {message._id}
                 <div>
                   author:  {message.author}

@@ -21,4 +21,9 @@ router.route('/:blogId')
   router.route('/:blogId/comments')
   .get(passportJWT,validateParam(schemas.idSchema, 'blogId'), BlogController.getBlogsComments)
   .post(passportJWT,validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.commentSchema), BlogController.newBlogsComment);
+
+  router.route('/:blogId/trust')
+    .post(passportJWT/*,validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.commentSchema), BlogController.newBlogsComment*/);
+
+
 module.exports = router;

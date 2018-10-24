@@ -15,7 +15,6 @@ class AddComment extends Component {
     }
 
     handleChange(e) {
-        console.log('stiiize', [e.target.name])
         this.setState({ comment: e.target.value })
     }
     handleClick() {

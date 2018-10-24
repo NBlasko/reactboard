@@ -4,17 +4,28 @@ const Schema = mongoose.Schema;
 const blogSchema = new Schema({
     title: String,
     author: String,
-    publicID: String, 
+    publicID: String,
     authorsPublicID: String,
     body: String,
-    options: [{
-        body: String,
-        votes: {
+    statistics: {
+        seen: {
             type: Number,
             default: 0
-        }
-    }],
-    comments: [{
+        },
+        likeVotes: [{                            //counting (.find().count()) exists in mongodb docs, so I dont need to write it as a part of a schema
+            type: Schema.Types.ObjectId,
+            ref: 'likeVote'
+        }],
+        numberOfComments: {            //ovo moze u query ali je nepotrebno pregledati bazu ako mogu to da snimim u tri mala reda
+            type: Number,
+            default: 0
+        },
+        trustVote: {
+            type: Schema.Types.ObjectId,
+            ref: 'trustvote'
+          },                                    
+    },
+    comments: [{                            //counting (.find().count()) exists in mongodb docs, so I dont need to write it as a part of a schema
         type: Schema.Types.ObjectId,
         ref: 'comment'
     }],

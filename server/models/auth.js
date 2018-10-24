@@ -9,6 +9,22 @@ const userSchema = new Schema({
     required: true
   },
   publicID: String,
+  statistics: {
+    trustVote: {
+      type: Schema.Types.ObjectId,
+      ref: 'trustvote'
+    },
+    coins: {
+      date: {
+        type: Date,
+        default: Date.now
+      },
+      total: {
+        type: Number,
+        default: 100
+      },
+    }
+  },
   local: {
     email: {
       type: String,

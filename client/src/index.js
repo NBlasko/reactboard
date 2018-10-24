@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-
-
+import './index.css';
 import ReactBoard from './components/ReactBoard';
 
 import registerServiceWorker from './registerServiceWorker';

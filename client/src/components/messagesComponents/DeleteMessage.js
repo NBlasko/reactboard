@@ -16,15 +16,16 @@ class DeleteMessage extends Component {
     render() {
         const { message } = this.props;
         return (
-            <div className="alert alert-dark">
+            <div className="shadow p-3 m-2 bg-white rounded">
                 <h4><Link to={'./blog/' + message.publicID}> {message.title}</Link>  <small className="text-muted"> by {message.author} </small></h4>
                 <p>{message.body}</p>
-                <span className="badge badge-pill badge-primary"> <i className="fa fa-check-square-o"></i>  37%</span>
-                <span className="badge badge-pill badge-danger"> <i className="fa fa-eye"></i> 67 </span>
-                <span className="badge badge-pill badge-success"> <i className="fa fa-thumbs-up"></i>  47%</span>
-                <span className="badge badge-pill badge-warning"> <i className="fa fa-comment"></i> 208 </span>
+                <span className="small pr-3"> <i className="fa fa-check-square-o"></i> 37%</span>
+                <span className="small pr-3"> <i className="fa fa-eye"></i> {message.statistics.seen} </span>
+                <span className="small pr-3"> <i className="fa fa-thumbs-up"></i> 56% </span>
+                <span className="small pr-3"> <i className="fa fa-comment"></i> {message.statistics.numberOfComments} </span>
                 {// u komentar dok ne sredim dugme za brisanje   <button className="btn btn-danger" id={message.publicID} onClick={this.handleClick} > &times; </button>
                 }
+
             </div>
 
         )

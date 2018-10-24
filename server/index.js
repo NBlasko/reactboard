@@ -14,10 +14,13 @@ app.use(cors({
 app.use(express.json());
 
 
-
-app.use('/auth',  require('./routes/auth'));
-app.use('/api/blogs', require('./routes/blog'))
 // initialize passport
+app.use('/auth',  require('./routes/auth'));
+
+// secured routes
+app.use('/api/blogs', require('./routes/blog'));
+app.use('/api/profiles', require('./routes/profiles'));
+
 
 
 

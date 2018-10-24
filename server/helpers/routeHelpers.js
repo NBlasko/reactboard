@@ -56,6 +56,11 @@ module.exports = {
             body: Joi.string().required(),
         }),
 
+        trustSchema:  Joi.object().keys({
+            authorsID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
+            trust: Joi.number().integer().min(0).max(1).required()
+        }),
+
     }
 }
 

@@ -7,7 +7,6 @@ import {
     Collapse,
     Navbar,
     NavbarToggler,
-    NavbarBrand,
     Nav,
     NavItem,
     UncontrolledDropdown,
@@ -69,27 +68,35 @@ class NavbarComponent extends Component {
     }
 
     render() {
+        var name = this.props.name;
+
+        let initials;
+        if (name) {initials = name.match(/\b\w/g) || [];
+        initials = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();}
         const navBarContent = (this.props.name) ?  ///ovde je problem
-            <div className="navbarCustom">
-                <Navbar color="light" light expand="md">
+            <div className="navbarCustom small shadow">
+                <Navbar color="light" light expand="sm">
                     <NavbarToggler onClick={this.toggle} />
-                    <NavbarBrand>React Board</NavbarBrand>
+                    <span className="text-dark h4 logoCustom"  >RB</span>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
                             <NavItem>
-                                <Link onClick={this.closeToggle} className=" navbar-brand" to={'/'}>{this.props.name} </Link>
+                                <Input className="float-right" placeholder="search" />
+                            </NavItem>
+                            <NavItem className="d-none d-sm-block">
+                                <Link onClick={this.closeToggle} className="nav-link h6 text-light customCircle" to={'/'}>{initials}</Link>
+                            </NavItem>
+                            <NavItem className="d-block d-sm-none">
+                                <Link onClick={this.closeToggle} className="nav-link text-dark" to={'/'}>{name}</Link>
                             </NavItem>
                             <NavItem>
-                                <Input placeholder="search" />
+                                <Link onClick={this.closeToggle} className="nav-link text-dark tab" to={'/addmessage'}> Add message </Link>
                             </NavItem>
                             <NavItem>
-                                <Link onClick={this.closeToggle} className="nav-link" to={'/addmessage'}> Add message </Link>
+                                <Link onClick={this.closeToggle} className="nav-link text-dark tab" to={'/profile'}> Profile </Link>
                             </NavItem>
-                            <NavItem>
-                                <Link onClick={this.closeToggle} className="nav-link" to={'/profile'}> Profile </Link>
-                            </NavItem>
-                            <UncontrolledDropdown nav inNavbar>
-                                <DropdownToggle nav caret> Options </DropdownToggle>
+                            <UncontrolledDropdown nav inNavbar >
+                                <DropdownToggle nav caret className="text-dark tab"> Options </DropdownToggle>
                                 <DropdownMenu right>
                                     <DropdownItem onClick={this.closeToggle}> Option 1 </DropdownItem>
                                     <DropdownItem onClick={this.closeToggle}> Option 2 </DropdownItem>

@@ -6,7 +6,6 @@ class ListComments extends Component {
 
 
     componentDidMount() {
-console.log("blogID u list props",this.props.blogID)
         this.props.getCommentsAction(this.props.blogID);
     }
     componentWillUnmount() {
@@ -15,14 +14,12 @@ console.log("blogID u list props",this.props.blogID)
     }
 
     render() {
-        console.log("this.props u ListComments",this.props.comments)
          const commentList = this.props.comments.map((comment) =>
             <SingleComment key={comment._id} message={comment} />);
              //sada je ok da koristim comment._id, jer i ako ga ostali znaju ne mogu stetu da nacine
              // mislim da mi nije potreban ni publicBlogID, on nema veze sa jwt, zato cu ga obrisati prvom prilikom
         return (
             <div>
-                Komentari
                 {commentList
                 }
             </div>

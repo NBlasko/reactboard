@@ -12,7 +12,8 @@ const comments = (state = initialstate, action) => {
     case ADD_COMMENT:
     console.log("c",action.payload)
       return [
-        ...state, action.payload];
+        ...state, action.payload.newComment];
+       
 
     //   case DELETE_MESSAGE:
     //    const newState = state.filter(message => message.id !== action.id)
