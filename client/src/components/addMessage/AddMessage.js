@@ -24,13 +24,10 @@ class AddMessage extends Component {
         }
     }
     addMessage() {
-        if (this.state.text === '') return;
-        //   this.props.addMessageAction(this.state.text);
+        if (this.state.text === '' || this.state.title ==='') return;  //izbaci neku poruku da je potrebno popuniti polja
         this.props.addMessageAction({
-            author: this.props.name,
             text: this.state.text,
             title: this.state.title,
-            authorsPublicID: this.props.publicID
         });
 
         this.setState({ text: '', title: '' });
@@ -49,11 +46,6 @@ class AddMessage extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        name: state.user.name,
-        publicID: state.user.publicID
-    }
-}
 
-export default connect(mapStateToProps, { addMessageAction })(AddMessage);
+
+export default connect( null , { addMessageAction })(AddMessage);

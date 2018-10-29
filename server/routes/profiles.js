@@ -20,6 +20,7 @@ router.route('/:publicID')
 
 router.route('/:publicID/trust')
     // .get(passportJWT, BlogController.index)  //no need to vaidate because there are no inputs in get all
-    .post(passportJWT,/* validateParam(schemas.idSchema, 'blogId'),*/ validateBody(schemas.trustSchema), ProfileController.newProfileTrust);
+    .post(passportJWT, validateParam(schemas.idSchema, 'publicID'), validateBody(schemas.trustSchema), ProfileController.newProfileTrust);
+
 
 module.exports = router;

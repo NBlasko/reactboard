@@ -42,10 +42,7 @@ module.exports = {
         }),
         blogSchema: Joi.object().keys({
             title: Joi.string().required(),
-            author: Joi.string().required(),
-            authorsPublicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
-            body: Joi.string().required(),
-            //  date: Joi.date().required() ovo mislim da mi nece biti potrebno
+            body: Joi.string().required()
         }),
         idSchema: Joi.object().keys({
             param: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required()  // param, becuse I named it like that above, in validateParam method
@@ -56,9 +53,12 @@ module.exports = {
             body: Joi.string().required(),
         }),
 
-        trustSchema:  Joi.object().keys({
-            authorsID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
+        trustSchema: Joi.object().keys({
             trust: Joi.number().integer().min(0).max(1).required()
+        }),
+        
+        likeSchema: Joi.object().keys({
+            like: Joi.number().integer().min(0).max(1).required()
         }),
 
     }

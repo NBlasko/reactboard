@@ -15,6 +15,9 @@ class SingleComment extends Component {
     //  }
     render() {
         const { message } = this.props;
+        console.log("date", message.date)
+        const localDate= new Date(message.date);
+        console.log("localDate", localDate)
         return (
             <div>
                 <hr/>

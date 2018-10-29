@@ -4,7 +4,7 @@ const passportJWT = passport.authenticate('jwt', { session: false });
 
 const router = require('express-promise-router')();
 const BlogController = require('../controllers/blogs');
-const { validateBody,validateParam, schemas } = require('../helpers/routeHelpers')
+const { validateBody, validateParam, schemas } = require('../helpers/routeHelpers')
 
 
 // Always use data validation before mongodb, and I mean first thing after the request has been made. Don't rely only on mongoose schema to validate your responds, sometimes we will perform some
@@ -18,12 +18,15 @@ router.route('/')
 router.route('/:blogId')
   .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.getSingleBlog);
 
-  router.route('/:blogId/comments')
-  .get(passportJWT,validateParam(schemas.idSchema, 'blogId'), BlogController.getBlogsComments)
-  .post(passportJWT,validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.commentSchema), BlogController.newBlogsComment);
+router.route('/:blogId/comments')
+  .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.getBlogsComments)
+  .post(passportJWT, validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.commentSchema), BlogController.newBlogsComment);
 
-  router.route('/:blogId/trust')
-    .post(passportJWT/*,validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.commentSchema), BlogController.newBlogsComment*/);
+
+router.route('/:blogId/like')
+  // .get(passportJWT, BlogController.index)  //no need to vaidate because there are no inputs in get all
+  .post(passportJWT, validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.likeSchema), BlogController.newBlogsLike);   //hit a like/dislike on a blog
+
 
 
 module.exports = router;

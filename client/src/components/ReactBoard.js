@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
-
+import { connect } from 'react-redux';
 
 import ListMessages from './messagesComponents/ListMessages';
 import Signin from './authComponents/Signin';
@@ -24,7 +24,7 @@ class ReactBoard extends Component {
                 <Router path="/" >
                     <div>
                         <Route component={NavbarComponent} />
-                        <div style={{paddingTop : "55px"}}> 
+                        <div className={(!localStorage.reactBoardToken)? "signContainer" : null} style={{paddingTop : "55px"}}> 
                         <Switch>
                             <Route exact path="/" render={() => (
                                 !localStorage.reactBoardToken ?
@@ -59,6 +59,11 @@ class ReactBoard extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        name: state.user.name   //the only for this prop here is to activate lifecycle to rerender this component
+    }
+}
 
 
-export default ReactBoard;
+export default  connect(mapStateToProps, null)(ReactBoard);
