@@ -39,10 +39,10 @@ module.exports = {
     const newUser = new User({
       method: 'local',
       publicID: uuid,   //kasnije cu dodati i gold/tokene koji ce da se trose
+      name: name,
       local: {
         email: email,
-        password: password,
-        name: name
+        password: password,      
       },
       statistics: {
         trustVote: trustVote.id
@@ -86,7 +86,7 @@ module.exports = {
   },
 
   secret: async (req, res, next) => {
-    console.log("secret",req.user.statistics.trustVote)
-    res.json({ name: req.user.local.name, publicID: req.user.publicID });
+    console.log("secret",req.user)
+    res.json({ name: req.user.name, publicID: req.user.publicID });
   }
 }

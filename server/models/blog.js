@@ -29,7 +29,7 @@ const blogSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'comment'
     }],
-    date: { type: Date, default: Date.now },
+    date: { type: Date, default: Date.now },   // vreme.toISOString()
 
 });
 

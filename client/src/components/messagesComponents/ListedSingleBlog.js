@@ -24,16 +24,16 @@ class ListedSingleBlog extends Component {
             likePercent =Math.round(likeVote.number.Up / (likeVote.number.Up + likeVote.number.Down) *100);
         }
         return (
-            <div className="shadow p-3 m-2 bg-white rounded">
+            <div >
                 <h4><Link to={'./blog/' + message.publicID}> {message.title}</Link>  <small className="text-muted"> by {message.author} </small></h4>
                 <p>{message.body}</p>
                 <span className="small pr-3"> <i className="fa fa-check-square-o"></i> {trustPercent}% </span>
                 <span className="small pr-3"> <i className="fa fa-eye"></i> {message.statistics.seen} </span>
-                <span className="small pr-3"> <i className="fa fa-thumbs-up"></i> {likePercent} </span>
+                <span className="small pr-3"> <i className="fa fa-thumbs-up"></i> {likePercent}% </span>
                 <span className="small pr-3"> <i className="fa fa-comment"></i> {message.statistics.numberOfComments} </span>
                 {// u komentar dok ne sredim dugme za brisanje   <button className="btn btn-danger" id={message.publicID} onClick={this.handleClick} > &times; </button>
                 }
-
+                <hr/>
             </div>
 
         )

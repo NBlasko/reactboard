@@ -71,12 +71,12 @@ class SingleBlog extends Component {
                                 <div className="ml-auto col-sm-p-2">{(this.props.singleBlogMessage.authorsPublicID === this.props.publicID) ? <button className="btn btn-danger" type="button">Delete</button> : null}</div>
                             </div>
                             <div className="btn-group col-sm-pr-6 p-1" role="group" aria-label="Trust">
-                                <button type="button" onClick={this.addProfileTrustActionUp} className={`btn btn-outline-primary btn-sm ${(this.props.userVotedUp) ? "active" : ""} buttonBorder`}><span><i className="fa fa-check-square-o"></i></span> {Up} </button>
-                                <button type="button" onClick={this.addProfileTrustActionDown} className={`btn btn-outline-danger btn-sm ${(this.props.userVotedDown) ? "active" : ""} buttonBorder`}><span className="pr-1"> <i className="fa fa-exclamation-triangle"></i></span>{Down}</button>
+                                <button type="button" onClick={this.addProfileTrustActionUp} className={`btn btn-outline-primary btn-sm ${(this.props.userVotedUp) ? "btn-prim-act-custom" : ""} buttonBorder`}><span><i className="fa fa-check-square-o"></i></span> {Up} </button>
+                                <button type="button" onClick={this.addProfileTrustActionDown} className={`btn btn-outline-danger btn-sm ${(this.props.userVotedDown) ? "btn-dang-act-custom" : ""} buttonBorder`}><span className="pr-1"> <i className="fa fa-exclamation-triangle"></i></span>{Down}</button>
                             </div>
                             <div className="btn-group col-sm-pr-6" role="group" aria-label="Like">
-                                <button type="button" onClick={this.addBlogsLikeActionUp} className={`btn btn-outline-primary btn-sm ${(this.props.userLiked) ? "active" : ""} buttonBorder`}> <i className="fa fa-thumbs-up"></i> {Like}</button>
-                                <button type="button" onClick={this.addBlogsLikeActionDown} className={`btn btn-outline-danger btn-sm ${(this.props.userDisliked) ? "active" : ""}  rounded-right buttonBorder`}> <i className="fa fa-thumbs-down"></i>{Dislike}</button>
+                                <button type="button" onClick={this.addBlogsLikeActionUp} className={`btn btn-outline-primary btn-sm ${(this.props.userLiked) ? "btn-prim-act-custom" : ""} buttonBorder`}> <i className="fa fa-thumbs-up"></i> {Like}</button>
+                                <button type="button" onClick={this.addBlogsLikeActionDown} className={`btn btn-outline-danger btn-sm ${(this.props.userDisliked) ? "btn-dang-act-custom" : ""}  rounded-right buttonBorder`}> <i className="fa fa-thumbs-down"></i>{Dislike}</button>
                                 <div className="mr-auto col-sm-p-2"> <span className="badge badge-pill badge-white p-2"> <i className="fa fa-eye"></i> {this.props.seen} </span></div>
                                 <div className="">  <span className="badge badge-pill badge-white p-2"> <i className="fa fa-comment"></i>  {this.props.numberOfComments} </span></div>
                             </div>

@@ -8,6 +8,7 @@ const userSchema = new Schema({
     enum: ['local', 'google', 'facebook'],
     required: true
   },
+  name: String,
   publicID: String,
   statistics: {
     trustVote: {
@@ -17,7 +18,7 @@ const userSchema = new Schema({
     coins: {
       date: {
         type: Date,
-        default: Date.now
+        default: Date.now            // vreme.toISOString()
       },
       total: {
         type: Number,
@@ -30,8 +31,8 @@ const userSchema = new Schema({
       type: String,
       lowercase: true
     },
-    password: String,
-    name: String
+    password: String
+ 
 
   },
   google: {

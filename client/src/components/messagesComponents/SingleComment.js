@@ -15,23 +15,26 @@ class SingleComment extends Component {
     //  }
     render() {
         const { message } = this.props;
-        console.log("date", message.date)
-        const localDate= new Date(message.date);
-        console.log("localDate", localDate)
+
+
+
+        let localDate = new Date(message.date).toLocaleString() + "";
+        // const vreme = new Date() ;
+        //  const iso  =  vreme.toISOString();
+        //sad znam kako da brojim coins, mislim ...
+        //  const opet= new Date(iso);
+        //  console.log("vreme", vreme, iso, opet);
+
+        //koristi message._id za iinfinite scroll ili query selector
         return (
             <div>
-                <hr/>
-                {message._id}
+                <hr />
                 <div>
-                  author:  {message.author}
+                    <b>{message.author}</b>, <small className="text-muted"> {localDate.slice(0, -3)} </small>
                 </div>
                 <div>
-                 body:   {message.body}
+                    {message.body}
                 </div>
-                <div>
-                  date:  {message.date}
-                </div>
-
             </div>
 
         )

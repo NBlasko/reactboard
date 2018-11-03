@@ -10,10 +10,11 @@ module.exports = {
         const blogs = await Blog.find({}, "statistics title author body publicID authorsPublicID date").populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" });
         //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
         //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
-        let result = [];
+        let result = [], bodySliced;
         blogs.forEach(function (v) {
             const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
-            result.push({ statistics, title, author, body, publicID, authorsPublicID, date })
+            if (body.length > 100) bodySliced = body.slice(0,100) + "...";
+            result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date })
         });
         res.status(200).json(result);
     },
@@ -25,7 +26,7 @@ module.exports = {
         await likeVote.save();
         const blog = await new Blog({
             ...req.value.body,
-            author: req.user.local.name,
+            author: req.user.name,
             publicID: uuidv1(),
             //Ovde nije potrebno da se salje u body authorsId jer to stize preko passport token auth, tj ima u req.user snimljeno
         });
@@ -80,9 +81,6 @@ module.exports = {
             else Dislike = 0;
             likeNumber = statistics.likeVote.number;
         }
-
-
-
 
 
         const reducedStatistics = {   //throw out unnecessary things to go on client side

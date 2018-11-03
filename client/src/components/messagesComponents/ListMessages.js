@@ -18,7 +18,7 @@ class ListMessages extends Component {
         const MessageList = this.props.messages.map((message) =>
             <ListedSingleBlog key={message.publicID} message={message} />);
         return (
-            <div>
+            <div className="shadow p-3 m-2 bg-white rounded">
                 {MessageList}
             </div>
         );
