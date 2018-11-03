@@ -1,7 +1,7 @@
 const Blog = require('../models/blog');
 const User = require('../models/auth');
 
-const TrustVote = require('../models/trustVote');
+
 
 
 
@@ -11,6 +11,7 @@ module.exports = {
 
         //   const blogs = await Blog.find({});
         //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
+                //a da, ovo ce preko input-a search na klijentu da izabere i izlista odredjene profile korisnika po upitu
         res.status(200).json({ soon: "soon" });
     },
 
@@ -19,60 +20,59 @@ module.exports = {
         let profile = await User.findOne({ publicID }, "statistics local.name publicID");  
 
         // ne secam se sta sam ovde hteo da uradim :)
+        //po kliknutom linku imena klijenta da nas odvede na ovaj endo point gde je profil korisnika, tipa ime statistika, blogovi
         //  await blog.save();
         console.log('too')
         res.status(200).json(profile);
     },
 
     newProfileTrust: async (req, res, next) => {
-        const { publicID } = req.params;  //izvadis iz url javni id bloga
-        let blog = await Blog.findOne({ publicID })//.populate({ path: 'statistics.trustVoteNumber' }); //nadjes taj blog
-        let trustVote = await TrustVote.findOne({ authorId: blog.authorsPublicID })   //trazis da li je vec neko do sada dao trust , tj da li je kolekcija obrazovana kod tog Usera
-        if (!trustVote) {
-            trustVote = new TrustVote({
-                authorId: blog.authorsPublicID,
-                Up: 0,
-                Down: 0
-            });
-            await trustVote.save();
-            blog.statistics.trustVote = trustVote.id;
-            await blog.save();
-        }
+        const { publicID } = req.value.params;  //izvadis iz url javni id bloga
+        let blog = await Blog.findOne({ publicID }).populate({ path: 'statistics.trustVote' }); //nadjes taj blog
+        let trustVote = blog.statistics.trustVote; // await TrustVote.findOne({ authorId: blog.publicID })   //trazis da li je vec neko do sada dao trust , tj da li je kolekcija obrazovana kod tog Usera
+ 
+        let UserVotedUp = 0, UserVotedDown = 0;
         const foundUp = trustVote.voterId.Up.find((element) => {
-            return element.voterId === req.value.body.authorsID;
+            return element.voterId === req.user.publicID;
         });
         const foundDown = trustVote.voterId.Down.find((element) => {
-            return element.voterId === req.value.body.authorsID;
+            return element.voterId === req.user.publicID;
         });
 
         if (req.value.body.trust === 1) {
 
             if (foundUp) {
                 trustVote.number.Up--;
-                trustVote.voterId.Up = trustVote.voterId.Up.filter(item => item.voterId !== req.value.body.authorsID)
+                UserVotedUp = 0;
+                trustVote.voterId.Up = trustVote.voterId.Up.filter(item => item.voterId !== req.user.publicID)
             }
             else {
-                trustVote.voterId.Up.push({ voterId: req.value.body.authorsID })
+                trustVote.voterId.Up.push({ voterId: req.user.publicID })
                 trustVote.number.Up++;
+                UserVotedUp = 1;
             };
             if (foundDown) {
                 trustVote.number.Down--;
-                trustVote.voterId.Down = trustVote.voterId.Down.filter(item => item.voterId !== req.value.body.authorsID)
+                UserVotedDown = 0;
+                trustVote.voterId.Down = trustVote.voterId.Down.filter(item => item.voterId !== req.user.publicID)
             }
         }
         if (req.value.body.trust === 0) {
 
             if (foundDown) {
                 trustVote.number.Down--;
-                trustVote.voterId.Down = trustVote.voterId.Down.filter(item => item.voterId !== req.value.body.authorsID)
+                UserVotedDown = 0;
+                trustVote.voterId.Down = trustVote.voterId.Down.filter(item => item.voterId !== req.user.publicID)
             }
             else {
-                trustVote.voterId.Down.push({ voterId: req.value.body.authorsID })
+                trustVote.voterId.Down.push({ voterId: req.user.publicID })
                 trustVote.number.Down++;
+                UserVotedDown = 1;
             };
             if (foundUp) {
                 trustVote.number.Up--;
-                trustVote.voterId.Up = trustVote.voterId.Up.filter(item => item.voterId !== req.value.body.authorsID)
+                UserVotedUp = 0;
+                trustVote.voterId.Up = trustVote.voterId.Up.filter(item => item.voterId !== req.user.publicID)
             }
 
         }
@@ -82,7 +82,11 @@ module.exports = {
             1. ne mogu da glasaju dva puta tj da undo svoj glas   Uradjeno
             2. da se smanjuju coins
         */
-        res.status(200).json({ blog, trustVote });
+       const newTrustVote = {
+            number : trustVote.number   //idea behind this object is tosend it like in the previous version, to not mess up reducers in redux and data in components
+        }
+       const result = { trustVote: newTrustVote, UserVotedUp, UserVotedDown }
+        res.status(200).json(result);
 
     }
 }

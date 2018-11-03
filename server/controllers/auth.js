@@ -1,5 +1,6 @@
 const JWT = require('jsonwebtoken');
 const User = require('../models/auth');
+const TrustVote = require('../models/trustVote');
 const { JWT_SECRET } = require('../secret');
 const bcrypt = require('bcryptjs');
 const uuidv1 = require('uuid/v1');
@@ -26,15 +27,28 @@ module.exports = {
 
     // Create a new user
     const uuid = uuidv1();
+
+    trustVote = new TrustVote({
+      authorId: uuid,
+      Up: 0,
+      Down: 0
+    });
+    await trustVote.save();
+
+
     const newUser = new User({
       method: 'local',
       publicID: uuid,   //kasnije cu dodati i gold/tokene koji ce da se trose
+      name: name,
       local: {
         email: email,
-        password: password,
-        name: name
+        password: password,      
+      },
+      statistics: {
+        trustVote: trustVote.id
       }
     });
+
 
     // Generate a salt
     const salt = await bcrypt.genSalt(10);
@@ -72,6 +86,7 @@ module.exports = {
   },
 
   secret: async (req, res, next) => {
-    res.json({ name: req.user.local.name, publicID: req.user.publicID });
+    console.log("secret",req.user)
+    res.json({ name: req.user.name, publicID: req.user.publicID });
   }
 }

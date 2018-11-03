@@ -22,3 +22,7 @@ yarn-error.log*
 
 # debug error
 /debug.log
+
+# assets has background images and free svg-s
+
+/assets

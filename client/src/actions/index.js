@@ -2,7 +2,9 @@ import {
   ADD_USER_PROFILE, REMOVE_USER_PROFILE, USER_SIGNED,
   ADD_MESSAGE, GET_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES,
   GET_SINGLE_MESSAGE, DELETE_SINGLE_MESSAGE,
-  GET_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT
+  GET_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT,
+  ADD_PROFILE_TRUST,
+  ADD_BLOGS_LIKE
 } from '../constants';//import axios from 'axios';
 
 import axios from "axios";
@@ -62,9 +64,7 @@ export const addMessageAction = ({ author, text, title, authorsPublicID }) => di
     },
     data: {
       "title": title,
-      "author": author,
-      "body": text,
-      "authorsPublicID": authorsPublicID
+      "body": text
     },
     url: 'http://localhost:3001/api/blogs',
   })
@@ -171,6 +171,71 @@ export const addCommentAction = ({ author, text, blogsID, authorsPublicID }) => 
       console.log(err)
     });
 }
+
+
+//blog likes
+
+export const addBlogsLikeAction = ({ like, blogsID }) => dispatch => {
+  axios({
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    data: {
+      "like": like
+    },
+    url: 'http://localhost:3001/api/blogs/' + blogsID + '/like',
+  })
+    .then(res => {
+      console.log(res);
+      dispatch({
+        type: ADD_BLOGS_LIKE,
+        payload: res.data
+      })
+    })
+    .catch(err => {
+      console.log(err)
+    });
+}
+
+
+
+
+
+// profiles
+
+
+export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
+  axios({
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    data: {
+      "trust": trust
+    },
+    url: 'http://localhost:3001/api/profiles/' + blogsID + '/trust',
+  })
+    .then(res => {
+      console.log(res);
+      dispatch({
+        type: ADD_PROFILE_TRUST,
+        payload: res.data
+      })
+    })
+    .catch(err => {
+      console.log(err)
+    });
+}
+
+
+
+
+
+
+
 
 
 

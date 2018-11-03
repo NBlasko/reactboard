@@ -8,6 +8,8 @@ const config = require('./configuration');
 const secret = require('./secret');
 const User = require('./models/auth');
 const bcrypt = require('bcryptjs');
+const uuidv1 = require('uuid/v1');
+const TrustVote = require('./models/trustVote');
 
 
 // JSON WEB TOKENS STRATEGY
@@ -48,11 +50,28 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
       return done(null, existingUser);
     }
 
+
+    // Create a new user
+    const uuid = uuidv1();
+
+    trustVote = new TrustVote({
+      authorId: uuid,
+      Up: 0,
+      Down: 0
+    });
+    await trustVote.save();
+
+
     const newUser = new User({
       method: 'google',
+      publicID: uuid,
+      name: profile.displayName,
       google: {
         id: profile.id,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
+      },
+      statistics: {
+        trustVote: trustVote.id
       }
     });
 
@@ -84,11 +103,27 @@ passport.use('facebookToken', new FacebookTokenStrategy({
       return done(null, existingUser);
     }
 
+    // Create a new user
+    const uuid = uuidv1();
+
+    trustVote = new TrustVote({
+      authorId: uuid,
+      Up: 0,
+      Down: 0
+    });
+    await trustVote.save();
+
+
     const newUser = new User({
       method: 'facebook',
-      facebook: {
+      publicID: uuid,
+      name: profile.displayName,
+      google: {
         id: profile.id,
-        email: profile.emails[0].value
+        email: profile.emails[0].value,
+      },
+      statistics: {
+        trustVote: trustVote.id
       }
     });
 

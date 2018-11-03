@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getMessagesAction, deleteAllMessagesAction } from '../../actions'
-import DeleteMessage from './DeleteMessage'
+import ListedSingleBlog from './ListedSingleBlog'
 class ListMessages extends Component {
 
 
@@ -16,9 +16,9 @@ class ListMessages extends Component {
 
     render() {
         const MessageList = this.props.messages.map((message) =>
-            <DeleteMessage key={message.publicID} message={message} />);
+            <ListedSingleBlog key={message.publicID} message={message} />);
         return (
-            <div>
+            <div className="shadow p-3 m-2 bg-white rounded">
                 {MessageList}
             </div>
         );
