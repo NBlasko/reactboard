@@ -29,6 +29,7 @@ class NavbarComponent extends Component {
         this.SignOut = this.SignOut.bind(this);
         this.toggle = this.toggle.bind(this);
         this.closeToggle = this.closeToggle.bind(this);
+        this.NavigateProgrammatically = this.NavigateProgrammatically.bind(this)
         this.state = {
             isOpen: false
         };
@@ -43,7 +44,7 @@ class NavbarComponent extends Component {
     componentDidUpdate() {
         if (!this.props.name && localStorage.reactBoardToken) {
             this.props.addUserProfile();
-            console.log("obnovljen uslovni update")
+            //    console.log("obnovljen uslovni update")
         }
     }
     SignOut() {
@@ -51,9 +52,21 @@ class NavbarComponent extends Component {
         this.props.removeUserProfile(); //all reducers should be here
         this.props.deleteAllMessagesAction();
         this.props.userSigned(false);
-        this.props.history.replace('./signin');
+        this.props.history.replace('/signin');
     }
 
+    NavigateProgrammatically(e) {
+        if (
+            !(this.props.history.location.pathname + "newblogs" === "/" + e.target.name) &&
+            !(this.props.history.location.pathname === "/" + e.target.name)
+        ) {
+            if (e.target.name === "newblogs")
+                this.props.history.replace('/');
+            else
+                this.props.history.replace('/' + e.target.name);
+            this.closeToggle();
+        }
+    }
 
     toggle() {
         this.setState({
@@ -69,10 +82,12 @@ class NavbarComponent extends Component {
 
     render() {
         var name = this.props.name;
-
+        //     console.log("props in navbar", this.props)
         let initials;
-        if (name) {initials = name.match(/\b\w/g) || [];
-        initials = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();}
+        if (name) {
+            initials = name.match(/\b\w/g) || [];
+            initials = ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
+        }
         const navBarContent = (this.props.name) ?  ///ovde je problem
             <div className="navbarCustom small shadow">
                 <Navbar color="light" light expand="sm">
@@ -90,11 +105,19 @@ class NavbarComponent extends Component {
                                 <Link onClick={this.closeToggle} className="nav-link text-dark" to={'/'}>{name}</Link>
                             </NavItem>
                             <NavItem>
-                                <Link onClick={this.closeToggle} className="nav-link text-dark tab" to={'/addmessage'}> Add message </Link>
+                                <Link onClick={this.closeToggle} className="nav-link text-dark tab" to={'/addmessage'}> + </Link>
                             </NavItem>
                             <NavItem>
                                 <Link onClick={this.closeToggle} className="nav-link text-dark tab" to={'/profile'}> Profile </Link>
                             </NavItem>
+                            <UncontrolledDropdown nav inNavbar >
+                                <DropdownToggle nav caret className="text-dark tab"> Home </DropdownToggle>
+                                <DropdownMenu right>
+                                    <DropdownItem name="newblogs" onClick={this.NavigateProgrammatically}>  New blogs </DropdownItem>
+                                    <DropdownItem name="mostseenblogs" onClick={this.NavigateProgrammatically}> Most seen blogs </DropdownItem>
+                                    <DropdownItem name="mostlikedblogs" onClick={this.NavigateProgrammatically}> Most liked blogs </DropdownItem>
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
                             <UncontrolledDropdown nav inNavbar >
                                 <DropdownToggle nav caret className="text-dark tab"> Options </DropdownToggle>
                                 <DropdownMenu right>

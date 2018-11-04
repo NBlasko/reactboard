@@ -3,7 +3,7 @@ const User = require('../models/auth');
 const TrustVote = require('../models/trustVote');
 const { JWT_SECRET } = require('../secret');
 const bcrypt = require('bcryptjs');
-const uuidv1 = require('uuid/v1');
+
 
 signToken = user => {
   return JWT.sign({
@@ -26,10 +26,9 @@ module.exports = {
     }
 
     // Create a new user
-    const uuid = uuidv1();
+   
 
     trustVote = new TrustVote({
-      authorId: uuid,
       Up: 0,
       Down: 0
     });
@@ -38,7 +37,7 @@ module.exports = {
 
     const newUser = new User({
       method: 'local',
-      publicID: uuid,   //kasnije cu dodati i gold/tokene koji ce da se trose
+      publicID: trustVote.authorId,   //kasnije cu dodati i gold/tokene koji ce da se trose
       name: name,
       local: {
         email: email,
@@ -86,7 +85,7 @@ module.exports = {
   },
 
   secret: async (req, res, next) => {
-    console.log("secret",req.user)
+    //console.log("secret",req.user)
     res.json({ name: req.user.name, publicID: req.user.publicID });
   }
 }

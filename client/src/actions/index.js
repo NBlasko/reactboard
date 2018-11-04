@@ -1,6 +1,6 @@
 import {
   ADD_USER_PROFILE, REMOVE_USER_PROFILE, USER_SIGNED,
-  ADD_MESSAGE, GET_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES,
+  ADD_MESSAGE, GET_MESSAGES, GET_NEW_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES,
   GET_SINGLE_MESSAGE, DELETE_SINGLE_MESSAGE,
   GET_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT,
   ADD_PROFILE_TRUST,
@@ -81,17 +81,37 @@ export const addMessageAction = ({ author, text, title, authorsPublicID }) => di
 }
 
  
-export const getMessagesAction = () => dispatch => {
+export const getMessagesAction = (skip, criteria) => dispatch => {
+  const newCriteria = ( criteria === "") ?  "new" : criteria;
   axios({
     method: 'GET',
     headers: {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: 'http://localhost:3001/api/blogs',
+    url: 'http://localhost:3001/api/blogs?skip='+ skip + '&criteria=' + newCriteria ,
   }).then(res => {
     dispatch({
       type: GET_MESSAGES,
+      payload: res.data
+    })
+  })
+    .catch(err => console.log(err));
+};
+
+
+export const getNewMessagesAction = (skip, criteria) => dispatch => {
+  const newCriteria = ( criteria === "") ?  "new" : criteria;
+  axios({
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    url: 'http://localhost:3001/api/blogs?skip='+ skip + '&criteria=' + newCriteria ,
+  }).then(res => {
+    dispatch({
+      type: GET_NEW_MESSAGES,
       payload: res.data
     })
   })
@@ -122,14 +142,14 @@ export const getSingleMessageAction = (blogID) => dispatch => {
 };
 
 
-export const getCommentsAction = (blogID) => dispatch => {
+export const getCommentsAction = (blogID, skip) => dispatch => {
   axios({
     method: 'GET',
     headers: {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: 'http://localhost:3001/api/blogs/' + blogID + '/comments',
+    url: 'http://localhost:3001/api/blogs/' + blogID + '/comments?skip='+ skip,
   }).then(res => {
     dispatch({
       type: GET_COMMENTS,

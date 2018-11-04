@@ -23,5 +23,6 @@ const likeVoteSchema = new Schema({
     }
 });
 
+
 const LikeVote = mongoose.model('likeVote', likeVoteSchema);
 module.exports = LikeVote;

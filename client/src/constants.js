@@ -13,7 +13,7 @@ export const ADD_MESSAGE = 'ADD_MESSAGE';
 export const GET_MESSAGES = 'GET_MESSAGES';
 export const DELETE_MESSAGE = 'DELETE_MESSAGE';
 export const DELETE_ALL_MESSAGES ='DELETE_ALL_MESSAGES';
-
+export const GET_NEW_MESSAGES ="GET_NEW_MESSAGES"
 // single blog message
 
 export const GET_SINGLE_MESSAGE ='GET_SINGLE_MESSAGE';

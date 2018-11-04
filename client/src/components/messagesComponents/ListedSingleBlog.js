@@ -23,9 +23,10 @@ class ListedSingleBlog extends Component {
         if (likeVote && likeVote.number.Up + likeVote.number.Down !== 0) {
             likePercent =Math.round(likeVote.number.Up / (likeVote.number.Up + likeVote.number.Down) *100);
         }
+        let localDate = new Date(message.date).toLocaleString() + "";
         return (
-            <div >
-                <h4><Link to={'./blog/' + message.publicID}> {message.title}</Link>  <small className="text-muted"> by {message.author} </small></h4>
+            <div id={message.publicID} >
+                <h4><Link to={'./blog/' + message.publicID}> {message.title}</Link>  <small className="text-muted"> by {message.author} </small></h4> 
                 <p>{message.body}</p>
                 <span className="small pr-3"> <i className="fa fa-check-square-o"></i> {trustPercent}% </span>
                 <span className="small pr-3"> <i className="fa fa-eye"></i> {message.statistics.seen} </span>
@@ -33,6 +34,7 @@ class ListedSingleBlog extends Component {
                 <span className="small pr-3"> <i className="fa fa-comment"></i> {message.statistics.numberOfComments} </span>
                 {// u komentar dok ne sredim dugme za brisanje   <button className="btn btn-danger" id={message.publicID} onClick={this.handleClick} > &times; </button>
                 }
+                 <small className="text-muted"> {localDate.slice(0, -3)} </small>
                 <hr/>
             </div>
 

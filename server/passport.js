@@ -8,7 +8,7 @@ const config = require('./configuration');
 const secret = require('./secret');
 const User = require('./models/auth');
 const bcrypt = require('bcryptjs');
-const uuidv1 = require('uuid/v1');
+
 const TrustVote = require('./models/trustVote');
 
 
@@ -52,10 +52,10 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
 
 
     // Create a new user
-    const uuid = uuidv1();
+   
 
     trustVote = new TrustVote({
-      authorId: uuid,
+    
       Up: 0,
       Down: 0
     });
@@ -64,7 +64,7 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
 
     const newUser = new User({
       method: 'google',
-      publicID: uuid,
+      publicID: trustVote.authorId,
       name: profile.displayName,
       google: {
         id: profile.id,
@@ -104,10 +104,9 @@ passport.use('facebookToken', new FacebookTokenStrategy({
     }
 
     // Create a new user
-    const uuid = uuidv1();
+  
 
     trustVote = new TrustVote({
-      authorId: uuid,
       Up: 0,
       Down: 0
     });
@@ -116,7 +115,7 @@ passport.use('facebookToken', new FacebookTokenStrategy({
 
     const newUser = new User({
       method: 'facebook',
-      publicID: uuid,
+      publicID: trustVote.authorId,
       name: profile.displayName,
       google: {
         id: profile.id,

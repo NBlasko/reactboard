@@ -1,19 +1,33 @@
 const Blog = require('../models/blog');
 const Comment = require('../models/comment');
 const LikeVote = require('../models/likeVote');
-const uuidv1 = require('uuid/v1');
+
 
 module.exports = {
 
     index: async (req, res, next) => {
+        console.log("req", req.query)
+        let { skip, criteria } = req.query;
+        let newCriteria = {"date": -1}
+        if (criteria === "mostseenblogs") newCriteria ={ "statistics.seen": -1};
+        if (criteria === "mostlikedblogs") newCriteria ={ "difference": -1};
+        if (criteria === "new") newCriteria ={ "date": -1};
+        skip = parseInt(skip)
+        const blogs = await Blog
+            .find({}, "statistics title author body publicID authorsPublicID date difference")
+            .populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" })
+            .skip(skip)
+            .limit(5)
+            .sort(newCriteria )
 
-        const blogs = await Blog.find({}, "statistics title author body publicID authorsPublicID date").populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" });
+
         //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
         //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
         let result = [], bodySliced;
         blogs.forEach(function (v) {
             const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
-            if (body.length > 100) bodySliced = body.slice(0,100) + "...";
+            if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
+            else bodySliced = body;
             result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date })
         });
         res.status(200).json(result);
@@ -27,7 +41,7 @@ module.exports = {
         const blog = await new Blog({
             ...req.value.body,
             author: req.user.name,
-            publicID: uuidv1(),
+            
             //Ovde nije potrebno da se salje u body authorsId jer to stize preko passport token auth, tj ima u req.user snimljeno
         });
         await blog.save();
@@ -41,7 +55,6 @@ module.exports = {
 
     getSingleBlog: async (req, res, next) => {
         const { blogId } = req.value.params; //value is new added property created with module helpers/routeHelpers
-
         let blog = await Blog.findOne({ publicID: blogId }).populate({ path: 'statistics.trustVote statistics.likeVote'/*, select: "number"*/ });;
 
         blog.statistics.seen += 1;
@@ -49,7 +62,7 @@ module.exports = {
         const { statistics, title, author, body, authorsPublicID, publicID, date, } = blog;
 
         let Up = 0, Down = 0, number = { Up: 0, Down: 0 },
-         Like =0, Dislike = 0, likeNumber = { Like : 0, Dislike : 0};
+            Like = 0, Dislike = 0, likeNumber = { Like: 0, Dislike: 0 };
         if (statistics.trustVote) {
             Up = statistics.trustVote.voterId.Up;
             Down = statistics.trustVote.voterId.Down;
@@ -93,7 +106,7 @@ module.exports = {
                 number
             }
         }
-        const result = { statistics: reducedStatistics, title, author, body, authorsPublicID, publicID, date, UserVotedUp: Up, UserVotedDown: Down, Like,  Dislike  };
+        const result = { statistics: reducedStatistics, title, author, body, authorsPublicID, publicID, date, UserVotedUp: Up, UserVotedDown: Down, Like, Dislike };
         res.status(200).json(result);
     },
 
@@ -115,15 +128,22 @@ module.exports = {
 
     getBlogsComments: async (req, res, next) => {   //ovo da aktiviram na neko dugme ili skrolovanjem na dno bloga, da dobacim komentare
         const { blogId } = req.value.params;   //f
-        const blog = await Blog.findOne({ publicID: blogId }).populate('comments');
-        res.status(200).json(blog.comments);
+        let { skip } = req.query
+        skip = parseInt(skip)
+        const comments = await Comment
+            .find({ blogsPublicID: blogId })
+            .skip(skip)
+            .limit(5)
+            .sort({ date: -1 })
+
+        res.status(200).json(comments);
     },
 
     newBlogsLike: async (req, res, next) => {
         const { blogId } = req.value.params;  //izvadis iz url javni id bloga
         let blog = await Blog.findOne({ publicID: blogId }).populate({ path: 'statistics.likeVote' }); //nadjes taj blog
         let likeVote = blog.statistics.likeVote; // await LikeVote.findOne({ authorId: blog.publicID })   //trazis da li je vec neko do sada dao trust , tj da li je kolekcija obrazovana kod tog Usera
- 
+
         let UserLiked = 0, UserDisliked = 0;
         const foundUp = likeVote.voterId.Up.find((element) => {
             return element.voterId === req.user.publicID;
@@ -136,16 +156,19 @@ module.exports = {
 
             if (foundUp) {
                 likeVote.number.Up--;
+                blog.difference--;
                 UserLiked = 0;
                 likeVote.voterId.Up = likeVote.voterId.Up.filter(item => item.voterId !== req.user.publicID)
             }
             else {
                 likeVote.voterId.Up.push({ voterId: req.user.publicID })
                 likeVote.number.Up++;
+                blog.difference++;
                 UserLiked = 1;
             };
             if (foundDown) {
                 likeVote.number.Down--;
+                blog.difference++;
                 UserDisliked = 0;
                 likeVote.voterId.Down = likeVote.voterId.Down.filter(item => item.voterId !== req.user.publicID)
             }
@@ -154,31 +177,35 @@ module.exports = {
 
             if (foundDown) {
                 likeVote.number.Down--;
+                blog.difference++;
                 UserDisliked = 0;
                 likeVote.voterId.Down = likeVote.voterId.Down.filter(item => item.voterId !== req.user.publicID)
             }
             else {
                 likeVote.voterId.Down.push({ voterId: req.user.publicID })
                 likeVote.number.Down++;
+                blog.difference--;
                 UserDisliked = 1;
             };
             if (foundUp) {
                 likeVote.number.Up--;
+                blog.difference--;
                 UserLiked = 0;
                 likeVote.voterId.Up = likeVote.voterId.Up.filter(item => item.voterId !== req.user.publicID)
             }
 
         }
         await likeVote.save();
-
+        await blog.save();
+       
         /*potrebno je srediti da
             1. ne mogu da glasaju dva puta tj da undo svoj glas   Uradjeno
             2. da se smanjuju coins
         */
-       const newLikeVote = {
-            number : likeVote.number   //idea behind this object is tosend it like in the previous version, to not mess up reducers in redux and data in components
+        const newLikeVote = {
+            number: likeVote.number   //idea behind this object is tosend it like in the previous version, to not mess up reducers in redux and data in components
         }
-       const result = { likeVote: newLikeVote, UserLiked, UserDisliked }
+        const result = { likeVote: newLikeVote, UserLiked, UserDisliked }
         res.status(200).json(result);
 
     }

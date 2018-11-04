@@ -27,7 +27,7 @@ class SingleComment extends Component {
 
         //koristi message._id za iinfinite scroll ili query selector
         return (
-            <div>
+            <div id = {message._id}>
                 <hr />
                 <div>
                     <b>{message.author}</b>, <small className="text-muted"> {localDate.slice(0, -3)} </small>

@@ -10,6 +10,7 @@ const userSchema = new Schema({
   },
   name: String,
   publicID: String,
+
   statistics: {
     trustVote: {
       type: Schema.Types.ObjectId,
@@ -32,7 +33,7 @@ const userSchema = new Schema({
       lowercase: true
     },
     password: String
- 
+
 
   },
   google: {

@@ -30,7 +30,7 @@ module.exports = {
         const { publicID } = req.value.params;  //izvadis iz url javni id bloga
         let blog = await Blog.findOne({ publicID }).populate({ path: 'statistics.trustVote' }); //nadjes taj blog
         let trustVote = blog.statistics.trustVote; // await TrustVote.findOne({ authorId: blog.publicID })   //trazis da li je vec neko do sada dao trust , tj da li je kolekcija obrazovana kod tog Usera
- 
+        
         let UserVotedUp = 0, UserVotedDown = 0;
         const foundUp = trustVote.voterId.Up.find((element) => {
             return element.voterId === req.user.publicID;
@@ -86,6 +86,10 @@ module.exports = {
             number : trustVote.number   //idea behind this object is tosend it like in the previous version, to not mess up reducers in redux and data in components
         }
        const result = { trustVote: newTrustVote, UserVotedUp, UserVotedDown }
+       console.log("t", trustVote.difference)  //radi
+
+//jos samo da hoce query sa virtual 
+
         res.status(200).json(result);
 
     }

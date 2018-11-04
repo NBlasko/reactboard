@@ -24,34 +24,43 @@ class ReactBoard extends Component {
                 <Router path="/" >
                     <div>
                         <Route component={NavbarComponent} />
-                        <div className={(!localStorage.reactBoardToken)? "signContainer" : null} style={{paddingTop : "55px"}}> 
-                        <Switch>
-                            <Route exact path="/" render={() => (
-                                !localStorage.reactBoardToken ?
-                                    (<Redirect to="/signin" replace />) : (<ListMessages />))} />
-                            <Route exact path="/addmessage" render={() => (
-                                !localStorage.reactBoardToken ?
-                                    (<Redirect to="/signin" replace />) : (<AddMessage />))} />
+                        <div className={(!localStorage.reactBoardToken) ? "signContainer" : null} style={{ paddingTop: "55px" }}>
+                            <Switch>
+                                <Route exact path="/" render={(props) => (
+                                    !localStorage.reactBoardToken ?
+                                        (<Redirect to="/signin" replace />) : (<ListMessages {...props} />))} />
 
-                            <Route exact path="/profile" render={() => (
-                                !localStorage.reactBoardToken ?
-                                    (<Redirect to="/signin" replace />) : (<Profile />))} />
+                                <Route exact path="/mostseenblogs" render={(props) => (
+                                    !localStorage.reactBoardToken ?
+                                        (<Redirect to="/signin" replace />) : (<ListMessages  {...props}  />))} />
 
-                            <Route exact path="/blog/:id" render={(routeProps) => (
-                                !localStorage.reactBoardToken ?
-                                    (<Redirect to="/signin" replace />) : (<SingleBlog routeProps={routeProps} />))}
-                            />
+                                <Route exact path="/mostlikedblogs" render={(props) => (
+                                    !localStorage.reactBoardToken ?
+                                        (<Redirect to="/signin" replace />) : (<ListMessages  {...props}  />))} />
 
-                            <Route exact path="/signin" render={({ history }) => (
-                                localStorage.reactBoardToken ?
-                                    (<Redirect to="/" replace />) : (<Signin history={history} />))} />
+                                <Route exact path="/addmessage" render={() => (
+                                    !localStorage.reactBoardToken ?
+                                        (<Redirect to="/signin" replace />) : (<AddMessage />))} />
 
-                            <Route exact path="/signup" render={({ history }) => (
-                                localStorage.reactBoardToken ?
-                                    (<Redirect to="/" replace />) : (<Signup history={history} />))} />
+                                <Route exact path="/profile" render={() => (
+                                    !localStorage.reactBoardToken ?
+                                        (<Redirect to="/signin" replace />) : (<Profile />))} />
 
-                            <Redirect from='*' to='/' />
-                        </Switch>
+                                <Route exact path="/blog/:id" render={(routeProps) => (
+                                    !localStorage.reactBoardToken ?
+                                        (<Redirect to="/signin" replace />) : (<SingleBlog routeProps={routeProps} />))}
+                                />
+
+                                <Route exact path="/signin" render={({ history }) => (
+                                    localStorage.reactBoardToken ?
+                                        (<Redirect to="/" replace />) : (<Signin history={history} />))} />
+
+                                <Route exact path="/signup" render={({ history }) => (
+                                    localStorage.reactBoardToken ?
+                                        (<Redirect to="/" replace />) : (<Signup history={history} />))} />
+
+                                <Redirect from='*' to='/' />
+                            </Switch>
                         </div>
                     </div>
                 </Router>
@@ -66,4 +75,4 @@ const mapStateToProps = (state) => {
 }
 
 
-export default  connect(mapStateToProps, null)(ReactBoard);
+export default connect(mapStateToProps, null)(ReactBoard);

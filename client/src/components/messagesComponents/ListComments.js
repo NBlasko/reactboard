@@ -4,24 +4,60 @@ import { getCommentsAction, deleteAllCommentsAction } from '../../actions'
 import SingleComment from './SingleComment';
 class ListComments extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            skip: 5,
+            loading: false,
+            numberOfcomments: 0,
+            emptyAJAX: false
+        };
+        this.handleScroll = this.handleScroll.bind(this);
 
+    }
     componentDidMount() {
-        this.props.getCommentsAction(this.props.blogID);
+        this.props.getCommentsAction(this.props.blogID, 0);
+        window.addEventListener('scroll', this.handleScroll);
     }
     componentWillUnmount() {
-
+        window.removeEventListener('scroll', this.handleScroll)
         this.props.deleteAllCommentsAction();
     }
 
+    componentWillReceiveProps(newProps) {
+        this.setState((previousState) => {
+            return { loading: false, numberOfcomments: newProps.comments.length };
+        });
+        if (this.state.numberOfcomments === newProps.comments.length)
+            this.setState({ emptyAJAX: true })
+    }
+
+    handleScroll(e) {
+        if (!this.state.loading && !this.state.emptyAJAX) {
+            const lastDiv = document.getElementById(this.props.comments[this.props.comments.length - 1]._id)
+            const lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
+            const pageOffset = window.pageYOffset + window.innerHeight;
+            const bottomOffset = 20;
+            if (pageOffset > lastDivOffset - bottomOffset) {
+                this.setState({ loading: true })   //I wanted two call here on setState
+                this.props.getCommentsAction(this.props.blogID, this.state.skip);
+                this.setState((previousState) => {
+                    return { skip: previousState.skip + 5 };
+                });
+            }
+        }
+    }
+
+
     render() {
-         const commentList = this.props.comments.map((comment) =>
+        const commentList = this.props.comments.map((comment) =>
             <SingleComment key={comment._id} message={comment} />);
-             //sada je ok da koristim comment._id, jer i ako ga ostali znaju ne mogu stetu da nacine
-             // mislim da mi nije potreban ni publicBlogID, on nema veze sa jwt, zato cu ga obrisati prvom prilikom
+        //sada je ok da koristim comment._id, jer i ako ga ostali znaju ne mogu stetu da nacine
+        // mislim da mi nije potreban ni publicBlogID, on nema veze sa jwt, zato cu ga obrisati prvom prilikom
         return (
             <div>
-                {commentList
-                }
+                {commentList}
+                {(this.state.emptyAJAX) ? <div> There are no more comments... </div> : null}
             </div>
         );
     }
@@ -29,7 +65,7 @@ class ListComments extends Component {
 
 const mapStateToProps = (state) => {
     return {
-          comments: state.comments
+        comments: state.comments
     }
 }
 

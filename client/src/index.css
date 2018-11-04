@@ -49,7 +49,9 @@ color: white;
 
 }
 
-
+.hoverSocial :hover{
+  opacity: 0.9
+}
 
 .btn-social img {
   width: 30px;
@@ -61,6 +63,10 @@ color: white;
   background-color: #3b5998;
 }
 
+
+.minHeight{
+  min-height: 200px;
+}
 
 
 

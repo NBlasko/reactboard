@@ -99,25 +99,29 @@ class Signin extends Component {
                                 <h3 className="text-light text-center font-flower"> SIGN IN WITH </h3>
 
                                 <FormGroup>
+                                    <span className="hoverSocial">
+                                        <FacebookLogin
+                                            appId="2217486381803421"
+                                            autoLoad={false}
+                                            fields="name,email,picture"
+                                            callback={this.handleFacebookOuth}
+                                            cssClass=" social-link btn btn-social text-light facebook-btn"
+                                            icon={<img src={iconFacebook} alt="FACEBOOK" />}
+                                            textButton="Facebook"
+                                        />
+                                    </span>
 
-                                    <FacebookLogin
-                                        appId="2217486381803421"
-                                        autoLoad={false}
-                                        fields="name,email,picture"
-                                        callback={this.handleFacebookOuth}
-                                        cssClass="social-link btn btn-social text-light facebook-btn"
-                                        icon={<img src={iconFacebook} alt="FACEBOOK" />}
-                                        textButton="Facebook"
-                                    />
-
-                                    <GoogleLogin
-                                        clientId="96297730196-r8fgd3j43in9q8a4esbufqf6ual9pvnh.apps.googleusercontent.com"
-                                        onSuccess={this.handleGoogleOuth}
-                                        onFailure={this.handleGoogleOuth}
-                                        className="social-link btn btn-social btn-light float-right"
-                                    >
-                                        <img src={iconGoogle} alt="GOOGLE" />Google
+                                    <span className="hoverSocial">
+                                        <GoogleLogin
+                                            clientId="96297730196-r8fgd3j43in9q8a4esbufqf6ual9pvnh.apps.googleusercontent.com"
+                                            onSuccess={this.handleGoogleOuth}
+                                            onFailure={this.handleGoogleOuth}
+                                            className="social-link btn btn-social btn-light float-right"
+                                        >
+                                            <img src={iconGoogle} alt="GOOGLE" />Google
                                     </GoogleLogin>
+                                    </span>
+
 
                                 </FormGroup>
                                 <FormGroup> <Input type="email" placeholder="email" name="email" onChange={this.handleChange} onKeyPress={this.handleKeyPress} /> </FormGroup>
@@ -131,7 +135,7 @@ class Signin extends Component {
                     </Row>
 
                 </Container>
-            </div>
+            </div >
         );
     }
 }

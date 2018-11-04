@@ -49,7 +49,7 @@ class SingleBlog extends Component {
     render() {
         const trustVote = this.props.trustVote;
         const likeVote = this.props.likeVote;
-        let Up = 0, Down = 0, Like = 0, Dislike = 0;
+        let Up = 0, Down = 0, Like = 0, Dislike = 0, localDate = "Date...";
         if (this.props.trustVote) {
             Up = trustVote.number.Up;
             Down = trustVote.number.Down;
@@ -58,13 +58,15 @@ class SingleBlog extends Component {
             Like = likeVote.number.Up;
             Dislike = likeVote.number.Down;
         }
-
+        if (this.props.singleBlogMessage)
+            localDate = new Date(this.props.singleBlogMessage.date).toLocaleString() + "";
 
         const blogContent = (this.props.singleBlogMessage) ?
             <div className="shadow-lg p-3 m-2 bg-white rounded">
                 <div className="card border-white mb-3" >
                     <div className="card-body">
-                        <h5 className="card-title text-dark">{this.props.singleBlogMessage.title} <i>by {this.props.singleBlogMessage.author}</i></h5>
+                        <h3>{this.props.singleBlogMessage.title}</h3>
+                        <h5 className="card-title text-dark"><i>by {this.props.singleBlogMessage.author},</i>  <small className="text-muted"> {localDate.slice(0, -3)} </small>   </h5>                             
                         <p className="card-text">{this.props.singleBlogMessage.body}</p>
                         <div className="container-fluid">
                             <div className="row">
@@ -79,6 +81,7 @@ class SingleBlog extends Component {
                                 <button type="button" onClick={this.addBlogsLikeActionDown} className={`btn btn-outline-danger btn-sm ${(this.props.userDisliked) ? "btn-dang-act-custom" : ""}  rounded-right buttonBorder`}> <i className="fa fa-thumbs-down"></i>{Dislike}</button>
                                 <div className="mr-auto col-sm-p-2"> <span className="badge badge-pill badge-white p-2"> <i className="fa fa-eye"></i> {this.props.seen} </span></div>
                                 <div className="">  <span className="badge badge-pill badge-white p-2"> <i className="fa fa-comment"></i>  {this.props.numberOfComments} </span></div>
+  
                             </div>
                         </div>
                         <AddComment blogsID={this.props.routeProps.match.params.id} />
@@ -123,7 +126,7 @@ const mapStateToProps = (state) => {
         userVotedDown,
         likeVote,
         userLiked,
-        userDisliked
+        userDisliked,
     })
 }
 
