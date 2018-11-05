@@ -8,7 +8,9 @@ import Signin from './authComponents/Signin';
 import Signup from './authComponents/Signup';
 import AddMessage from './addMessage/AddMessage';
 import SingleBlog from './messagesComponents/SingleBlog';
-import Profile from './profileComponents/Profile';
+import SingleProfile from './profileComponents/SingleProfile';
+import ListProfiles from './profileComponents/ListProfiles';
+
 import NavbarComponent from './Navbar';
 
 
@@ -42,10 +44,14 @@ class ReactBoard extends Component {
                                     !localStorage.reactBoardToken ?
                                         (<Redirect to="/signin" replace />) : (<AddMessage />))} />
 
-                                <Route exact path="/profile" render={() => (
+                                <Route exact path="/listprofiles" render={(routeProps) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<Profile />))} />
-
+                                        (<Redirect to="/signin" replace />) : (<ListProfiles routeProps={routeProps} />))} />
+                               
+                                <Route exact path="/singleprofile/:id" render={(routeProps) => (
+                                    !localStorage.reactBoardToken ?
+                                        (<Redirect to="/signin" replace />) : (<SingleProfile routeProps={routeProps} />))}
+                                />
                                 <Route exact path="/blog/:id" render={(routeProps) => (
                                     !localStorage.reactBoardToken ?
                                         (<Redirect to="/signin" replace />) : (<SingleBlog routeProps={routeProps} />))}

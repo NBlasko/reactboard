@@ -29,6 +29,17 @@ module.exports = {
             next();
         }
     },
+    validateQueryString: (schema, name) => {
+        return (req, res, next) => {
+            const result = Joi.validate(req.query, schema);
+            if (result.error) {
+                return res.status(400).json({ error: result.error.details[0].message });
+            }
+            if (!req.value) { req.value = {}; }
+            req.value['query'] = result.value;
+            next();
+        }
+    },
 
     schemas: {
         authSchema: Joi.object().keys({
@@ -59,6 +70,10 @@ module.exports = {
         
         likeSchema: Joi.object().keys({
             like: Joi.number().integer().min(0).max(1).required()
+        }),
+        skipCriteriaSchema: Joi.object().keys({
+            skip: Joi.number().integer().min(0).required(),
+            criteria: Joi.string().regex(/^(new|mostlikedblogs|mostseenblogs)$/).required()
         }),
 
     }

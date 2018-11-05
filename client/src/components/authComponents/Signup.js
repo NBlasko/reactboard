@@ -4,6 +4,7 @@ import { Button, Form, FormGroup, Input, Container, Alert, Row, Col } from 'reac
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { userSigned } from '../../actions';
+import { SERVERURL } from '../../constants'
 
 class Signup extends Component {
     constructor(props) {
@@ -22,7 +23,7 @@ class Signup extends Component {
     signUp() {
 
         const { email, password, name } = this.state;
-        axios.post('http://localhost:3001/auth/signup', { email, password, name })
+        axios.post(SERVERURL + 'auth/signup', { email, password, name })
             .then((response) => {
 
                 if (response.status === 200) {

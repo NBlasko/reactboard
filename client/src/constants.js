@@ -31,5 +31,9 @@ export const ADD_BLOGS_LIKE ='ADD_BLOGS_LIKE';
 
 
 //profiles
-
+export const GET_SINGLE_USER ='GET_SINGLE_USER';
 export const ADD_PROFILE_TRUST ='ADD_PROFILE_TRUST';
+
+//SERVERURL
+
+export const SERVERURL = "http://localhost:3001/"

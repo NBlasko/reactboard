@@ -64,8 +64,9 @@ class NavbarComponent extends Component {
                 this.props.history.replace('/');
             else
                 this.props.history.replace('/' + e.target.name);
-            this.closeToggle();
+
         }
+        this.closeToggle();
     }
 
     toggle() {
@@ -81,7 +82,8 @@ class NavbarComponent extends Component {
     }
 
     render() {
-        var name = this.props.name;
+
+        const { publicID, name } = this.props;
         //     console.log("props in navbar", this.props)
         let initials;
         if (name) {
@@ -99,7 +101,7 @@ class NavbarComponent extends Component {
                                 <Input className="float-right" placeholder="search" />
                             </NavItem>
                             <NavItem className="d-none d-sm-block">
-                                <Link onClick={this.closeToggle} className="nav-link h6 text-light customCircle" to={'/'}>{initials}</Link>
+                                <Link onClick={this.closeToggle} className="nav-link h6 text-light customCircle" to={`/singleprofile/${publicID}`}>{initials}</Link>
                             </NavItem>
                             <NavItem className="d-block d-sm-none">
                                 <Link onClick={this.closeToggle} className="nav-link text-dark" to={'/'}>{name}</Link>
@@ -108,7 +110,7 @@ class NavbarComponent extends Component {
                                 <Link onClick={this.closeToggle} className="nav-link text-dark tab" to={'/addmessage'}> + </Link>
                             </NavItem>
                             <NavItem>
-                                <Link onClick={this.closeToggle} className="nav-link text-dark tab" to={'/profile'}> Profile </Link>
+                                <Link onClick={this.closeToggle} className="nav-link text-dark tab" to={'/listprofiles'}> Profiles </Link>
                             </NavItem>
                             <UncontrolledDropdown nav inNavbar >
                                 <DropdownToggle nav caret className="text-dark tab"> Home </DropdownToggle>
@@ -144,9 +146,10 @@ class NavbarComponent extends Component {
 }
 
 const mapStateToProps = (state) => {
+    console.log ("pp", state.user.publicID, state.user.name )
     return {
         name: state.user.name,
-        PublicID: state.user.PublicID,
+        publicID: state.user.publicID,
         signed: state.userSignedBool.signed
     }
 }

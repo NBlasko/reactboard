@@ -6,8 +6,8 @@ const LikeVote = require('../models/likeVote');
 module.exports = {
 
     index: async (req, res, next) => {
-        console.log("req", req.query)
-        let { skip, criteria } = req.query;
+        console.log("req", req.value.query)
+        let { skip, criteria } = req.value.query;
         let newCriteria = {"date": -1}
         if (criteria === "mostseenblogs") newCriteria ={ "statistics.seen": -1};
         if (criteria === "mostlikedblogs") newCriteria ={ "difference": -1};

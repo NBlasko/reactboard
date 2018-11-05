@@ -8,6 +8,7 @@ import iconGoogle from '../../assets/google.svg';
 import iconFacebook from '../../assets/facebook.svg';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
+import { SERVERURL } from '../../constants'
 
 class Signin extends Component {
     constructor(props) {
@@ -28,7 +29,7 @@ class Signin extends Component {
     signIn() {
 
         let { email, password } = this.state;
-        axios.post('http://localhost:3001/auth/signin', { email, password })
+        axios.post(SERVERURL + 'auth/signin', { email, password })
             .then((response) => {
 
                 if (response.status === 200) {
@@ -56,7 +57,7 @@ class Signin extends Component {
 
 
     handleFacebookOuth(res) {
-        axios.post('http://localhost:3001/auth/facebook', { access_token: res.accessToken })
+        axios.post(SERVERURL + 'auth/facebook', { access_token: res.accessToken })
             .then((response) => {
 
                 if (response.status === 200) {
@@ -72,7 +73,7 @@ class Signin extends Component {
 
     handleGoogleOuth(res) {
         console.log(res)
-        axios.post('http://localhost:3001/auth/google', { access_token: res.accessToken })
+        axios.post(SERVERURL + 'auth/google', { access_token: res.accessToken })
             .then((response) => {
 
                 if (response.status === 200) {

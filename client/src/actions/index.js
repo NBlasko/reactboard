@@ -1,9 +1,10 @@
 import {
+  SERVERURL,
   ADD_USER_PROFILE, REMOVE_USER_PROFILE, USER_SIGNED,
   ADD_MESSAGE, GET_MESSAGES, GET_NEW_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES,
   GET_SINGLE_MESSAGE, DELETE_SINGLE_MESSAGE,
   GET_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT,
-  ADD_PROFILE_TRUST,
+  GET_SINGLE_USER ,ADD_PROFILE_TRUST,
   ADD_BLOGS_LIKE
 } from '../constants';//import axios from 'axios';
 
@@ -18,7 +19,7 @@ export const userSigned = (bool) => ({
 //user Name
 
 export const addUserProfile = () => dispatch => {
-  const API_URL = 'http://localhost:3001/auth/secret';
+  const API_URL = SERVERURL + 'auth/secret';
   axios(API_URL, {
     headers: {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
@@ -66,7 +67,7 @@ export const addMessageAction = ({ author, text, title, authorsPublicID }) => di
       "title": title,
       "body": text
     },
-    url: 'http://localhost:3001/api/blogs',
+    url: SERVERURL + 'api/blogs',
   })
     .then(res => {
       console.log(res);
@@ -89,7 +90,7 @@ export const getMessagesAction = (skip, criteria) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: 'http://localhost:3001/api/blogs?skip='+ skip + '&criteria=' + newCriteria ,
+    url: SERVERURL + 'api/blogs?skip='+ skip + '&criteria=' + newCriteria ,
   }).then(res => {
     dispatch({
       type: GET_MESSAGES,
@@ -108,7 +109,7 @@ export const getNewMessagesAction = (skip, criteria) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: 'http://localhost:3001/api/blogs?skip='+ skip + '&criteria=' + newCriteria ,
+    url: SERVERURL + 'api/blogs?skip='+ skip + '&criteria=' + newCriteria ,
   }).then(res => {
     dispatch({
       type: GET_NEW_MESSAGES,
@@ -131,7 +132,7 @@ export const getSingleMessageAction = (blogID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: 'http://localhost:3001/api/blogs/'+blogID,
+    url: SERVERURL + 'api/blogs/'+blogID,
   }).then(res => {
     dispatch({
       type: GET_SINGLE_MESSAGE,
@@ -149,7 +150,7 @@ export const getCommentsAction = (blogID, skip) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: 'http://localhost:3001/api/blogs/' + blogID + '/comments?skip='+ skip,
+    url: SERVERURL + 'api/blogs/' + blogID + '/comments?skip='+ skip,
   }).then(res => {
     dispatch({
       type: GET_COMMENTS,
@@ -178,7 +179,7 @@ export const addCommentAction = ({ author, text, blogsID, authorsPublicID }) => 
       "authorsPublicID": authorsPublicID,
       //
     },
-    url: 'http://localhost:3001/api/blogs/' + blogsID + '/comments',
+    url: SERVERURL + 'api/blogs/' + blogsID + '/comments',
   })
     .then(res => {
       console.log(res);
@@ -205,7 +206,7 @@ export const addBlogsLikeAction = ({ like, blogsID }) => dispatch => {
     data: {
       "like": like
     },
-    url: 'http://localhost:3001/api/blogs/' + blogsID + '/like',
+    url: SERVERURL + 'api/blogs/' + blogsID + '/like',
   })
     .then(res => {
       console.log(res);
@@ -225,6 +226,25 @@ export const addBlogsLikeAction = ({ like, blogsID }) => dispatch => {
 
 // profiles
 
+export const getSingleUserAction = (publicID) => dispatch => {
+  axios({
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    url: SERVERURL + 'api/profiles/'+publicID,
+  }).then(res => {
+    dispatch({
+      type: GET_SINGLE_USER,
+      payload: res.data
+    })
+  })
+    .catch(err => console.log(err));
+};
+
+
+
 
 export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
   axios({
@@ -236,7 +256,7 @@ export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
     data: {
       "trust": trust
     },
-    url: 'http://localhost:3001/api/profiles/' + blogsID + '/trust',
+    url: SERVERURL + 'api/profiles/' + blogsID + '/trust',
   })
     .then(res => {
       console.log(res);
