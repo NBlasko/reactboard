@@ -8,8 +8,10 @@ const messages = (state = initialstate, action) => {
     case GET_MESSAGES:
       return [
         ...state, ...action.payload];
+
     case GET_NEW_MESSAGES:
-        return [...action.payload]
+        return [...action.payload];
+        
     case DELETE_MESSAGE:
       const newState = state.filter(message => message.id !== action.id)
       return [...newState];

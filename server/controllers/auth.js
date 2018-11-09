@@ -1,7 +1,7 @@
 const JWT = require('jsonwebtoken');
 const User = require('../models/auth');
 const TrustVote = require('../models/trustVote');
-const { JWT_SECRET } = require('../secret');
+const { JWT_SECRET }= require('../configuration');
 const bcrypt = require('bcryptjs');
 
 
@@ -85,7 +85,7 @@ module.exports = {
   },
 
   secret: async (req, res, next) => {
-    //console.log("secret",req.user)
-    res.json({ name: req.user.name, publicID: req.user.publicID });
+    console.log("secret",req.user)
+    res.json({ name: req.user.name, publicID: req.user.publicID, image: req.user.image });
   }
 }

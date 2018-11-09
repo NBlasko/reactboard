@@ -73,7 +73,11 @@ module.exports = {
         }),
         skipCriteriaSchema: Joi.object().keys({
             skip: Joi.number().integer().min(0).required(),
-            criteria: Joi.string().regex(/^(new|mostlikedblogs|mostseenblogs)$/).required()
+            criteria: Joi.string().regex(/^(new|mostlikedblogs|mostseenblogs|profile)$/).required()
+        }),
+        skipAuthorsPublicIDSchema: Joi.object().keys({
+            skip: Joi.number().integer().min(0).required(),
+            authorsPublicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required()
         }),
 
     }

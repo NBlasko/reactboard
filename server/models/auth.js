@@ -53,8 +53,11 @@ const userSchema = new Schema({
       type: String,
       lowercase: true
     }
+  },
+  image: {
+    URL: String,
+    imageID: String
   }
-
 });
 
 // Create a model

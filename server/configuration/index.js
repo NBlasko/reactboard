@@ -1,13 +1,13 @@
- module.exports = {
-    JWT_SECRET: '',
-    oauth: {
-      google: {
-        clientID: '96297730196-r8fgd3j43in9q8a4esbufqf6ual9pvnh.apps.googleusercontent.com',
-        clientSecret: 'ogxUGbdqUfoA47Dnr4cj_wFK',
-      },
-      facebook: {
-        clientID: '2217486381803421',
-        clientSecret: '8d827a988ad3323da43d172e9eb47620',
-      },
+module.exports = {
+  JWT_SECRET: process.env.JWT_STRATEGY_SECRET,
+  oauth: {
+    google: {
+      clientID: process.env.OUTH_GOOGLE_CLIENT_ID,
+      clientSecret: process.env.OUTH_GOOGLE_CLIENT_SECRET,
     },
-  };
+    facebook: {
+      clientID: process.env.OUTH_FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.OUTH_FACEBOOK_CLIENT_SECRET,
+    },
+  },
+};

@@ -14,12 +14,29 @@ module.exports = {
         //a da, ovo ce preko input-a search na klijentu da izabere i izlista odredjene profile korisnika po upitu
         res.status(200).json({ soon: "soon" });
     },
+    newImage: async ( req, res, next) => {
+        console.log("user",req.user)
+        console.log("meesage",req.file) // to see what is returned to you
+        const image = {
+            URL:  req.file.url,
+            imageID: req.file.public_id
+        };
+
+        const user = await User.findById(req.user.id)
+        user.image =  image
+      await  user.save();
+      //  Image.create(image) // save image information in database
+     //     .then(newImage => res.json(newImage))
+        //  .catch(err => console.log(err));
+
+    res.status(200).json({ image });
+    },
 
     getSingleProfile: async (req, res, next) => {
         const { publicID } = req.value.params; //value is new added property created with module helpers/routeHelpers
-        const profile = await User.findOne({ publicID }, "statistics name publicID")
+        const profile = await User.findOne({ publicID }, "statistics name publicID image")
             .populate({ path: 'statistics.trustVote', select: "number" })
-        const { statistics, name } = profile;
+        const { statistics, name, image } = profile;
         // ne secam se sta sam ovde hteo da uradim :)
         //po kliknutom linku imena klijenta da nas odvede na ovaj end point gde je profil korisnika, tipa ime statistika, blogovi
         const admin = (profile.id === req.user.id) ? true : false;
@@ -29,11 +46,37 @@ module.exports = {
         const result = {
             statistics: newStatistics,
             name,
-            admin
+            admin,
+            image
         }
-        console.log("r", result)
         res.status(200).json(result);
     },
+
+    getProfileMessages: async (req, res, next) => {
+
+        let { skip, authorsPublicID } = req.value.query;
+        skip = parseInt(skip)
+        const blogs = await Blog
+            .find({authorsPublicID}, "statistics title author body publicID authorsPublicID date difference")
+            .populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" })
+            .skip(skip)
+            .limit(5)
+            .sort({ "date": -1 })
+
+
+        //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
+        //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
+        let result = [], bodySliced;
+        blogs.forEach(function (v) {
+            const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
+            if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
+            else bodySliced = body;
+            result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date })
+        });
+        res.status(200).json(result);
+
+    },
+
 
     newProfileTrust: async (req, res, next) => {
         const { publicID } = req.value.params;  //izvadis iz url javni id bloga

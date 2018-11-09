@@ -31,7 +31,8 @@ export const addUserProfile = () => dispatch => {
       dispatch({
         type: ADD_USER_PROFILE,
         name: res.data.name,
-        publicID : res.data.publicID
+        publicID : res.data.publicID,
+        image: res.data.image
       })
     })
     .catch((error) => {
@@ -109,7 +110,7 @@ export const getNewMessagesAction = (skip, criteria) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs?skip='+ skip + '&criteria=' + newCriteria ,
+    url: SERVERURL + 'api/blogs?skip='+ skip + '&criteria=' + newCriteria,
   }).then(res => {
     dispatch({
       type: GET_NEW_MESSAGES,
@@ -244,7 +245,41 @@ export const getSingleUserAction = (publicID) => dispatch => {
 };
 
 
+export const getProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
+ 
+  axios({
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    url: SERVERURL + 'api/profiles?skip='+ skip + '&authorsPublicID=' + authorsPublicID ,
+  }).then(res => {
+    dispatch({
+      type: GET_MESSAGES,
+      payload: res.data
+    })
+  })
+    .catch(err => console.log(err));
+};
 
+export const getNewProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
+ 
+  axios({
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    url: SERVERURL + 'api/profiles?skip='+ skip + '&authorsPublicID=' + authorsPublicID ,
+  }).then(res => {
+    dispatch({
+      type: GET_NEW_MESSAGES,
+      payload: res.data
+    })
+  })
+    .catch(err => console.log(err));
+};
 
 export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
   axios({

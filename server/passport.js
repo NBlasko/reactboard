@@ -5,17 +5,15 @@ const LocalStrategy = require('passport-local').Strategy;
 const FacebookTokenStrategy = require('passport-facebook-token');
 const GooglePlusTokenStrategy = require('passport-google-plus-token');
 const config = require('./configuration');
-const secret = require('./secret');
 const User = require('./models/auth');
 const bcrypt = require('bcryptjs');
-
 const TrustVote = require('./models/trustVote');
 
 
 // JSON WEB TOKENS STRATEGY
 passport.use(new JwtStrategy({
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: secret.JWT_SECRET
+  secretOrKey: config.JWT_SECRET
 }, async (payload, done) => {
   try {
 

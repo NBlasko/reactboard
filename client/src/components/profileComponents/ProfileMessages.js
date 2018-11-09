@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getMessagesAction, deleteAllMessagesAction, getNewMessagesAction } from '../../actions'
-import ListedSingleBlog from './ListedSingleBlog'
-class ListMessages extends Component {
+import { getProfileMessagesAction,getNewProfileMessagesAction , deleteAllMessagesAction } from '../../actions'
+import ListedSingleBlog from '../messagesComponents/ListedSingleBlog'
+class ProfileMessages extends Component {
 
     constructor(props) {
         super(props);
@@ -16,43 +16,35 @@ class ListMessages extends Component {
 
     }
     componentDidMount() {
-        console.log("props mount in listmessages", this.props.location.pathname.slice(1))
-        this.props.getNewMessagesAction(0, this.props.location.pathname.slice(1));
-      /*  this.scrollListener =*/ window.addEventListener('scroll', this.handleScroll)
+        console.log("props mount in listmessages", this.props.authorsPublicID)
+        this.props.getNewProfileMessagesAction(0, this.props.authorsPublicID);
+        window.addEventListener('scroll', this.handleScroll)
     }
     componentWillUnmount() {
         window.removeEventListener('scroll', this.handleScroll)
         this.props.deleteAllMessagesAction();
     }
-    componentDidUpdate(prevProps, prevState) {
-        // only update  if the data has changed
-        if (prevProps.location.pathname !== this.props.location.pathname) {
-            window.scrollTo(0, 0);
-          //  console.log("didupdate", this.props.location.pathname.slice(1))
-            this.props.getNewMessagesAction(0, this.props.location.pathname.slice(1));
-            this.setState({ skip: 5, emptyAJAX: false, numberOfmessages: -1, });
-        }
-    }
+
     componentWillReceiveProps(newProps) {
 
-        if (newProps.location.pathname === this.props.location.pathname) {
+       
             this.setState({ loading: false, numberOfmessages: newProps.messages.length });
             if (this.state.numberOfmessages === newProps.messages.length && newProps.messages.length !== -1)
                 this.setState({ emptyAJAX: true })
-        }
+     
     }
 
 
 
 handleScroll(e) {
-    if (!this.state.loading && !this.state.emptyAJAX && this.props.messages[0]) {
+    if (!this.state.loading && !this.state.emptyAJAX  && this.props.messages[0]) {
         const lastDiv = document.getElementById(this.props.messages[this.props.messages.length - 1].publicID)
         const lastDivOffset = lastDiv.offsetTop + lastDiv.clientHeight;
         const pageOffset = window.pageYOffset + window.innerHeight;
         const bottomOffset = 20;
         if (pageOffset > lastDivOffset - bottomOffset) {
             this.setState({ loading: true })   //I wanted two call here on setState
-            this.props.getMessagesAction(this.state.skip, this.props.location.pathname.slice(1));
+            this.props.getProfileMessagesAction(this.state.skip, this.props.authorsPublicID);
             this.setState((previousState) => {
                 return { skip: previousState.skip + 5 };
             });
@@ -74,8 +66,8 @@ render() {
 
 const mapStateToProps = (state) => {
     return {
-        messages: state.messages
+        messages: state.messages,
     }
 }
 
-export default connect(mapStateToProps, { getMessagesAction, deleteAllMessagesAction, getNewMessagesAction })(ListMessages);
+export default connect(mapStateToProps, {  deleteAllMessagesAction,getNewProfileMessagesAction, getProfileMessagesAction })(ProfileMessages);

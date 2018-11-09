@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').load();
+}
+
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -8,14 +12,14 @@ const app = express();
 
 app.use(morgan('dev'));
 app.use(cors({
-  origin: 'http://localhost:3000'
+    origin: 'http://localhost:3000'
 }));
 //app.use(passport.initialize());
 app.use(express.json());
 
 
 // initialize passport
-app.use('/auth',  require('./routes/auth'));
+app.use('/auth', require('./routes/auth'));
 
 // secured routes
 app.use('/api/blogs', require('./routes/blog'));
@@ -25,27 +29,35 @@ app.use('/api/profiles', require('./routes/profiles'));
 
 
 
+
 // Catch 404 errors
 app.use((req, res, next) => {
+
     const err = new Error('Not found');
     err.status = 404;
+
     next(err);
 })
 
 // Error handler function
 app.use((err, req, res, next) => {
-
     const error = app.get('env') === 'development' ? err : {};
+     if (err.http_code) {
+         return res.status(200).json({err})    //this is special case for multer-cloudinary
+         //it doesn't want to throw an error in usual way, so the error is sent via json with status 200
+         //it happens when the format is not alowed
+     }
     const status = err.status || 500;
-
     //respond to client
+
     res.status(status).json({
         error: {
-            message: error.message
+            message: error.message,
         }
     });
     // respond to server
-    console.error(err);
+    console.error("greska5", err);
+
 })
 
 

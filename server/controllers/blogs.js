@@ -6,7 +6,7 @@ const LikeVote = require('../models/likeVote');
 module.exports = {
 
     index: async (req, res, next) => {
-        console.log("req", req.value.query)
+      //  console.log("req", req.value.query)
         let { skip, criteria } = req.value.query;
         let newCriteria = {"date": -1}
         if (criteria === "mostseenblogs") newCriteria ={ "statistics.seen": -1};
@@ -41,7 +41,7 @@ module.exports = {
         const blog = await new Blog({
             ...req.value.body,
             author: req.user.name,
-            
+            authorsPublicID: req.user.publicID
             //Ovde nije potrebno da se salje u body authorsId jer to stize preko passport token auth, tj ima u req.user snimljeno
         });
         await blog.save();

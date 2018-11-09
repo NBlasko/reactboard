@@ -146,7 +146,6 @@ class NavbarComponent extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log ("pp", state.user.publicID, state.user.name )
     return {
         name: state.user.name,
         publicID: state.user.publicID,
