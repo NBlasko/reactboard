@@ -85,7 +85,7 @@ module.exports = {
   },
 
   secret: async (req, res, next) => {
-    console.log("secret",req.user)
+   // console.log("secret",req.user)
     res.json({ name: req.user.name, publicID: req.user.publicID, image: req.user.image });
   }
 }

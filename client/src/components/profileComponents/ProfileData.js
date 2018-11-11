@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getSingleUserAction } from '../../actions';
 import ImageUploadClass from './ImageUploadClass';
-import { Button, Container, Alert, Row, Col } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import coinsSVG from '../../assets/coins.svg';
 
 class ProfileData extends Component {
@@ -23,22 +23,19 @@ class ProfileData extends Component {
         }
         return (
             <div>
-                <div className="container-fluid">
+                <Container>
                     <Row>
-                        <Col lg="4" md="4" sm="6" xs="12">
-                            <div /* style={{ maxWidth: "560px", height: "300px" }}*/>
-                                <img src={(sp) ? sp.image.URL : null} alt="nema" className="img-thumbnail img-fluid float-left " />
+                        <Col lg="4" md="6" sm="8" xs="12">
+                            <div style={{ maxWidth: "550px"/*, height: "300px"*/ }} className="d-flex justify-content-around">
+                                <img src={(sp) ? sp.image.URL : null} alt="nema" className="img-thumbnail img-fluid  " />
                             </div>
                         </Col>
 
-                        <Col lg="8" md="8" sm="6" xs="12">
+                        <Col lg="8" md="6" sm="4" xs="12">
 
-                            <h2>  {name}</h2>
-                            <div> admin: {(admin) ? "jeste" : "nije"}</div>
-                            <div>
-                            <div className="mb-3"> <img style = {{width : 35, height: 35}} src ={coinsSVG} alt = "coins"/> {coins}</div> 
-                            </div>
-                              <div className="d-flex justify-content-between">
+                            <h2 className="d-flex justify-content-around">  {name}</h2>
+
+                            <div className="d-flex justify-content-between">
                                 <span className="small pr-3"> <i className="fa fa-check-square-o"></i> {trustUp} % </span>
                                 <span className="small pr-3"> <i className="fa fa-exclamation-triangle"></i> {trustDown} % </span>
                             </div>
@@ -46,15 +43,18 @@ class ProfileData extends Component {
                                 <div className="progress-bar  bg-primary" role="progressbar" style={{ width: `${totalTrust}%` }} aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
                                 <div className="progress-bar bg-danger" role="progressbar" style={{ width: `${100 - totalTrust}%` }} aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
-
-                            <div></div>
-                            <ImageUploadClass />
-
+                            <div className="mt-3">  {(admin) ?
+                                <div>
+                                    <div className="mb-3"> <img style={{ width: 35, height: 35 }} src={coinsSVG} alt="coins" /> {coins}</div>
+                                    <ImageUploadClass />
+                                </div>
+                                : null}
+                            </div>
 
                         </Col>
                     </Row>
 
-                </div>
+                </Container>
 
 
             </div>

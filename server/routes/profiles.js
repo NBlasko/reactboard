@@ -26,7 +26,7 @@ router.route('/:publicID/trust')
 
 
 router.route('/images')
-    // .get(passportJWT, BlogController.index)  //no need to vaidate because there are no inputs in get all
+      //no need to vaidate because there are no inputs in get all
     .post(passportJWT, parser.single("image"), ProfileController.newImage);
 
 

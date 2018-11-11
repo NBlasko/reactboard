@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import axios from 'axios'
-
+import { Button, Alert } from 'reactstrap';
 
 
 class ImageUploadClass extends Component {
 
     state = {
-        file: null
+        file: null,
+        errorMessage: '',
+        progressMessage : ''
     }
 
     fileSelected = e => {
@@ -42,31 +44,21 @@ class ImageUploadClass extends Component {
         }
 
 
-        /*axios({
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${localStorage.reactBoardToken}`,
-      'Cache-Control': 'no-cache'
-    },
-    data: {
-      "trust": trust
-    },
-    url: SERVERURL + 'api/profiles/' + blogsID + '/trust',
-  }) */
+     
 
     }
 
     render() {
-
+        let progressMessage = (this.state.progressMessage !== '') ? <Alert color="warning opacity-5">{this.state.progressMessage}</Alert> : null;
+      
+        let errorMessage = (this.state.errorMessage !== '') ? <Alert color="warning opacity-5">{this.state.errorMessage}</Alert> : null;
         return (
             <div>
                 <br />
-                Image Upload
-
-
               <input type="file" ref={fileInput => this.fileInput = fileInput} style={{ display: "none" }} onChange={this.fileSelected} />
-                <button onClick={() => this.fileInput.click()} > Select image </button>
-                <button onClick={this.fileUpload} > Upload </button>
+                <Button color="dark" onClick={() => this.fileInput.click()} > Select image </Button>
+                <Button color="dark" onClick={this.fileUpload} > Upload </Button>
+                {errorMessage}
             </div>
         );
     }

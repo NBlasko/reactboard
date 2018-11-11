@@ -14,23 +14,24 @@ module.exports = {
         //a da, ovo ce preko input-a search na klijentu da izabere i izlista odredjene profile korisnika po upitu
         res.status(200).json({ soon: "soon" });
     },
-    newImage: async ( req, res, next) => {
-        console.log("user",req.user)
-        console.log("meesage",req.file) // to see what is returned to you
+    newImage: async (req, res, next) => {
+        console.log("user", req.user)
+        console.log("meesage", req.file) // to see what is returned to you
         const image = {
-            URL:  req.file.url,
+            URL: req.file.url,
             imageID: req.file.public_id
         };
 
         const user = await User.findById(req.user.id)
-        user.image =  image
-      await  user.save();
-      //  Image.create(image) // save image information in database
-     //     .then(newImage => res.json(newImage))
+        user.image = image
+        await user.save();
+        //  Image.create(image) // save image information in database
+        //     .then(newImage => res.json(newImage))
         //  .catch(err => console.log(err));
 
-    res.status(200).json({ image });
+        res.status(200).json({ image });
     },
+
 
     getSingleProfile: async (req, res, next) => {
         const { publicID } = req.value.params; //value is new added property created with module helpers/routeHelpers
@@ -57,7 +58,7 @@ module.exports = {
         let { skip, authorsPublicID } = req.value.query;
         skip = parseInt(skip)
         const blogs = await Blog
-            .find({authorsPublicID}, "statistics title author body publicID authorsPublicID date difference")
+            .find({ authorsPublicID }, "statistics title author body publicID authorsPublicID date difference")
             .populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" })
             .skip(skip)
             .limit(5)
