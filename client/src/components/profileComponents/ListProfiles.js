@@ -1,38 +1,19 @@
 import React, { Component } from 'react';
-import axios from "axios";
+import { connect } from 'react-redux';
 import { SERVERURL } from '../../constants';
 
 
 class ListProfiles extends Component {
 
     state = {
-        slika: ''
+        imageQueryID: ''
     }
-    componentDidMount() {
-        var img = document.createElement("img");
-        
-       img.src =  SERVERURL + 'api/images';
-      // console.log("img", img.src)
-       var src = document.getElementById("slikabr1");
-        src.appendChild(img);
-
-        axios({
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${localStorage.reactBoardToken}`,
-                'Cache-Control': 'no-cache',
-            },
-            url: SERVERURL + 'api/test',
-        }).then(res => {
-             console.log("res",res)
-               this.setState({slika: res.data})
-          //  img.src =  res;
-      //      src.appendChild(res);
-
-        })
-            .catch(err => console.log(err));
-
+    componentWillReceiveProps(newProps) {
+        this.setState({
+            imageQueryID: newProps.imageQueryID
+          });
     }
+
 
 
     render() {
@@ -41,12 +22,18 @@ class ListProfiles extends Component {
             <div>
                 ListProfiles
                 <h1>oce li</h1>
-                <img src={"data:image/png;base64," + this.state.slika} alt="nema nista" />
-                <div id = "slikabr1"  /> <div></div>
+                <img src={`${SERVERURL}api/images?imageQueryID=${this.state.imageQueryID || null}&publicID=`} alt= "profile" />
             </div>
         );
     }
 }
 
+const mapStateToProps = (state) => {
+    console.log("s",state.user)
+    return {
+        imageQueryID: state.user.imageQueryID,
+    }
+}
 
-export default ListProfiles;
+
+export default connect(mapStateToProps,null)(ListProfiles);

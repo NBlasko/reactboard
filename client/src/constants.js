@@ -37,3 +37,8 @@ export const ADD_PROFILE_TRUST ='ADD_PROFILE_TRUST';
 //SERVERURL
 
 export const SERVERURL = "http://localhost:3001/"
+
+
+//rerender
+
+export const PROFILE_DATA = "PROFILE_DATA"

@@ -26,7 +26,7 @@ class ListedSingleBlog extends Component {
         let localDate = new Date(message.date).toLocaleString() + "";
         return (
             <div id={message.publicID} >
-                <h4><Link to={'./blog/' + message.publicID}> {message.title}</Link>  <small className="text-muted"> by {message.author} </small></h4> 
+                <h4><Link to={'../blog/' + message.publicID}> {message.title}</Link>  <small className="text-muted"> by {message.author} </small></h4> 
                 <p>{message.body}</p>
                 <span className="small pr-3"> <i className="fa fa-check-square-o"></i> {trustPercent}% </span>
                 <span className="small pr-3"> <i className="fa fa-eye"></i> {message.statistics.seen} </span>

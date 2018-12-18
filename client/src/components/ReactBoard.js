@@ -40,9 +40,9 @@ class ReactBoard extends Component {
                                     !localStorage.reactBoardToken ?
                                         (<Redirect to="/signin" replace />) : (<ListMessages  {...props}  />))} />
 
-                                <Route exact path="/addmessage" render={() => (
+                                <Route exact path="/addmessage" render={(routeProps) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<AddMessage />))} />
+                                        (<Redirect to="/signin" replace />) : (<AddMessage  routeProps={routeProps} />))} />
 
                                 <Route exact path="/listprofiles" render={(routeProps) => (
                                     !localStorage.reactBoardToken ?

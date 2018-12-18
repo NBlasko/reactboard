@@ -1,7 +1,8 @@
 const JWT = require('jsonwebtoken');
 const User = require('../models/auth');
 const TrustVote = require('../models/trustVote');
-const { JWT_SECRET }= require('../configuration');
+const ImagesGallery = require('../models/imagesGallery');
+const { JWT_SECRET } = require('../configuration');
 const bcrypt = require('bcryptjs');
 
 
@@ -26,7 +27,7 @@ module.exports = {
     }
 
     // Create a new user
-   
+
 
     trustVote = new TrustVote({
       Up: 0,
@@ -34,6 +35,10 @@ module.exports = {
     });
     await trustVote.save();
 
+    const imagesGallery = new ImagesGallery({
+      authorId: trustVote.authorId
+    })
+    await imagesGallery.save();
 
     const newUser = new User({
       method: 'local',
@@ -41,11 +46,11 @@ module.exports = {
       name: name,
       local: {
         email: email,
-        password: password,      
+        password: password,
       },
       statistics: {
         trustVote: trustVote.id
-      }
+      },
     });
 
 
@@ -85,7 +90,11 @@ module.exports = {
   },
 
   secret: async (req, res, next) => {
-   // console.log("secret",req.user)
-    res.json({ name: req.user.name, publicID: req.user.publicID, image: req.user.image });
+    //   console.log("secret",req.user)
+    res.json({
+      name: req.user.name,
+      publicID: req.user.publicID,
+      imageQueryID: req.user.imageQueryID
+    });
   }
 }

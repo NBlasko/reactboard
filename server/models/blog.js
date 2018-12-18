@@ -37,7 +37,11 @@ const blogSchema = new Schema({
     difference: {
         type: Number,
         default: 0
-    }
+    },
+    image: {
+        URL: String,
+        imageID: String
+      },
 });
 
 const Blog = mongoose.model('blog', blogSchema);

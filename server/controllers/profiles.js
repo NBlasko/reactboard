@@ -14,7 +14,7 @@ module.exports = {
         //a da, ovo ce preko input-a search na klijentu da izabere i izlista odredjene profile korisnika po upitu
         res.status(200).json({ soon: "soon" });
     },
-    newImage: async (req, res, next) => {
+    /*newImage: async (req, res, next) => {
         console.log("user", req.user)
         console.log("meesage", req.file) // to see what is returned to you
         const image = {
@@ -30,7 +30,7 @@ module.exports = {
         //  .catch(err => console.log(err));
 
         res.status(200).json({ image });
-    },
+    },*/
 
 
     getSingleProfile: async (req, res, next) => {

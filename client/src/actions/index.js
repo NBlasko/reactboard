@@ -32,7 +32,7 @@ export const addUserProfile = () => dispatch => {
         type: ADD_USER_PROFILE,
         name: res.data.name,
         publicID : res.data.publicID,
-        image: res.data.image
+        imageQueryID: res.data.imageQueryID
       })
     })
     .catch((error) => {

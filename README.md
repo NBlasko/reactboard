@@ -15,7 +15,7 @@
 [] fix blank options in dropdown
 [] add profile image everywhere
         [] with social, save the link
-        [] with email, save it to cloudinary, and hide the image url via backend
+        [x] with email, save it to cloudinary, and hide the image url via backend
 [] validate query string like params and body via joi
         [x] for blogs
         [] for profiles

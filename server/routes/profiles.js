@@ -6,7 +6,7 @@ const router = require('express-promise-router')();
 const ProfileController = require('../controllers/profiles');
 const { validateBody, validateParam, validateQueryString, schemas } = require('../helpers/routeHelpers')
 
-const  parser = require('../helpers/uploadHelpers')
+//const  parser = require('../helpers/uploadHelpers')
 
 
 // Always use data validation before mongodb, and I mean first thing after the request has been made. Don't rely only on mongoose schema to validate your responds, sometimes we will perform some
@@ -25,9 +25,9 @@ router.route('/:publicID/trust')
     .post(passportJWT, validateParam(schemas.idSchema, 'publicID'), validateBody(schemas.trustSchema), ProfileController.newProfileTrust);
 
 
-router.route('/images')
+//router.route('/images')
       //no need to vaidate because there are no inputs in get all
-    .post(passportJWT, parser.single("image"), ProfileController.newImage);
+   // .post(passportJWT, parser.single("image"), ProfileController.newImage);
 
 
 

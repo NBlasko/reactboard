@@ -16,7 +16,7 @@ class ProfileMessages extends Component {
 
     }
     componentDidMount() {
-        console.log("props mount in listmessages", this.props.authorsPublicID)
+        //console.log("props mount in listmessages", this.props.authorsPublicID)
         this.props.getNewProfileMessagesAction(0, this.props.authorsPublicID);
         window.addEventListener('scroll', this.handleScroll)
     }
@@ -56,7 +56,7 @@ render() {
     const MessageList = this.props.messages.map((message) =>
         <ListedSingleBlog key={message.publicID} message={message} />);
     return (
-        <div className="shadow p-3 m-2 bg-white rounded">
+        <div>
             {MessageList}
             {(this.state.emptyAJAX) ? <div> There are no more messages... </div> : null}
         </div>

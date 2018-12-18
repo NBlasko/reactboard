@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
+const uuidv4 = require('uuid/v4');
 // Create a schema
 const userSchema = new Schema({
   method: {
@@ -57,7 +57,11 @@ const userSchema = new Schema({
   image: {
     URL: String,
     imageID: String
-  }
+  },
+  imageQueryID: {
+    type: String,
+    default: uuidv4
+  }  // send via URL query instead jwt to authorize images
 });
 
 // Create a model

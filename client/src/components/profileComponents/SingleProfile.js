@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 //import {  } from '../../actions';
+import ImageGallery from './ImageGallery';
 import ProfileData from './ProfileData';
 import ProfileMessages from './ProfileMessages'
 class SingleProfile extends Component {
@@ -9,9 +10,9 @@ class SingleProfile extends Component {
     render() {
        
         return (
-            <div>
-                <div> Profile</div>
+            <div className="shadow p-3 m-2 bg-white rounded">
                 <ProfileData routeProps = {this.props.routeProps}/>
+                <ImageGallery/>
                 <hr />
                 <ProfileMessages authorsPublicID = { this.props.routeProps.match.params.id} />
             </div>

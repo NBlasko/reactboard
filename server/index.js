@@ -6,7 +6,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 require('./db/connection');
-const request = require('request');
+
 
 const app = express();
 
@@ -25,39 +25,6 @@ app.use('/auth', require('./routes/auth'));
 app.use('/api/blogs', require('./routes/blog'));
 app.use('/api/profiles', require('./routes/profiles'));
 app.use('/api/images', require('./routes/images'));
-
-app.get("/api/test", function(req, res) {
-    var requestSettings = {
-        url: 'http://wallpapers.ae/wp-content/uploads/2014/09/Free-HD-Picture.jpeg',
-        method: 'GET',
-        encoding: null
-    };
-    request(requestSettings, function(error, response, body) {
-        var base64 = Buffer.from(body).toString('base64');
-        res.send(base64);
-    });
-});
-
-/*
-pa u react
-gde je slika = res.data iz axios
- <img src={"data:image/png;base64," + this.state.slika} alt="nema nista" />
-*/
-/*
-app.get("/api/test", function(req, res) {
-    var requestSettings = {
-        url: 'http://wallpapers.ae/wp-content/uploads/2014/09/Free-HD-Picture.jpeg',
-        method: 'GET',
-        encoding: null
-    };
-    
-    request(requestSettings, function(error, response, body) {
-        res.set('Content-Type', 'image/png');
-        res.send(body);
-    });
-});
-
-*/
 
 
 

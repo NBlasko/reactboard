@@ -1,8 +1,16 @@
 const Blog = require('../models/blog');
 const User = require('../models/auth');
 const request = require('request');
+const ImagesGallery = require('../models/imagesGallery');
+const cloudinary = require("cloudinary");
 
+const path = require("path");
 
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET,
+});
 
 
 
@@ -16,36 +24,73 @@ module.exports = {
         res.status(200).json({ soon: "soon" });
     },
     newImage: async (req, res, next) => {
-        console.log("user", req.user)
-        console.log("meesage", req.file) // to see what is returned to you
+
+        const image = {
+            URL: req.file.url,
+            imageID: req.file.public_id
+        };
+        //treba proveriti ako slika vec postoji, da se obrise prethodna verzija
+        const user = await User.findById(req.user.id)
+        if (req.user.image.imageID) { 
+            await cloudinary.v2.uploader.destroy(req.user.image.imageID,  function (error, result) {
+                if (error) throw error;
+                user.image = image;        
+            });     
+        }
+        else {
+            user.image = image;
+        }
+        await user.save();
+        
+      
+        res.status(200).json({result: "ok"});
+    },
+    newGalleryImage: async (req, res, next) => {
+
         const image = {
             URL: req.file.url,
             imageID: req.file.public_id
         };
 
-        const user = await User.findById(req.user.id)
-        user.image = image
-        await user.save();
-        //  Image.create(image) // save image information in database
-        //     .then(newImage => res.json(newImage))
-        //  .catch(err => console.log(err));
+        const galery = await ImagesGallery.findOne({authorId: req.user.publicID})
 
-        res.status(200).json({ image });
+      galery.images.push(image);
+           
+    
+        await galery.save();
+        res.status(200).json({result: "ok"});
+    },
+    deleteGalleryImage: async (req, res, next) => {
+
+      //  const { id } = req.value.params;
+      const galery = await ImagesGallery.findOne({authorId: req.user.publicID})
+     // galery = galery.filter(item => item.id !== value)
+        res.status(200).json({result: "ok"});
     },
 
     singleImage: async (req, res, next) => {
-        console.log("stizem")
+     //   console.log("stizem query", req.query)
+        const { imageQueryID, publicID } = req.query;
+        const admin = await User.findOne({ imageQueryID: imageQueryID })
+      //  console.log("a", admin)
+        if (!admin)
+            return res.status(403).json({ err: "Forbidden" })
+
+
+        const blogsAuthor = await User.findOne({ publicID: publicID })
+        if (!blogsAuthor)
+            return res.status(404).json({ err: "Not found" })
 
         var requestSettings = {
-            url: 'http://wallpapers.ae/wp-content/uploads/2014/09/Free-HD-Picture.jpeg',
+            url: blogsAuthor.image.URL,
             method: 'GET',
             encoding: null
         };
-
+      
         request(requestSettings, function (error, response, body) {
-            res.set('Content-Type', 'image/png');
+            //   var base64 = Buffer.from(body).toString('base64');
             res.send(body);
         });
     },
- 
+
 }
