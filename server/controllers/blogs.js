@@ -1,34 +1,36 @@
 const Blog = require('../models/blog');
 const Comment = require('../models/comment');
 const LikeVote = require('../models/likeVote');
-
+const ImagesGallery = require('../models/imagesGallery');
 
 module.exports = {
 
     index: async (req, res, next) => {
-      //  console.log("req", req.value.query)
+        //  console.log("req", req.value.query)
         let { skip, criteria } = req.value.query;
-        let newCriteria = {"date": -1}
-        if (criteria === "mostseenblogs") newCriteria ={ "statistics.seen": -1};
-        if (criteria === "mostlikedblogs") newCriteria ={ "difference": -1};
-        if (criteria === "new") newCriteria ={ "date": -1};
+        let newCriteria = { "date": -1 }
+        if (criteria === "mostseenblogs") newCriteria = { "statistics.seen": -1 };
+        if (criteria === "mostlikedblogs") newCriteria = { "difference": -1 };
+        if (criteria === "new") newCriteria = { "date": -1 };
         skip = parseInt(skip)
         const blogs = await Blog
-            .find({}, "statistics title author body publicID authorsPublicID date difference")
+            .find({}, "statistics title author body publicID authorsPublicID date difference image.galleryMongoID")
             .populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" })
             .skip(skip)
             .limit(5)
-            .sort(newCriteria )
+            .sort(newCriteria)
 
 
         //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
         //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
         let result = [], bodySliced;
         blogs.forEach(function (v) {
+            console.log("v", v)
             const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
             if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
             else bodySliced = body;
-            result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date })
+            const image = (v.image) ? v.image.galleryMongoID : null
+            result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date, image })
         });
         res.status(200).json(result);
     },
@@ -38,13 +40,33 @@ module.exports = {
             authorId: req.user.publicID
         })
         await likeVote.save();
+
+
+
+        const { imageId } = req.value.body;
+        //  console.log("loggg", req.user)
+
+        const gallery = await ImagesGallery.findOne({ authorId: req.user.publicID })//.select({ images: {$elemMatch: {_id: id}} } )
+        if (!gallery) return res.status(404).json({ error: "image doesn\'t exist or forbidden" });
+
+
+        let imageObject = await gallery.images.find(x => x._id == imageId)
+
+  //   console.log("blog imageID", req.value.body, "imageObject", imageObject)
         const blog = await new Blog({
-            ...req.value.body,
+            //  ...req.value.body,
+            title: req.value.body.title,
+            body: req.value.body.body,
             author: req.user.name,
             authorsPublicID: req.user.publicID
             //Ovde nije potrebno da se salje u body authorsId jer to stize preko passport token auth, tj ima u req.user snimljeno
         });
         await blog.save();
+        if (imageObject) blog.image = {
+            URL: imageObject.URL,
+            imageID: imageObject.imageID,
+            galleryMongoID: imageObject._id
+        }
         blog.statistics.trustVote = req.user.statistics.trustVote;
         blog.statistics.likeVote = likeVote.id;
         await blog.save();
@@ -56,7 +78,7 @@ module.exports = {
     getSingleBlog: async (req, res, next) => {
         const { blogId } = req.value.params; //value is new added property created with module helpers/routeHelpers
         let blog = await Blog.findOne({ publicID: blogId }).populate({ path: 'statistics.trustVote statistics.likeVote'/*, select: "number"*/ });
-
+        console.log("blog", blog)
         blog.statistics.seen += 1;
         await blog.save();
         const { statistics, title, author, body, authorsPublicID, publicID, date, } = blog;
@@ -107,6 +129,7 @@ module.exports = {
             }
         }
         const result = { statistics: reducedStatistics, title, author, body, authorsPublicID, publicID, date, UserVotedUp: Up, UserVotedDown: Down, Like, Dislike };
+       if (blog.image) result.image = blog.image.galleryMongoID;
         res.status(200).json(result);
     },
 
@@ -197,7 +220,7 @@ module.exports = {
         }
         await likeVote.save();
         await blog.save();
-       
+
         /*potrebno je srediti da
             1. ne mogu da glasaju dva puta tj da undo svoj glas   Uradjeno
             2. da se smanjuju coins

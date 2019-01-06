@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { getSingleMessageAction, deleteSingleMessageAction, addProfileTrustAction, addBlogsLikeAction } from '../../actions';
 import ListComments from './ListComments';
 import AddComment from './AddComment';
-
+import { SERVERURL } from '../../constants';
 class SingleBlog extends Component {
 
     constructor(props) {
@@ -65,8 +65,12 @@ class SingleBlog extends Component {
             <div className="shadow-lg p-3 m-2 bg-white rounded">
                 <div className="card border-white mb-3" >
                     <div className="card-body">
+                        {
+                            (this.props.singleBlogMessage && this.props.singleBlogMessage.image) ? <img className="imageFit" src={`${SERVERURL}api/images/galleryImage?imageQueryID=${this.props.imageQueryID}&singleImageID=${this.props.singleBlogMessage.image}&publicID=${this.props.singleBlogMessage.authorsPublicID}`} alt="loading..." />
+                                : null
+                        }
                         <h3>{this.props.singleBlogMessage.title}</h3>
-                        <h5 className="card-title text-dark"><i>by {this.props.singleBlogMessage.author},</i>  <small className="text-muted"> {localDate.slice(0, -3)} </small>   </h5>                             
+                        <h5 className="card-title text-dark"><i>by {this.props.singleBlogMessage.author},</i>  <small className="text-muted"> {localDate.slice(0, -3)} </small>   </h5>
                         <p className="card-text">{this.props.singleBlogMessage.body}</p>
                         <div className="container-fluid">
                             <div className="row">
@@ -81,7 +85,7 @@ class SingleBlog extends Component {
                                 <button type="button" onClick={this.addBlogsLikeActionDown} className={`btn btn-outline-danger btn-sm ${(this.props.userDisliked) ? "btn-dang-act-custom" : ""}  rounded-right buttonBorder`}> <i className="fa fa-thumbs-down"></i>{Dislike}</button>
                                 <div className="mr-auto col-sm-p-2"> <span className="badge badge-pill badge-white p-2"> <i className="fa fa-eye"></i> {this.props.seen} </span></div>
                                 <div className="">  <span className="badge badge-pill badge-white p-2"> <i className="fa fa-comment"></i>  {this.props.numberOfComments} </span></div>
-  
+
                             </div>
                         </div>
                         <AddComment blogsID={this.props.routeProps.match.params.id} />
@@ -119,6 +123,7 @@ const mapStateToProps = (state) => {
     return ({
         singleBlogMessage: sbm,
         publicID: state.user.publicID,
+        imageQueryID: state.user.imageQueryID,
         seen: seen,
         numberOfComments: numberOfComments,
         trustVote,

@@ -12,7 +12,7 @@ class SingleProfile extends Component {
         return (
             <div className="shadow p-3 m-2 bg-white rounded">
                 <ProfileData routeProps = {this.props.routeProps}/>
-                <ImageGallery/>
+                <ImageGallery routeProps = {this.props.routeProps}/>
                 <hr />
                 <ProfileMessages authorsPublicID = { this.props.routeProps.match.params.id} />
             </div>

@@ -40,7 +40,8 @@ const blogSchema = new Schema({
     },
     image: {
         URL: String,
-        imageID: String
+        imageID: String,
+        galleryMongoID: String
       },
 });
 

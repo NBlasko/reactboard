@@ -19,6 +19,7 @@ module.exports = {
     },
     validateBody: (schema) => {
         return (req, res, next) => {
+            
             const result = Joi.validate(req.body, schema);
             if (result.error) {
                 return res.status(400).json({ error: result.error.details[0].message });
@@ -29,7 +30,7 @@ module.exports = {
             next();
         }
     },
-    validateQueryString: (schema, name) => {
+    validateQueryString: (schema) => {
         return (req, res, next) => {
             const result = Joi.validate(req.query, schema);
             if (result.error) {
@@ -53,10 +54,14 @@ module.exports = {
         }),
         blogSchema: Joi.object().keys({
             title: Joi.string().required(),
-            body: Joi.string().required()
+            body: Joi.string().required(),
+            imageId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).allow('', null).required(),
         }),
         idSchema: Joi.object().keys({
             param: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required()  // param, becuse I named it like that above, in validateParam method
+        }),
+        mongoIdSchema: Joi.object().keys({
+            param: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required() 
         }),
         commentSchema: Joi.object().keys({
             author: Joi.string().required(),

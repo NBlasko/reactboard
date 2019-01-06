@@ -71,7 +71,7 @@ color: white;
 .imageFit{
   padding-bottom: 10px;
     width: 100%;
-    height: 250px;
+    max-height: 400px;
     object-fit: cover;
  /*   object-position: -50px 20px;
     border: 5px solid red;

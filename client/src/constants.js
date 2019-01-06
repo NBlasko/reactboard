@@ -34,11 +34,21 @@ export const ADD_BLOGS_LIKE ='ADD_BLOGS_LIKE';
 export const GET_SINGLE_USER ='GET_SINGLE_USER';
 export const ADD_PROFILE_TRUST ='ADD_PROFILE_TRUST';
 
+
+//gallery
+export const GET_GALLERY_LIST ='GET_GALLERY_LIST';
+export const REMOVE_GALLERY_IMAGE = 'REMOVE_GALLERY_IMAGE'
+export const ADD_GALLERY_IMAGE = 'ADD_GALLERY_IMAGE'
+export const REMOVE_GALLERY_LIST ='REMOVE_GALLERY_LIST'; 
+
+export const SET_PROFILE_IMAGE = 'SET_PROFILE_IMAGE';
+export const SET_BLOG_IMAGE = 'SET_BLOG_IMAGE';
+export const REMOVE_PREVIEW_BLOG_IMAGE = 'REMOVE_PREVIEW_BLOG_IMAGE';
 //SERVERURL
 
 export const SERVERURL = "http://localhost:3001/"
 
 
 //rerender
-
+//export const REFRESH ="REFRESH"
 export const PROFILE_DATA = "PROFILE_DATA"

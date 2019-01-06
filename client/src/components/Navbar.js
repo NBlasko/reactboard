@@ -16,6 +16,7 @@ import {
     Input
 }
     from 'reactstrap';
+    import search from '../assets/search.svg'
 
 
 
@@ -30,8 +31,13 @@ class NavbarComponent extends Component {
         this.toggle = this.toggle.bind(this);
         this.closeToggle = this.closeToggle.bind(this);
         this.NavigateProgrammatically = this.NavigateProgrammatically.bind(this)
+        this.handleDropDown = this.handleDropDown.bind(this);
+        this.handleKeyPress = this.handleKeyPress.bind(this)
         this.state = {
-            isOpen: false
+            isOpen: false,
+            dropInputClassBlog: "active", 
+            dropInputClassProfile: "", 
+            dropInputSelected: "blogs",
         };
     }
     componentDidMount() {
@@ -46,6 +52,17 @@ class NavbarComponent extends Component {
             this.props.addUserProfile();
             //    console.log("obnovljen uslovni update")
         }
+    }
+
+    handleKeyPress(e){
+        console.log("handleKeyPress", e.key) //Za enter spremam
+    }
+
+    handleDropDown(e){
+        if (e.target.name === "profiles")
+           this.setState({ dropInputClassBlog: "", dropInputClassProfile: "active", dropInputSelected: "profiles"})
+        else
+        this.setState({ dropInputClassBlog: "active", dropInputClassProfile: "", dropInputSelected: "blogs"})
     }
     SignOut() {
         localStorage.removeItem('reactBoardToken');
@@ -84,7 +101,7 @@ class NavbarComponent extends Component {
     render() {
 
         const { publicID, name } = this.props;
-        //     console.log("props in navbar", this.props)
+             console.log("state", this.state)
         let initials;
         if (name) {
             initials = name.match(/\b\w/g) || [];
@@ -97,9 +114,24 @@ class NavbarComponent extends Component {
                     <span className="text-dark h4 logoCustom"  >RB</span>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
-                            <NavItem>
-                                <Input className="float-right" placeholder="search" />
-                            </NavItem>
+
+
+                            <UncontrolledDropdown  className="float-right"  style= {{margin : "0px"}} >
+                                <DropdownToggle  className="text-dark tab" style= {{margin : "0px", padding : "0px"}}>
+                                    <Input  className="float-right" placeholder={"search for " + this.state.dropInputSelected} style= {{margin : "0px"}} onKeyPress={this.handleKeyPress}  />
+                                </DropdownToggle>
+                                
+                                <DropdownMenu right>
+                                    <DropdownItem toggle={false} className = {this.state.dropInputClassBlog} onClick = {this.handleDropDown} name="blogs">  Blogs {(this.state.dropInputClassBlog)? <i className="fa fa-check"></i> : null} </DropdownItem>
+                                    <DropdownItem toggle={false}  className = {this.state.dropInputClassProfile} name="profiles" onClick = {this.handleDropDown} > Profiles {(this.state.dropInputClassProfile)? <i className="fa fa-check"></i> : null} </DropdownItem>
+                                    <DropdownItem name="searchGo" className = "btn-dark" > Start search <img style = {{height: "20px"}} src={search} alt= "search" /> </DropdownItem>
+                               
+                                </DropdownMenu>
+                            </UncontrolledDropdown>
+                           
+
+
+
                             <NavItem className="d-none d-sm-block">
                                 <Link onClick={this.closeToggle} className="nav-link h6 text-light customCircle" to={`/singleprofile/${publicID}`}>{initials}</Link>
                             </NavItem>

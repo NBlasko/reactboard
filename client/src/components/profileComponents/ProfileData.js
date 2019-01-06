@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getSingleUserAction } from '../../actions';
-import axios from 'axios'
-import { Container, Row, Col, Button, Alert } from 'reactstrap';
+
+import { Container, Row, Col} from 'reactstrap';
 import coinsSVG from '../../assets/coins.svg';
 import profileImg from '../../assets/profile.svg';
 import { SERVERURL } from '../../constants';
@@ -10,24 +10,21 @@ class ProfileData extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            imageQueryID: '',
-            file: null,
-            errorMessage: '',
-            progressMessage: '',
+            imageQueryID: '',   
             refresh: 0,   //to refresh url get method
             imageLoadError: true
         }
-
-        this.fileSelected = this.fileSelected.bind(this);
-        this.fileUploadButton = this.fileUploadButton.bind(this);
-        this.fileUpload = this.fileUpload.bind(this);
-
     }
 
 
     componentWillReceiveProps(newProps) {
+        if (this.state.imageQueryID !== newProps.imageQueryID)
         this.setState({
             imageQueryID: newProps.imageQueryID
+        });
+        if (this.state.refresh !== newProps.refresh)
+        this.setState({
+            refresh: newProps.refresh
         });
     }
 
@@ -36,44 +33,15 @@ class ProfileData extends Component {
     componentDidMount() {
         this.props.getSingleUserAction(this.props.routeProps.match.params.id);
     }
+    componentDidUpdate(prevProps) {
 
-
-    fileSelected(e) {
-        //   console.log("e", e.target.files[0])
-        this.setState({ file: e.target.files[0] })
+        if (prevProps.routeProps.match.params.id !== this.props.routeProps.match.params.id)
+            this.props.getSingleUserAction(this.props.routeProps.match.params.id);
     }
+    //http://localhost:3000/singleprofile/dcdfdf00-fc81-11e8-8edf-c9b5ffc599f3
 
-    fileUploadButton() { this.fileInput.click() }
-    fileUpload() {
 
-        if (this.state.file) {
-            let fd = new FormData();
-            fd.append('image', this.state.file, this.state.file.name)
-            axios({
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${localStorage.reactBoardToken}`,
-                    'Cache-Control': 'no-cache'
-                },
 
-           //     url: SERVERURL + 'api/images',
-                url: 'http://localhost:3001/api/images/gallery',
-                data: fd,
-                onUploadProgress: (e) => {
-                    this.setState({ progressMessage: Math.round(e.loaded / e.total * 100) })
-                }
-            })
-                .then(res => {
-
-                    this.setState({ file: null, progressMessage: '', refresh: new Date().getTime() })
-                })
-                .catch(err => {
-                    this.setState({ file: null, progressMessage: '' })
-                    console.log("error", err)
-                    //handle errorMessage
-                })
-        }
-    }
 
 
 
@@ -88,20 +56,10 @@ class ProfileData extends Component {
             if (admin) coins = sp.statistics.coins.total;
             totalTrust = Math.round(trustUp / (trustUp + trustDown) * 100) || 50
         }
-        const pm = this.state.progressMessage;
-        let progressMessage = (pm !== '') ?
-            <div>
-                <h6> Image is loading... </h6>
-                <div className="progress">
-                    <div className="progress-bar  bg-primary" role="progressbar" style={{ width: `${pm - 1}%` }} aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                    <div className="progress-bar bg-light" role="progressbar" style={{ width: `${101 - pm}%` }} aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-            </div>
-            : null;
+       
+       
 
-        let errorMessage = (this.state.errorMessage !== '') ? <Alert color="warning opacity-5">{this.state.errorMessage}</Alert> : null;
-        //className="d-flex justify-content-around"
-        console.log("statettt", this.state.imageQueryID, this.props.routeProps.match.params.id, this.state.refresh)
+      
         return (
             <div>
                 <Container>
@@ -138,18 +96,8 @@ class ProfileData extends Component {
                                 <div className="progress-bar bg-danger" role="progressbar" style={{ width: `${100 - totalTrust}%` }} aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                             <div className="mt-3">  {(admin) ?
-                                <div>
-                                    <div className="mb-3"> <img style={{ width: 35, height: 35 }} src={coinsSVG} alt="coins" /> {coins}</div>
-                                    <div>
-                                        <br />
-                                        <input type="file" ref={fileInput => this.fileInput = fileInput} style={{ display: "none" }} onChange={this.fileSelected} />
-                                        <Button color="dark" className="m-3" onClick={() => this.fileInput.click()} > Select image </Button>
-                                        {(this.state.file && !pm) ? <Button color="dark" className="m-3" onClick={this.fileUpload} > Upload </Button> : null}
-                                        {(pm) ? progressMessage : null}
-
-
-                                        {errorMessage}
-                                    </div>
+                                <div className="mb-3">
+                                    <img style={{ width: 35, height: 35 }} src={coinsSVG} alt="coins" /> {coins}
                                 </div>
                                 : null}
                             </div>
@@ -173,6 +121,7 @@ const mapStateToProps = (state) => {
     return ({
         searchedProfile,
         imageQueryID: state.user.imageQueryID,
+        refresh: state.refresh
     })
 }
 

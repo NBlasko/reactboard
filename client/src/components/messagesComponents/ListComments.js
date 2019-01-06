@@ -7,7 +7,7 @@ class ListComments extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            skip: 5,
+            skip: 0,
             loading: false,
             numberOfcomments: 0,
             emptyAJAX: false
@@ -25,8 +25,15 @@ class ListComments extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        this.setState((previousState) => {
-            return { loading: false, numberOfcomments: newProps.comments.length };
+
+        if (newProps.comments !== this.props.comments) {
+            this.setState((previousState) => {
+                return { skip: previousState.skip + 5 };
+            });  
+        }
+
+        this.setState({
+            loading: false, numberOfcomments: newProps.comments.length
         });
         if (this.state.numberOfcomments === newProps.comments.length)
             this.setState({ emptyAJAX: true })
@@ -41,9 +48,7 @@ class ListComments extends Component {
             if (pageOffset > lastDivOffset - bottomOffset) {
                 this.setState({ loading: true })   //I wanted two call here on setState
                 this.props.getCommentsAction(this.props.blogID, this.state.skip);
-                this.setState((previousState) => {
-                    return { skip: previousState.skip + 5 };
-                });
+               
             }
         }
     }

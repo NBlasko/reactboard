@@ -5,8 +5,16 @@ import  userSignedBool  from './userSignedBool';
 import  singleBlogMessage  from './singleBlogMessage';
 import  singleProfile  from './singleProfile';
 import  comments from './comments';
+import  galleryList from './galleryList';
+import refresh from './refresh';
+import numberOfData from './numberOfData';
+import previewBlogImage from './previewBlogImage'
 export default combineReducers(
     { messages, user, userSignedBool, singleBlogMessage, comments,
-     searchedProfile: singleProfile
+     searchedProfile: singleProfile,
+     galleryList,
+     refresh,
+     numberOfData,
+     previewBlogImage
     }
 );

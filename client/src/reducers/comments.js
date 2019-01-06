@@ -12,7 +12,7 @@ const comments = (state = initialstate, action) => {
     case ADD_COMMENT:
     console.log("c",action.payload)
       return [
-        ...state, action.payload.newComment];
+         action.payload.newComment, ...state];
        
 
     //   case DELETE_MESSAGE:

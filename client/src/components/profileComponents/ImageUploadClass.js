@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios'
 import { Button, Alert } from 'reactstrap';
-
+import {SERVERURL} from '../../constants'
+import { connect } from 'react-redux';
+import { addGalleryImageAction } from '../../actions'
 
 class ImageUploadClass extends Component {
     constructor(props) {
@@ -25,6 +27,7 @@ class ImageUploadClass extends Component {
     fileUploadButton() { this.fileInput.click() }
     fileUpload() {
 
+       
         if (this.state.file) {
             let fd = new FormData();
             fd.append('image', this.state.file, this.state.file.name)
@@ -35,31 +38,30 @@ class ImageUploadClass extends Component {
                     'Cache-Control': 'no-cache'
                 },
 
-             url: 'http://localhost:3001/api/images',
-          // url: 'http://localhost:3001/api/images/gallery',
+           //     url: SERVERURL + 'api/images',
+                url: SERVERURL + 'api/images/galleryImage',
                 data: fd,
                 onUploadProgress: (e) => {
                     this.setState({ progressMessage: Math.round(e.loaded / e.total * 100) })
                 }
             })
                 .then(res => {
-                    console.log(res)
-                    this.setState({ file: null, progressMessage: '' })
-                    window.location.reload()
+                    this.setState({ file: null, progressMessage: ''/*, refresh: new Date().getTime() */})
+                    console.log("res uploada", res)
+                  this.props.addGalleryImageAction(res.data.id);
                 })
                 .catch(err => {
                     this.setState({ file: null, progressMessage: '' })
                     console.log("error", err)
+                    //handle errorMessage
                 })
         }
-
 
 
 
     }
 
     render() {
-        console.log("cc")
         const pm = this.state.progressMessage;
         let progressMessage = (pm !== '') ?
             <div>
@@ -76,7 +78,7 @@ class ImageUploadClass extends Component {
             <div>
                 <br />
                 <input type="file" ref={fileInput => this.fileInput = fileInput} style={{ display: "none" }} onChange={this.fileSelected} />
-                <Button color="dark" className="m-3" onClick={() => this.fileInput.click()} > Select image </Button>
+                <Button color="dark" className="m-3" onClick={() => this.fileInput.click()} > Select an image to upload </Button>
                 {(this.state.file && !pm) ? <Button color="dark" onClick={this.fileUpload} > Upload </Button> : null}
                 {(pm) ? progressMessage : null}
 
@@ -89,4 +91,4 @@ class ImageUploadClass extends Component {
 
 
 
-export default ImageUploadClass;
+export default connect(null, { addGalleryImageAction })(ImageUploadClass);
