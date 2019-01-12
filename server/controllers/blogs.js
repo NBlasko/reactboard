@@ -25,7 +25,7 @@ module.exports = {
         //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
         let result = [], bodySliced;
         blogs.forEach(function (v) {
-            console.log("v", v)
+            //  console.log("v", v)
             const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
             if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
             else bodySliced = body;
@@ -34,6 +34,54 @@ module.exports = {
         });
         res.status(200).json(result);
     },
+
+
+    searchBlogs: async (req, res, next) => {
+        console.log("reqSearch", req.value.query.searchText)
+        let { searchText } = req.value.query;
+        const regexSearch = new RegExp(searchText, "i");
+        const blogs = await Blog
+            .find({ title: regexSearch }, "statistics title author body publicID authorsPublicID date difference image.galleryMongoID")
+            .populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" })
+            .limit(10)
+            .sort({ "date": -1 })
+
+
+        //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
+        //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
+        let result = [], bodySliced;
+        blogs.forEach(function (v) {
+            //     console.log("v", v)
+            const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
+            if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
+            else bodySliced = body;
+            const image = (v.image) ? v.image.galleryMongoID : null;
+
+           let  filteredStatistics = {
+                likeVote: {
+                    number:
+                    {
+                        Up: statistics.likeVote.number.Up,
+                        Down: statistics.likeVote.number.Down
+                    }
+                },
+                trustVote: {
+                    number:
+                    {
+                        Up: statistics.trustVote.number.Up,
+                        Down: statistics.trustVote.number.Down
+                    }
+                },
+                numberOfComments : statistics.numberOfComments,
+                seen: statistics.seen
+
+            }
+            result.push({ statistics : filteredStatistics,  title, author, body: bodySliced, publicID, authorsPublicID, date, image })
+        });
+        res.status(200).json({ result });
+    },
+
+
 
     newBlog: async (req, res, next) => {
         const likeVote = await new LikeVote({
@@ -52,7 +100,7 @@ module.exports = {
 
         let imageObject = await gallery.images.find(x => x._id == imageId)
 
-  //   console.log("blog imageID", req.value.body, "imageObject", imageObject)
+        //   console.log("blog imageID", req.value.body, "imageObject", imageObject)
         const blog = await new Blog({
             //  ...req.value.body,
             title: req.value.body.title,
@@ -78,7 +126,7 @@ module.exports = {
     getSingleBlog: async (req, res, next) => {
         const { blogId } = req.value.params; //value is new added property created with module helpers/routeHelpers
         let blog = await Blog.findOne({ publicID: blogId }).populate({ path: 'statistics.trustVote statistics.likeVote'/*, select: "number"*/ });
-        console.log("blog", blog)
+        //  console.log("blog", blog)
         blog.statistics.seen += 1;
         await blog.save();
         const { statistics, title, author, body, authorsPublicID, publicID, date, } = blog;
@@ -129,7 +177,7 @@ module.exports = {
             }
         }
         const result = { statistics: reducedStatistics, title, author, body, authorsPublicID, publicID, date, UserVotedUp: Up, UserVotedDown: Down, Like, Dislike };
-       if (blog.image) result.image = blog.image.galleryMongoID;
+        if (blog.image) result.image = blog.image.galleryMongoID;
         res.status(200).json(result);
     },
 

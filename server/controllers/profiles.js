@@ -34,13 +34,35 @@ module.exports = {
         }
         res.status(200).json(result);
     },
+    searchProfiles: async (req, res, next) => {
+        console.log("reqSearch", req.value.query.searchText)
+      let { searchText } = req.value.query;
+      const regexSearch = new RegExp(searchText,"i");
+      const profiles = await User
+          .find({name: regexSearch}, "statistics.trustVote name publicID image")
+          .populate({ path: 'statistics.trustVote', select: "number" })
+          .limit(10)
+          .sort({ "_id": -1 })
+
+
+      //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
+      //PublicID  zadrzavam u listi profila kako bih napravio link koji vodi ka profilu tog authora i da nabavim sliku
+      let result = [];
+      profiles.forEach(function (v) {
+         console.log("v", v)
+          const { statistics, name, publicID } = v;
+
+          result.push({ trustVote: statistics.trustVote.number, name, publicID })
+      });
+      res.status(200).json({result});
+  },
 
     getProfileMessages: async (req, res, next) => {
 
         let { skip, authorsPublicID } = req.value.query;
         skip = parseInt(skip)
         const blogs = await Blog
-            .find({ authorsPublicID }, "statistics title author body publicID authorsPublicID date difference")
+            .find({ authorsPublicID }, "statistics title author body publicID authorsPublicID date difference image.galleryMongoID")
             .populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" })
             .skip(skip)
             .limit(5)
@@ -51,10 +73,12 @@ module.exports = {
         //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
         let result = [], bodySliced;
         blogs.forEach(function (v) {
-            const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
+            const { statistics, title, author, body, publicID, authorsPublicID, date, image } = v;
             if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
             else bodySliced = body;
-            result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date })
+            console.log("v", v)
+            const imageId = (image && image.galleryMongoID)? image.galleryMongoID : null;
+            result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date, image: imageId })
         });
         res.status(200).json(result);
 

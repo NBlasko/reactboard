@@ -4,7 +4,7 @@ const passportJWT = passport.authenticate('jwt', { session: false });
 
 const router = require('express-promise-router')();
 const BlogController = require('../controllers/blogs');
-const { validateBody, validateParam, validateQueryString , schemas } = require('../helpers/routeHelpers')
+const { validateBody, validateParam, validateQueryString, schemas } = require('../helpers/routeHelpers')
 
 
 // Always use data validation before mongodb, and I mean first thing after the request has been made. Don't rely only on mongoose schema to validate your responds, sometimes we will perform some
@@ -13,6 +13,11 @@ const { validateBody, validateParam, validateQueryString , schemas } = require('
 router.route('/')
   .get(passportJWT, validateQueryString(schemas.skipCriteriaSchema), BlogController.index)  //no need to vaidate because there are no inputs in get all
   .post(passportJWT, validateBody(schemas.blogSchema), BlogController.newBlog);
+
+
+
+router.route('/search')
+  .get(passportJWT, validateQueryString(schemas.searchCriteriaSchema), BlogController.searchBlogs);
 
 
 router.route('/:blogId')

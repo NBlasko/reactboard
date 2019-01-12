@@ -3,9 +3,9 @@ import {
   ADD_USER_PROFILE, REMOVE_USER_PROFILE, USER_SIGNED,
   ADD_MESSAGE, GET_MESSAGES, GET_NEW_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES,
   GET_SINGLE_MESSAGE, DELETE_SINGLE_MESSAGE,
-  GET_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT,
-  GET_SINGLE_USER, ADD_PROFILE_TRUST,
-  GET_GALLERY_LIST, REMOVE_GALLERY_IMAGE, REMOVE_GALLERY_LIST,
+  GET_COMMENTS, GET_NEW_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT,
+  GET_SINGLE_USER, SEARCH_PROFILES, REMOVE_PROFILES, ADD_PROFILE_TRUST,
+  GET_GALLERY_LIST, GET_NEW_GALLERY_LIST, REMOVE_GALLERY_IMAGE, REMOVE_GALLERY_LIST,
   ADD_GALLERY_IMAGE, SET_PROFILE_IMAGE, SET_BLOG_IMAGE, REMOVE_PREVIEW_BLOG_IMAGE,
   ADD_BLOGS_LIKE,
   //REFRESH
@@ -30,7 +30,7 @@ export const addUserProfile = () => dispatch => {
     },
   })
     .then((res) => {
-     // console.log(res);
+      // console.log(res);
       dispatch({
         type: ADD_USER_PROFILE,
         name: res.data.name,
@@ -70,7 +70,7 @@ export const addMessageAction = ({ text, title, imageId }) => dispatch => {
     data: {
       "title": title,
       "body": text,
-      "imageId" : imageId
+      "imageId": imageId
     },
     url: SERVERURL + 'api/blogs',
   })
@@ -100,6 +100,25 @@ export const getMessagesAction = (skip, criteria) => dispatch => {
     dispatch({
       type: GET_MESSAGES,
       payload: res.data
+    })
+  })
+    .catch(err => console.log(err));
+};
+
+
+export const searchBlogsAction = (searchText) => dispatch => {
+  axios({
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    url: SERVERURL + 'api/blogs/search?searchText=' + searchText,
+  }).then(res => {
+    console.log("resSearch", res)
+    dispatch({
+      type: GET_NEW_MESSAGES,
+      payload: res.data.result
     })
   })
     .catch(err => console.log(err));
@@ -164,6 +183,24 @@ export const getCommentsAction = (blogID, skip) => dispatch => {
   })
     .catch(err => console.log(err));
 };
+
+export const getNewCommentsAction = (blogID, skip) => dispatch => {
+  axios({
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    url: SERVERURL + 'api/blogs/' + blogID + '/comments?skip=' + skip,
+  }).then(res => {
+    dispatch({
+      type: GET_NEW_COMMENTS,
+      payload: res.data
+    })
+  })
+    .catch(err => console.log(err));
+};
+
 
 export const deleteAllCommentsAction = () => ({
   type: DELETE_ALL_COMMENTS
@@ -249,6 +286,30 @@ export const getSingleUserAction = (publicID) => dispatch => {
 };
 
 
+export const searchProfilesAction = (searchText) => dispatch => {
+  axios({
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    url: SERVERURL + 'api/profiles/search?searchText=' + searchText,
+  }).then(res => {
+    console.log("res profiles Search", res)
+    dispatch({
+      type: SEARCH_PROFILES,
+      payload: res.data.result
+    })
+  })
+    .catch(err => console.log(err));
+};
+
+
+
+export const removeProfilesAction = () => ({
+  type: REMOVE_PROFILES,
+});
+
 export const getProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
 
   axios({
@@ -329,6 +390,24 @@ export const getGalleryListAction = (skip, authorsPublicID) => dispatch => {
     .catch(err => console.log(err));
 };
 
+export const getNewGalleryListAction = (skip, authorsPublicID) => dispatch => {
+
+  axios({
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${localStorage.reactBoardToken}`,
+      'Cache-Control': 'no-cache'
+    },
+    url: SERVERURL + 'api/images/gallerylist?skip=' + skip + '&authorsPublicID=' + authorsPublicID,
+  }).then(res => {
+    dispatch({
+      type: GET_NEW_GALLERY_LIST,  //this one overwrites the state, not just adds new elements in the list
+      payload: res.data
+    })
+  })
+    .catch(err => console.log(err));
+};
+
 
 export const removeGalleryImageAction = (id) => ({
   type: REMOVE_GALLERY_IMAGE,
@@ -343,7 +422,7 @@ export const removeGalleryListAction = () => ({
 
 export const addGalleryImageAction = (id) => ({
   type: ADD_GALLERY_IMAGE,
-  payload: {_id : id}
+  payload: { _id: id }
 });
 
 
@@ -372,7 +451,7 @@ export const setProfileImageAction = ({ id }) => dispatch => {
     });
 }
 
-  
+
 export const setBlogImageAction = (id) => ({
   type: SET_BLOG_IMAGE,
   id
@@ -380,6 +459,7 @@ export const setBlogImageAction = (id) => ({
 export const removePreviewBlogImageAction = () => ({
   type: REMOVE_PREVIEW_BLOG_IMAGE,
 });
+
 
 
 

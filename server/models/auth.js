@@ -59,14 +59,6 @@ const userSchema = new Schema({
       type: String,
       default: ""
     },
-    imageID: {
-      type: String,
-      default: ""
-    },
-    mongoID: {
-      type: String,
-      default: ""
-    },
   },
   imageQueryID: {
     type: String,

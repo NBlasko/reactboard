@@ -16,6 +16,10 @@ router.route('/')
  .get(passportJWT, validateQueryString(schemas.skipAuthorsPublicIDSchema), ProfileController.getProfileMessages)  //no need to vaidate because there are no inputs in get all
 // .post(passportJWT, validateBody(schemas.blogSchema), BlogController.newBlog);
 
+router.route('/search')
+  .get(passportJWT, validateQueryString(schemas.searchCriteriaSchema), ProfileController.searchProfiles);
+
+
 router.route('/:publicID')
     .get(passportJWT, validateParam(schemas.idSchema, 'publicID'), ProfileController.getSingleProfile);
 

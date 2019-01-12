@@ -1,5 +1,6 @@
 import {
-    GET_SINGLE_USER
+    GET_SINGLE_USER,
+    REMOVE_USER_PROFILE
 } from '../constants'
 
 const initialstate = null;
@@ -10,14 +11,8 @@ const singleUserAction = (state = initialstate, action) => {
         case GET_SINGLE_USER:
             return action.payload;
 
-      /*  case ADD_PROFILE_TRUST:
-            let newPayload2 = { ...state };
-            newPayload2.statistics.trustVote = action.payload.trustVote;
-            newPayload2.UserVotedUp = action.payload.UserVotedUp;
-            newPayload2.UserVotedDown = action.payload.UserVotedDown;
-            return newPayload2;
-*/
-
+        case REMOVE_USER_PROFILE:
+            return initialstate;
 
         default:
             return state;

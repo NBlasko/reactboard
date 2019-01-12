@@ -9,12 +9,14 @@ import  galleryList from './galleryList';
 import refresh from './refresh';
 import numberOfData from './numberOfData';
 import previewBlogImage from './previewBlogImage'
+import profiles from './profiles';
+
 export default combineReducers(
     { messages, user, userSignedBool, singleBlogMessage, comments,
-     searchedProfile: singleProfile,
+     searchedProfile: singleProfile, profiles,
      galleryList,
      refresh,
      numberOfData,
-     previewBlogImage
+     previewBlogImage,
     }
 );

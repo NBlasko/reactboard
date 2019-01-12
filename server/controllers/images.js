@@ -129,9 +129,7 @@ module.exports = {
         const gpImage = gallery.images[0];
         const user = await User.findById(req.user.id)
 
-        user.image = { URL: gpImage.URL/*, imageID: gpImage.imageID, mongoID: gpImage._id
-        obrisacu ih i iz sheme
-        */}
+        user.image = { URL: gpImage.URL }
 
 
         await user.save();

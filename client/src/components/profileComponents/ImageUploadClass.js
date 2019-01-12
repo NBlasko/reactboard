@@ -14,17 +14,16 @@ class ImageUploadClass extends Component {
             progressMessage: ''
         }
         this.fileSelected = this.fileSelected.bind(this);
-        this.fileUploadButton = this.fileUploadButton.bind(this);
+     //   this.fileUploadButton = this.fileUploadButton.bind(this);
         this.fileUpload = this.fileUpload.bind(this);
     }
 
 
     fileSelected(e) {
-        console.log("e", e.target.files[0])
         this.setState({ file: e.target.files[0] })
     }
 
-    fileUploadButton() { this.fileInput.click() }
+ //   fileUploadButton() { this.fileInput.click() }
     fileUpload() {
 
        

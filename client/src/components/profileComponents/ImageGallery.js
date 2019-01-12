@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import SingleImageInGallery from './SingleImageInGallery'
-import { getGalleryListAction, removeGalleryListAction } from '../../actions'
+import { getGalleryListAction, getNewGalleryListAction ,removeGalleryListAction } from '../../actions'
 import ImageUploadClass from './ImageUploadClass';
 
 class ImageGallery extends Component {
@@ -32,7 +32,7 @@ class ImageGallery extends Component {
     componentDidMount() {
         this.setState({ matchPath: this.props.routeProps.match.path })
         if (this.props.routeProps.match.path !== "/addmessage")
-            this.props.getGalleryListAction(0, this.props.routeProps.match.params.id);
+            this.props.getNewGalleryListAction(0, this.props.routeProps.match.params.id);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -40,7 +40,7 @@ class ImageGallery extends Component {
         if (this.props.routeProps.match.path !== this.state.matchPath)
             this.setState({ matchPath: this.props.routeProps.match.path })
         if (prevProps.routeProps.match.url !== this.props.routeProps.match.url)
-            this.props.getGalleryListAction(0, this.props.routeProps.match.params.id)
+            this.props.getNewGalleryListAction(0, this.props.routeProps.match.params.id)
     }
 
 
@@ -108,4 +108,4 @@ const mapStateToProps = (state) => {
     if (state.galleryList) returnedObject.galleryList = state.galleryList
     return (returnedObject);
 }
-export default connect(mapStateToProps, { getGalleryListAction, removeGalleryListAction })(ImageGallery);
+export default connect(mapStateToProps, { getGalleryListAction, getNewGalleryListAction, removeGalleryListAction })(ImageGallery);

@@ -2,7 +2,8 @@ import {
     GET_SINGLE_MESSAGE, DELETE_SINGLE_MESSAGE, ADD_MESSAGE,
     ADD_COMMENT,
     ADD_PROFILE_TRUST,
-    ADD_BLOGS_LIKE
+    ADD_BLOGS_LIKE,
+    REMOVE_USER_PROFILE
 } from '../constants'
 
 const initialstate = null;
@@ -31,6 +32,9 @@ const singleBlogMessage = (state = initialstate, action) => {
             return newPayload3;
 
         case DELETE_SINGLE_MESSAGE:
+            return initialstate;
+
+        case REMOVE_USER_PROFILE:
             return initialstate;
 
         default:

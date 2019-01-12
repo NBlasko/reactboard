@@ -4,6 +4,8 @@ import { getSingleMessageAction, deleteSingleMessageAction, addProfileTrustActio
 import ListComments from './ListComments';
 import AddComment from './AddComment';
 import { SERVERURL } from '../../constants';
+import { Link } from 'react-router-dom';
+
 class SingleBlog extends Component {
 
     constructor(props) {
@@ -70,7 +72,13 @@ class SingleBlog extends Component {
                                 : null
                         }
                         <h3>{this.props.singleBlogMessage.title}</h3>
-                        <h5 className="card-title text-dark"><i>by {this.props.singleBlogMessage.author},</i>  <small className="text-muted"> {localDate.slice(0, -3)} </small>   </h5>
+                        <h5 className="card-title text-dark">
+                            <i>by{" "}
+                                <Link to={`/singleprofile/${this.props.singleBlogMessage.authorsPublicID}`}>
+                                    {this.props.singleBlogMessage.author}
+                            </Link>,
+                            </i>
+                            <small className="text-muted"> {localDate.slice(0, -3)} </small>   </h5>
                         <p className="card-text">{this.props.singleBlogMessage.body}</p>
                         <div className="container-fluid">
                             <div className="row">

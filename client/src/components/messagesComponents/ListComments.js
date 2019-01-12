@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getCommentsAction, deleteAllCommentsAction } from '../../actions'
+import { getCommentsAction,getNewCommentsAction,  deleteAllCommentsAction } from '../../actions'
 import SingleComment from './SingleComment';
 class ListComments extends Component {
 
@@ -8,7 +8,7 @@ class ListComments extends Component {
         super(props);
         this.state = {
             skip: 0,
-            loading: false,
+            loading: true,
             numberOfcomments: 0,
             emptyAJAX: false
         };
@@ -16,7 +16,7 @@ class ListComments extends Component {
 
     }
     componentDidMount() {
-        this.props.getCommentsAction(this.props.blogID, 0);
+        this.props.getNewCommentsAction(this.props.blogID, 0);
         window.addEventListener('scroll', this.handleScroll);
     }
     componentWillUnmount() {
@@ -74,4 +74,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, { getCommentsAction, deleteAllCommentsAction })(ListComments);
+export default connect(mapStateToProps, { getCommentsAction, deleteAllCommentsAction, getNewCommentsAction })(ListComments);

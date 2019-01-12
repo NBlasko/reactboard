@@ -84,6 +84,9 @@ module.exports = {
             skip: Joi.number().integer().min(0).required(),
             authorsPublicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required()
         }),
+        searchCriteriaSchema: Joi.object().keys({
+            searchText: Joi.string().required()
+          }),
 
     }
 }

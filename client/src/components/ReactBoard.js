@@ -9,9 +9,10 @@ import Signup from './authComponents/Signup';
 import AddMessage from './addMessage/AddMessage';
 import SingleBlog from './messagesComponents/SingleBlog';
 import SingleProfile from './profileComponents/SingleProfile';
-import ListProfiles from './profileComponents/ListProfiles';
+import ListSearchedProfiles from './profileComponents/ListSearchedProfiles';
 
 import NavbarComponent from './Navbar';
+import ListSearchedMessages from './messagesComponents/ListSearchedMessages';
 
 
 
@@ -34,20 +35,28 @@ class ReactBoard extends Component {
 
                                 <Route exact path="/mostseenblogs" render={(props) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<ListMessages  {...props}  />))} />
+                                        (<Redirect to="/signin" replace />) : (<ListMessages  {...props} />))} />
 
                                 <Route exact path="/mostlikedblogs" render={(props) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<ListMessages  {...props}  />))} />
+                                        (<Redirect to="/signin" replace />) : (<ListMessages  {...props} />))} />
 
                                 <Route exact path="/addmessage" render={(routeProps) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<AddMessage  routeProps={routeProps} />))} />
+                                        (<Redirect to="/signin" replace />) : (<AddMessage routeProps={routeProps} />))} />
 
-                                <Route exact path="/listprofiles" render={(routeProps) => (
+
+
+
+
+                                <Route exact path="/searchedmessages" render={(routeProps) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<ListProfiles routeProps={routeProps} />))} />
-                               
+                                        (<Redirect to="/signin" replace />) : (<ListSearchedMessages location={routeProps.location} />))} />
+
+                                <Route exact path="/listsearchedprofiles" render={(routeProps) => (
+                                    !localStorage.reactBoardToken ?
+                                        (<Redirect to="/signin" replace />) : (<ListSearchedProfiles location={routeProps.location} />))} />
+
                                 <Route exact path="/singleprofile/:id" render={(routeProps) => (
                                     !localStorage.reactBoardToken ?
                                         (<Redirect to="/signin" replace />) : (<SingleProfile routeProps={routeProps} />))}
@@ -76,7 +85,7 @@ class ReactBoard extends Component {
 }
 const mapStateToProps = (state) => {
     return {
-        name: state.user.name   //the only for this prop here is to activate lifecycle to rerender this component
+        publicID: state.user.publicID   //the only use of this prop here is to activate lifecycle to rerender this component
     }
 }
 

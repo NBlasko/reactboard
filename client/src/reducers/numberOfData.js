@@ -1,5 +1,6 @@
 import {
-    GET_GALLERY_LIST, REMOVE_GALLERY_LIST
+    GET_GALLERY_LIST, REMOVE_GALLERY_LIST,
+    REMOVE_USER_PROFILE
 } from '../constants'
 
 const initialstate = {
@@ -13,12 +14,13 @@ const galleryList = (state = initialstate, action) => {
         case GET_GALLERY_LIST:
             const number = action.payload.galleryList.length;
             return { number };
-            
-            
-            case REMOVE_GALLERY_LIST:
-            return initialstate;
-      
 
+
+        case REMOVE_GALLERY_LIST:
+            return initialstate;
+
+        case REMOVE_USER_PROFILE:
+            return initialstate;
 
 
         default:

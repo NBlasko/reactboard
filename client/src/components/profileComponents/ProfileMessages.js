@@ -8,7 +8,7 @@ class ProfileMessages extends Component {
         super(props);
         this.state = {
             skip: 0,
-            loading: false,
+            loading: true,
             numberOfmessages: -1,
             emptyAJAX: false
         };
@@ -23,6 +23,11 @@ class ProfileMessages extends Component {
     componentWillUnmount() {
         window.removeEventListener('scroll', this.handleScroll)
         this.props.deleteAllMessagesAction();
+    }
+
+    componentDidUpdate(prevProps) {
+       if (prevProps.authorsPublicID !== this.props.authorsPublicID)
+       this.props.getNewProfileMessagesAction(0, this.props.authorsPublicID);
     }
 
     componentWillReceiveProps(newProps) {
@@ -54,7 +59,7 @@ class ProfileMessages extends Component {
 
     render() {
         const MessageList = this.props.messages.map((message) =>
-            <ListedSingleBlog key={message.publicID} message={message} />);
+            <ListedSingleBlog key={message.publicID} message={message} imageQueryID ={this.props.imageQueryID} />);
         return (
             <div>
                 {MessageList}
@@ -67,6 +72,7 @@ class ProfileMessages extends Component {
 const mapStateToProps = (state) => {
     return {
         messages: state.messages,
+        imageQueryID: state.user.imageQueryID
     }
 }
 

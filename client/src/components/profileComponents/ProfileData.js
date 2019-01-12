@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { getSingleUserAction } from '../../actions';
 
-import { Container, Row, Col} from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import coinsSVG from '../../assets/coins.svg';
 import profileImg from '../../assets/profile.svg';
 import { SERVERURL } from '../../constants';
@@ -10,7 +10,7 @@ class ProfileData extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            imageQueryID: '',   
+            imageQueryID: '',
             refresh: 0,   //to refresh url get method
             imageLoadError: true
         }
@@ -19,13 +19,13 @@ class ProfileData extends Component {
 
     componentWillReceiveProps(newProps) {
         if (this.state.imageQueryID !== newProps.imageQueryID)
-        this.setState({
-            imageQueryID: newProps.imageQueryID
-        });
+            this.setState({
+                imageQueryID: newProps.imageQueryID
+            });
         if (this.state.refresh !== newProps.refresh)
-        this.setState({
-            refresh: newProps.refresh
-        });
+            this.setState({
+                refresh: newProps.refresh
+            });
     }
 
 
@@ -35,10 +35,11 @@ class ProfileData extends Component {
     }
     componentDidUpdate(prevProps) {
 
-        if (prevProps.routeProps.match.params.id !== this.props.routeProps.match.params.id)
+        if (prevProps.routeProps.match.params.id !== this.props.routeProps.match.params.id) {
+            this.setState({ imageLoadError: true });
             this.props.getSingleUserAction(this.props.routeProps.match.params.id);
+        }
     }
-    //http://localhost:3000/singleprofile/dcdfdf00-fc81-11e8-8edf-c9b5ffc599f3
 
 
 
@@ -56,10 +57,10 @@ class ProfileData extends Component {
             if (admin) coins = sp.statistics.coins.total;
             totalTrust = Math.round(trustUp / (trustUp + trustDown) * 100) || 50
         }
-       
-       
 
-      
+
+
+
         return (
             <div>
                 <Container>

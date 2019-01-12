@@ -1,6 +1,8 @@
-import { GET_GALLERY_LIST, REMOVE_GALLERY_LIST, REMOVE_GALLERY_IMAGE,
-  ADD_GALLERY_IMAGE
- } from '../constants'
+import {
+  GET_GALLERY_LIST, GET_NEW_GALLERY_LIST, REMOVE_GALLERY_LIST, REMOVE_GALLERY_IMAGE,
+  ADD_GALLERY_IMAGE,
+  REMOVE_USER_PROFILE
+} from '../constants'
 
 const initialstate = [];
 
@@ -11,9 +13,11 @@ const galleryList = (state = initialstate, action) => {
     case GET_GALLERY_LIST:
       return [...state, ...action.payload.galleryList];
 
+    case GET_NEW_GALLERY_LIST:
+      return [...action.payload.galleryList];
 
     case ADD_GALLERY_IMAGE:
-      return [action.payload, ...state ];
+      return [action.payload, ...state];
 
     case REMOVE_GALLERY_IMAGE:
 
@@ -23,8 +27,11 @@ const galleryList = (state = initialstate, action) => {
     case REMOVE_GALLERY_LIST:
       return [];
 
+      case REMOVE_USER_PROFILE:
+      return initialstate;
+
     default:
-      return state
+      return state 
   }
 }
 
