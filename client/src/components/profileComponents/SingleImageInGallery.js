@@ -118,7 +118,7 @@ class SingleImageInGallery extends Component {
        
         const publicIdToGetImage = (this.props.routeProps.match.path === "/addmessage") ? this.props.publicID : this.state.matchId;
         return (
-            <div className="col-sm-6 col-md-4 col-lg-3">
+            <div className="col-sm-6 col-md-4 col-lg-3" style = {{border: "1px solid #ddd", padding: "5px"}}>
                 <img onClick={this.toggle} className="imageFit" src={`${SERVERURL}api/images/galleryImage?imageQueryID=${this.props.imageQueryID}&singleImageID=${this.props.singleImage._id}&publicID=${publicIdToGetImage}&refreshID=${this.state.refresh}`} alt="loading..." />
                 <Modal isOpen={this.state.modal} className={this.props.className} toggle={this.toggle}>
                     <ModalHeader toggle={this.toggle} close={closeBtn}>

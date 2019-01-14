@@ -3,15 +3,15 @@
 [x] style add message component
 [x] in add message component don't forget "preview" part
 [x] add date in listed Blogs, profiles...
-[] style and create data from profile component
-    [] on profile would be nice to have a history of all blogs user posted,
+[x] style and create data from profile component
+    [x] on profile would be nice to have a history of all blogs user posted,
     [] maybe track all comments
 [x] add hover to social buttons on login form
 [] add coins, this is going to be a long one
-[] query db by ,start at nth, limit last 10 by
+[x] query db by ,start at nth, limit last 10 by
         [x] blogs views
         [x] number and percent of likes
-        [] number and percent of trust
+        [x] number and percent of trust
 [] fix blank options in dropdown
 [] add profile image everywhere
         [] with social, save the link

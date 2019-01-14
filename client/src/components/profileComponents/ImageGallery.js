@@ -71,8 +71,10 @@ class ImageGallery extends Component {
         return (
 
             <div >
+                
                 {(this.props.admin) ? <ImageUploadClass /> : null}
                 <hr />
+                <h2 className = "text-dark">Image Gallery</h2>
                 <div className="row">
 
                     {imageGalleryList}

@@ -8,6 +8,9 @@ import noPhotosImg from '../../assets/no-photos.svg';
 class ListedSingleBlog extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            imageLoadError: true
+        }
         this.handleClick = this.handleClick.bind(this);
     }
 
@@ -16,7 +19,7 @@ class ListedSingleBlog extends Component {
     }
     render() {
         const { message } = this.props;
-       //console.log("message", message)
+        //console.log("message", message)
         const { trustVote, likeVote } = message.statistics;
         let trustPercent = 50, likePercent = 50;
         if (trustVote && trustVote.number.Up + trustVote.number.Down !== 0) {
@@ -33,13 +36,24 @@ class ListedSingleBlog extends Component {
                     <div className="col-sm-4 col-lg-3 col-xl-2">
                         <Link to={'../blog/' + message.publicID}>
                             {
-                                (message.image) ? <img className="img-thumbnail rounded mx-auto d-block" style={{ maxHeight: "200px" }} src={`${SERVERURL}api/images/galleryImage?imageQueryID=${this.props.imageQueryID}&singleImageID=${message.image}&publicID=${message.authorsPublicID}`} alt="loading..." />
+                                (message.image) ? <img className="img-thumbnail rounded mx-auto d-block"
+                                    style={{ maxHeight: "200px" }}
+                                    src={`${SERVERURL}api/images/galleryImage?imageQueryID=${this.props.imageQueryID}&singleImageID=${message.image}&publicID=${message.authorsPublicID}`}
+                                    onError={(e) => {
+                                        if (this.state.imageLoadError) {
+                                            this.setState({
+                                                imageLoadError: false
+                                            });
+                                            e.target.src = noPhotosImg;
+                                        }
+                                    }}
+                                    alt="loading..." />
                                     : <img className="img-thumbnail rounded mx-auto d-block" style={{ maxHeight: "200px" }} src={noPhotosImg} alt="loading..." />
                             }
                         </Link>
                     </div>
 
-                    <div>
+                    <div className="col-sm-8 col-lg-9 col-xl-10">
                         <h4><Link to={'../blog/' + message.publicID}> {message.title}</Link>  <small className="text-muted"> by {message.author} </small></h4>
                         <p>{message.body}</p>
                         <span className="small pr-3"> <i className="fa fa-check-square-o"></i> {trustPercent}% </span>

@@ -4,17 +4,25 @@ import { getSingleMessageAction, deleteSingleMessageAction, addProfileTrustActio
 import ListComments from './ListComments';
 import AddComment from './AddComment';
 import { SERVERURL } from '../../constants';
-import { Link } from 'react-router-dom';
-
+import { Link, Redirect } from 'react-router-dom';
+import axios from 'axios';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 class SingleBlog extends Component {
 
     constructor(props) {
         super(props);
-
+        this.state = {
+            imageLoadError: true,
+            messageDeleted: false,
+            modal: false
+        }
         this.addProfileTrustActionUp = this.addProfileTrustActionUp.bind(this);
         this.addProfileTrustActionDown = this.addProfileTrustActionDown.bind(this);
         this.addBlogsLikeActionUp = this.addBlogsLikeActionUp.bind(this);
         this.addBlogsLikeActionDown = this.addBlogsLikeActionDown.bind(this)
+        this.deleteSingleMessageOnServer = this.deleteSingleMessageOnServer.bind(this);
+        this.renderRedirect = this.renderRedirect.bind(this);
+        this.toggle = this.toggle.bind(this);
     }
 
     componentDidMount() {
@@ -43,10 +51,36 @@ class SingleBlog extends Component {
 
         this.props.addBlogsLikeAction({ like: 0, blogsID: this.props.routeProps.match.params.id })
     }
+    toggle() {
+        this.setState({
+            modal: !this.state.modal
+        });
+    }
+    deleteSingleMessageOnServer() {
 
 
+        axios({
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${localStorage.reactBoardToken}`,
+                'Cache-Control': 'no-cache'
+            },
+            url: SERVERURL + 'api/blogs/' + this.props.routeProps.match.params.id,
+        }).then(res => {
+            console.log("res", res)
+            //setSome state to redirect
+            this.setState({ messageDeleted: true, modal: false })
+        })
+            .catch(err => console.log(err));
 
 
+    }
+
+    renderRedirect() {
+        if (this.state.messageDeleted) {
+            return <Redirect to='/' />
+        }
+    }
 
     render() {
         const trustVote = this.props.trustVote;
@@ -68,7 +102,15 @@ class SingleBlog extends Component {
                 <div className="card border-white mb-3" >
                     <div className="card-body">
                         {
-                            (this.props.singleBlogMessage && this.props.singleBlogMessage.image) ? <img className="imageFit" src={`${SERVERURL}api/images/galleryImage?imageQueryID=${this.props.imageQueryID}&singleImageID=${this.props.singleBlogMessage.image}&publicID=${this.props.singleBlogMessage.authorsPublicID}`} alt="loading..." />
+                            (this.props.singleBlogMessage && this.props.singleBlogMessage.image && this.state.imageLoadError)
+                                ? <img className="imageFit"
+                                    src={`${SERVERURL}api/images/galleryImage?imageQueryID=${this.props.imageQueryID}&singleImageID=${this.props.singleBlogMessage.image}&publicID=${this.props.singleBlogMessage.authorsPublicID}`}
+                                    onError={(e) => {
+                                        this.setState({
+                                            imageLoadError: false
+                                        });
+                                    }}
+                                    alt="loading..." />
                                 : null
                         }
                         <h3>{this.props.singleBlogMessage.title}</h3>
@@ -76,13 +118,31 @@ class SingleBlog extends Component {
                             <i>by{" "}
                                 <Link to={`/singleprofile/${this.props.singleBlogMessage.authorsPublicID}`}>
                                     {this.props.singleBlogMessage.author}
-                            </Link>,
+                                </Link>,
                             </i>
                             <small className="text-muted"> {localDate.slice(0, -3)} </small>   </h5>
                         <p className="card-text">{this.props.singleBlogMessage.body}</p>
                         <div className="container-fluid">
                             <div className="row">
-                                <div className="ml-auto col-sm-p-2">{(this.props.singleBlogMessage.authorsPublicID === this.props.publicID) ? <button className="btn btn-danger" type="button">Delete</button> : null}</div>
+                                <div className="ml-auto col-sm-p-2">
+                                    {
+                                        (this.props.singleBlogMessage.authorsPublicID === this.props.publicID)
+                                            ? <span>
+                                                <Button color="danger" onClick={this.toggle}>Delete</Button>
+                                                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                                                    <ModalHeader toggle={this.toggle}>Delete blog</ModalHeader>
+                                                    <ModalBody>
+                                                        Are you sure?
+                                                     </ModalBody>
+                                                    <ModalFooter>
+                                                        <Button color="danger" onClick={this.deleteSingleMessageOnServer}>DELETE</Button>{' '}
+                                                        <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                                                    </ModalFooter>
+                                                </Modal>
+                                            </span>
+                                            : null
+                                    }
+                                </div>
                             </div>
                             <div className="btn-group col-sm-pr-6 p-1" role="group" aria-label="Trust">
                                 <button type="button" onClick={this.addProfileTrustActionUp} className={`btn btn-outline-primary btn-sm ${(this.props.userVotedUp) ? "btn-prim-act-custom" : ""} buttonBorder`}><span><i className="fa fa-check-square-o"></i></span> {Up} </button>
@@ -109,6 +169,7 @@ class SingleBlog extends Component {
 
         return (
             <div>
+                {this.renderRedirect()}
                 {blogContent}
             </div>
         );

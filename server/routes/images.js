@@ -15,7 +15,7 @@ router.route('/')
     //.post(passportJWT, parser.single("image"), ImageController.newImage);
   //  .post(passportJWT, parser.single("image"), ImageController.newImage);
 
-router.route('/blog')
+//router.route('/blog')
 //.get(ImageController.singleImage)  //no need to vaidate because there are no inputs in get all
     //.post(passportJWT, parser.single("image"), ImageController.newImage);
     //.post(passportJWT, parser.single("image"), ImageController.newImage);

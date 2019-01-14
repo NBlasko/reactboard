@@ -34,7 +34,7 @@ module.exports = {
 
 
     singleImage: async (req, res, next) => {
-           console.log("stizem query", req.query)
+        //    console.log("stizem query", req.query)
         const { imageQueryID, publicID } = req.query;
         const admin = await User.findOne({ imageQueryID: imageQueryID })
         //  console.log("a", admin)
@@ -63,18 +63,18 @@ module.exports = {
         let { skip, authorsPublicID } = req.value.query;
         skip = parseInt(skip)
         const gallery = await ImagesGallery.findOne({ authorId: authorsPublicID }, "images._id")
-         
+
         const l = gallery.images.length;
-        const a = (l-skip-5 >= 0) ? l-skip-5 : 0;
-        const sliced = gallery.images.slice(a, l-skip)
-        
+        const a = (l - skip - 5 >= 0) ? l - skip - 5 : 0;
+        const sliced = gallery.images.slice(a, l - skip)
+
 
         res.status(200).json({ galleryList: sliced.reverse() });
     },
     singleGalleryImage: async (req, res, next) => {
 
         const { imageQueryID, publicID, singleImageID } = req.query;
-        // console.log("query",req.query)
+        // console.log("singleGalleryImage query",req.query)
         const admin = await User.findOne({ imageQueryID: imageQueryID })
         //  console.log("a", admin)
         if (!admin)
@@ -97,10 +97,10 @@ module.exports = {
         });
     },
 
-    
+
     deleteGalleryImage: async (req, res, next) => {
         const { id } = req.value.params;
-        //  console.log("loggg", req.user)
+        console.log("loggg user", req.user)
 
         const gallery = await ImagesGallery.findOne({ authorId: req.user.publicID })//.select({ images: {$elemMatch: {_id: id}} } )
         if (!gallery) return res.status(404).json({ error: "image doesn\'t exist or forbidden" });
@@ -109,13 +109,19 @@ module.exports = {
         let imageObject = await gallery.images.find(x => x._id == id)
 
 
-        // console.log("posle pull gallery", gallery)
+        console.log("imageObject", imageObject)
         await cloudinary.v2.uploader.destroy(imageObject.imageID, function (error, result) {
             if (error) throw error;
             gallery.images.pull(id);
         });
 
         await gallery.save();
+        const admin = await User.findOne({ _id: req.user._id })
+
+        if (admin.image.URL !== "" && admin.image.URL === imageObject.URL) {
+            admin.image.URL = "";
+            await admin.save();
+        }
 
         res.status(200).json({ id });
     },
@@ -135,6 +141,6 @@ module.exports = {
         await user.save();
 
 
-        res.status(200).json({ refresh: new Date().getTime()  });
+        res.status(200).json({ refresh: new Date().getTime() });
     }
 }

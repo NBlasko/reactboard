@@ -21,9 +21,10 @@ router.route('/search')
 
 
 router.route('/:blogId')
-  .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.getSingleBlog);
+  .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.getSingleBlog)
+  .delete(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.deleteSingleBlog);
 
-router.route('/:blogId/comments')
+  router.route('/:blogId/comments')
   .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.getBlogsComments)
   .post(passportJWT, validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.commentSchema), BlogController.newBlogsComment);
 

@@ -26,8 +26,8 @@ class ProfileMessages extends Component {
     }
 
     componentDidUpdate(prevProps) {
-       if (prevProps.authorsPublicID !== this.props.authorsPublicID)
-       this.props.getNewProfileMessagesAction(0, this.props.authorsPublicID);
+        if (prevProps.authorsPublicID !== this.props.authorsPublicID)
+            this.props.getNewProfileMessagesAction(0, this.props.authorsPublicID);
     }
 
     componentWillReceiveProps(newProps) {
@@ -59,9 +59,10 @@ class ProfileMessages extends Component {
 
     render() {
         const MessageList = this.props.messages.map((message) =>
-            <ListedSingleBlog key={message.publicID} message={message} imageQueryID ={this.props.imageQueryID} />);
+            <ListedSingleBlog key={message.publicID} message={message} imageQueryID={this.props.imageQueryID} />);
         return (
             <div>
+                <h2 className="text-dark"> Messages</h2>
                 {MessageList}
                 {(this.state.emptyAJAX) ? <div> There are no more messages... </div> : null}
             </div>

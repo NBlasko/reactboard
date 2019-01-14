@@ -57,7 +57,7 @@ module.exports = {
             else bodySliced = body;
             const image = (v.image) ? v.image.galleryMongoID : null;
 
-           let  filteredStatistics = {
+           const  filteredStatistics = {
                 likeVote: {
                     number:
                     {
@@ -102,7 +102,6 @@ module.exports = {
 
         //   console.log("blog imageID", req.value.body, "imageObject", imageObject)
         const blog = await new Blog({
-            //  ...req.value.body,
             title: req.value.body.title,
             body: req.value.body.body,
             author: req.user.name,
@@ -279,6 +278,31 @@ module.exports = {
         const result = { likeVote: newLikeVote, UserLiked, UserDisliked }
         res.status(200).json(result);
 
+    },
+    deleteSingleBlog: async (req, res, next) => {
+        const { blogId } = req.value.params;
+        const blog = await Blog.findOne({ publicID: blogId })
+// potrebno je proveriti da li je admin za svaki od podataka
+
+// if (req.user.publicId === comment.authorsPublicID )
+//delete comments in blog       blogsPublicID
+console.log("authorsPublicID", req.user.publicID )
+await Comment.deleteMany({ blogsPublicID: blogId, authorsPublicID: req.user.publicID  });
+
+
+//delete likevote _id: blog.statistics.likeVote._id
+await LikeVote.deleteOne({ _id: blog.statistics.likeVote._id, authorId: req.user.publicID  });
+
+
+// delete blog itslef blogsPublicID
+await Blog.deleteOne({ publicID: blogId, authorsPublicID: req.user.publicID })
+
+
+//Character.deleteOne({ name: 'Eddard Stark' }, function (err) {});
+//Character.deleteMany({ name: /Stark/, age: { $gte: 18 } }, function (err) {});
+
+
+        res.status(200).json({result: "successful deletion"});
     }
 
 }

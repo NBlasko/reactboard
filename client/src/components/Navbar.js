@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
+import '../index.css';
 import { addUserProfile, removeUserProfile, searchBlogsAction, searchProfilesAction } from '../actions';
 import {
     Collapse,
@@ -21,7 +22,7 @@ import search from '../assets/search.svg'
 
 
 
-
+const logoFont = { fontFamily: "Italianno, cursive" }
 
 
 class NavbarComponent extends Component {
@@ -146,7 +147,7 @@ class NavbarComponent extends Component {
             <div className="navbarCustom small shadow">
                 <Navbar color="light" light expand="sm">
                     <NavbarToggler onClick={this.toggle} />
-                    <span className="text-dark h4 logoCustom"  >RB</span>
+                    <span className="text-dark h4" style = {logoFont}>RB</span>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
 
@@ -181,15 +182,9 @@ class NavbarComponent extends Component {
                                     <DropdownItem name="mostlikedblogs" onClick={this.NavigateProgrammatically}> Most liked blogs </DropdownItem>
                                 </DropdownMenu>
                             </UncontrolledDropdown>
-                            <UncontrolledDropdown nav inNavbar >
-                                <DropdownToggle nav caret className="text-dark tab"> Options </DropdownToggle>
-                                <DropdownMenu right>
-                                    <DropdownItem onClick={this.closeToggle}> Option 1 </DropdownItem>
-                                    <DropdownItem onClick={this.closeToggle}> Option 2 </DropdownItem>
-                                    <DropdownItem divider />
-                                    <DropdownItem onClick={this.SignOut}> SignOut </DropdownItem>
-                                </DropdownMenu>
-                            </UncontrolledDropdown>
+                            <NavItem>
+                                <span onClick={this.SignOut} className="signoutReactBoard nav-link text-dark tab"> SignOut  </span>
+                            </NavItem>
                         </Nav>
                     </Collapse>
                 </Navbar>

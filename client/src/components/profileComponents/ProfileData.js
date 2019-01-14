@@ -47,7 +47,7 @@ class ProfileData extends Component {
 
 
     render() {
-        let name = "", admin = false, trustUp = 0, trustDown = 0, coins = 0, totalTrust;
+        let name = "", admin = false, trustUp = 0, trustDown = 0, coins = 0, totalTrust = 50;
         const sp = this.props.searchedProfile;
         if (sp) {
             admin = sp.admin;
@@ -55,11 +55,13 @@ class ProfileData extends Component {
             trustUp = sp.statistics.trustVote.number.Up;
             trustDown = sp.statistics.trustVote.number.Down;
             if (admin) coins = sp.statistics.coins.total;
-            totalTrust = Math.round(trustUp / (trustUp + trustDown) * 100) || 50
+            if (trustUp + trustDown)
+                totalTrust = Math.round(trustUp / (trustUp + trustDown) * 100) //|| 50
         }
-
-
-
+        //else
+        //    totalTrust = Math.round(trustUp / (trustUp + trustDown) * 100) || 50
+//console.log("trust percent",  totalTrust , "math round", Math.round(trustUp / (trustUp + trustDown) * 100)  )
+//console.log("state",  this.state)
 
         return (
             <div>
@@ -72,6 +74,7 @@ class ProfileData extends Component {
                                         alt="nema"
                                         onError={(e) => {
                                             if (this.state.imageLoadError) {
+                                              //  console.log("error", e)
                                                 this.setState({
                                                     imageLoadError: false
                                                 });
