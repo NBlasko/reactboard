@@ -135,7 +135,7 @@ class SingleBlog extends Component {
                                                         Are you sure?
                                                      </ModalBody>
                                                     <ModalFooter>
-                                                        <Button color="danger" onClick={this.deleteSingleMessageOnServer}>DELETE</Button>{' '}
+                                                        <Button color="danger" onClick={this.deleteSingleMessageOnServer}>Yes, delete this blog</Button>{' '}
                                                         <Button color="secondary" onClick={this.toggle}>Cancel</Button>
                                                     </ModalFooter>
                                                 </Modal>

@@ -81,7 +81,7 @@ class ImageGallery extends Component {
 
                 </div>
                 {(this.state.emptyAJAX) ? <div> There are no more images... </div> :
-                    <button className="btn btn-primary" onClick={this.handleClick}> Load more images </button>
+                    <button className="btn btn-primary mt-2" onClick={this.handleClick}> Load more images </button>
                 }
             </div>
 

@@ -26,19 +26,25 @@ module.exports = {
       return res.status(403).json({ error: 'Email is already in use' });
     }
 
-    // Create a new user
 
 
+    // Create TrustVote
     trustVote = new TrustVote({
       Up: 0,
       Down: 0
     });
     await trustVote.save();
 
+
+    // Create ImagesGallery
+
     const imagesGallery = new ImagesGallery({
       authorId: trustVote.authorId
     })
     await imagesGallery.save();
+
+    // Create a new user
+
 
     const newUser = new User({
       method: 'local',

@@ -8,7 +8,20 @@ const config = require('./configuration');
 const User = require('./models/auth');
 const bcrypt = require('bcryptjs');
 const TrustVote = require('./models/trustVote');
+const ImagesGallery = require('./models/imagesGallery')
 
+
+const cloudinary = require("cloudinary");
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+const uploadCloudinaryOptions = {
+  folder: "reactboard",
+  allowedFormats: ["jpg", "png"],
+  transformation: [{ width: 500, height: 500, crop: "limit" }]
+}
 
 // JSON WEB TOKENS STRATEGY
 passport.use(new JwtStrategy({
@@ -39,27 +52,25 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     // Should have full user profile over here
-    console.log('profile', profile);
-    console.log('accessToken', accessToken);
-    console.log('refreshToken', refreshToken);
+    // console.log('profile', profile);
+    //  console.log('accessToken', accessToken);
+    // console.log('refreshToken', refreshToken);
 
     const existingUser = await User.findOne({ "google.id": profile.id });
     if (existingUser) {
       return done(null, existingUser);
     }
 
+    //code bellow executes for initial login - create TrustVote, ImageGallery
 
-    // Create a new user
-   
-
-    trustVote = new TrustVote({
-    
+    // Create TrustVote
+    const trustVote = new TrustVote({
       Up: 0,
       Down: 0
     });
     await trustVote.save();
 
-
+    // Create a new user
     const newUser = new User({
       method: 'google',
       publicID: trustVote.authorId,
@@ -73,7 +84,43 @@ passport.use('googleToken', new GooglePlusTokenStrategy({
       }
     });
 
+
+
+
+    let image;
+    //upload image on cloudinary if exists
+    if (profile.photos[0].value)
+      await cloudinary.v2.uploader.upload(profile.photos[0].value, uploadCloudinaryOptions,
+        function (error, result) {
+          if (error) throw error;
+          image = {
+            URL: result.secure_url,
+            imageID: result.public_id
+          }
+        });
+
+    // Create ImagesGallery
+    let imagesGallery
+    if (image) {
+      imagesGallery = new ImagesGallery({
+        authorId: trustVote.authorId,
+        images: [image],
+      })
+    }
+    else {
+      imagesGallery = new ImagesGallery({
+        authorId: trustVote.authorId
+      })
+    }
+
+    await imagesGallery.save();
+
+    if (image.URL)
+      newUser.image = { URL: image.URL }
+
+
     await newUser.save();
+
     done(null, newUser);
   } catch (error) {
     done(error, false, error.message);
@@ -92,25 +139,26 @@ passport.use('facebookToken', new FacebookTokenStrategy({
   clientSecret: config.oauth.facebook.clientSecret
 }, async (accessToken, refreshToken, profile, done) => {
   try {
-    console.log('profile', profile);
-    console.log('accessToken', accessToken);
-    console.log('refreshToken', refreshToken);
+  //  console.log('profile', profile);
+   // console.log('accessToken', accessToken);
+   // console.log('refreshToken', refreshToken);
 
     const existingUser = await User.findOne({ "facebook.id": profile.id });
     if (existingUser) {
       return done(null, existingUser);
     }
 
-    // Create a new user
-  
+    //code bellow executes for initial login - create TrustVote, ImageGallery
 
-    trustVote = new TrustVote({
+    // Create TrustVote
+    const trustVote = new TrustVote({
       Up: 0,
       Down: 0
     });
     await trustVote.save();
 
-
+    
+    // Create a new user
     const newUser = new User({
       method: 'facebook',
       publicID: trustVote.authorId,
@@ -123,6 +171,42 @@ passport.use('facebookToken', new FacebookTokenStrategy({
         trustVote: trustVote.id
       }
     });
+
+
+
+    let image;
+    //upload image on cloudinary if exists
+    if (profile.photos[0].value)
+      await cloudinary.v2.uploader.upload(profile.photos[0].value, uploadCloudinaryOptions,
+        function (error, result) {
+          if (error) throw error;
+          image = {
+            URL: result.secure_url,
+            imageID: result.public_id
+          }
+        });
+
+    // Create ImagesGallery
+    let imagesGallery
+    if (image) {
+      imagesGallery = new ImagesGallery({
+        authorId: trustVote.authorId,
+        images: [image],
+      })
+    }
+    else {
+      imagesGallery = new ImagesGallery({
+        authorId: trustVote.authorId
+      })
+    }
+
+    await imagesGallery.save();
+
+    if (image.URL)
+      newUser.image = { URL: image.URL }
+
+
+
 
     await newUser.save();
     done(null, newUser);

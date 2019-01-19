@@ -1,4 +1,5 @@
 const User = require('../models/auth');
+const Blog = require('../models/blog')
 const request = require('request');
 const ImagesGallery = require('../models/imagesGallery');
 const cloudinary = require("cloudinary");
@@ -109,7 +110,6 @@ module.exports = {
         let imageObject = await gallery.images.find(x => x._id == id)
 
 
-        console.log("imageObject", imageObject)
         await cloudinary.v2.uploader.destroy(imageObject.imageID, function (error, result) {
             if (error) throw error;
             gallery.images.pull(id);
@@ -123,6 +123,9 @@ module.exports = {
             await admin.save();
         }
 
+        //remove id of image from all blogs
+       await Blog.updateMany({'image.galleryMongoID' : id}, { image: null})
+        
         res.status(200).json({ id });
     },
     setProfileImage: async (req, res, next) => {

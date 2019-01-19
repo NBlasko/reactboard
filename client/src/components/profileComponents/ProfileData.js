@@ -82,7 +82,7 @@ class ProfileData extends Component {
                                             }
                                         }
                                         }
-                                        className="img-thumbnail img-fluid mx-auto d-block " />
+                                        className="imageFit " />
                                     : null}
                             </div>
                         </Col>

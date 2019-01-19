@@ -72,7 +72,7 @@ class Signin extends Component {
     }
 
     handleGoogleOuth(res) {
-        console.log(res)
+     //   console.log(res)
         axios.post(SERVERURL + 'auth/google', { access_token: res.accessToken })
             .then((response) => {
 
