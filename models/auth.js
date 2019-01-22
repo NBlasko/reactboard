@@ -32,7 +32,22 @@ const userSchema = new Schema({
       type: String,
       lowercase: true
     },
-    password: String
+    password: String,
+    verified: {
+      type: Boolean,
+      default: false
+    },
+    accessCode: {
+      type: String
+    },
+    accessCodeTime: {
+      type: Date,
+      default: Date.now 
+    },
+    accessNumberTry: {
+      type: Number,
+      default: 3
+    }
 
 
   },

@@ -48,6 +48,13 @@ module.exports = {
             password: Joi.string().trim().min(10).required(),
             name: Joi.string().required().min(4).max(30),
         }),
+        verifyEmailSchema: Joi.object().keys({
+            email: Joi.string().email().required(),
+            accessCode: Joi.string().length(5).required(),
+        }),
+        emailSchema: Joi.object().keys({
+            email: Joi.string().email().required()
+        }),
         authSchemaSignIn: Joi.object().keys({
             email: Joi.string().email().required(),
             password: Joi.string().trim().min(10).required()
@@ -90,31 +97,3 @@ module.exports = {
 
     }
 }
-
-
-
-/*
-schemas: {
- kako da validiram niz
-var Joi = require('joi');
-var service = Joi.object().keys({
-  serviceName: Joi.string().required()
-});
-
-var services = Joi.array().items(service);
-
-var test = Joi.validate([{serviceName:'service1'}, {serviceName:'service2'}],services)
-
-
-
-        productSellerSchema: Joi.object().keys({
-            seller: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
-            make: Joi.string().required(),
-            model: Joi.string().required(),
-            year: Joi.number().required()
-        }), 
-        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
-    }           45745c60-7b1a-11e8-9c9c-2d42b21b1a3e
-
-
-*/

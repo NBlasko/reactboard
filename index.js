@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const express = require('express');
-const cors = require('cors');
+//const cors = require('cors');
 const morgan = require('morgan');
 require('./db/connection');
 
@@ -11,9 +11,9 @@ require('./db/connection');
 const app = express();
 
 app.use(morgan('dev'));
-app.use(cors({
-    origin: 'http://localhost:3000'
-}));
+//app.use(cors({
+  //  origin: 'https://localhost:3000'
+//}));
 //app.use(passport.initialize());
 app.use(express.json());
 
@@ -28,7 +28,14 @@ app.use('/api/images', require('./routes/images'));
 
 
 
+
+
+
+
+
+
 // Catch 404 errors
+// Ovaj brisem i dodajem put da serviram frontend
 app.use((req, res, next) => {
 
     const err = new Error('Not found');
@@ -54,7 +61,7 @@ app.use((err, req, res, next) => {
         }
     });
     // respond to server
-    console.error("greska5", err);
+    console.error("err5", err);
 
 })
 

@@ -12,19 +12,12 @@ const  parser = require('../helpers/uploadHelpers')
 
 router.route('/')
     .get(ImageController.singleImage)  //no need to vaidate because there are no inputs in get all
-    //.post(passportJWT, parser.single("image"), ImageController.newImage);
-  //  .post(passportJWT, parser.single("image"), ImageController.newImage);
-
-//router.route('/blog')
-//.get(ImageController.singleImage)  //no need to vaidate because there are no inputs in get all
-    //.post(passportJWT, parser.single("image"), ImageController.newImage);
-    //.post(passportJWT, parser.single("image"), ImageController.newImage);
+ 
 
 
 router.route('/gallery')
     .get(ImageController.singleImage)  //no need to vaidate because there are no inputs in get all
-    //.get(ImageController.index)
-    //.post(passportJWT, parser.single("image"), ImageController.newImage);
+
    
  
 

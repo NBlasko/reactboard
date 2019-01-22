@@ -11,6 +11,12 @@ const passportJWT = passport.authenticate('jwt', { session: false });
 router.route('/signup')
   .post(validateBody(schemas.authSchema), authController.signUp);
 
+router.route('/verifymail')         //verify email with the code that was already sent  in signup/resendVerifyMail
+  .post(validateBody(schemas.verifyEmailSchema), authController.verifyMail);
+
+router.route('/resend-verification-mail')    //if signup route does not send an email with code, send it again
+  .post(validateBody(schemas.emailSchema), authController.resendVerificationMail);
+
 router.route('/signin')
   .post(validateBody(schemas.authSchemaSignIn), passportSignIn, authController.signIn);
 

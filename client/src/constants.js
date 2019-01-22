@@ -50,7 +50,7 @@ export const SET_BLOG_IMAGE = 'SET_BLOG_IMAGE';
 export const REMOVE_PREVIEW_BLOG_IMAGE = 'REMOVE_PREVIEW_BLOG_IMAGE';
 //SERVERURL
 
-export const SERVERURL = "http://localhost:3001/"
+export const SERVERURL = "/"
 
 
 //rerender

@@ -4,6 +4,7 @@ const TrustVote = require('../models/trustVote');
 const ImagesGallery = require('../models/imagesGallery');
 const { JWT_SECRET } = require('../configuration');
 const bcrypt = require('bcryptjs');
+const sendEmail = require('../helpers/mailHelpers')
 
 
 signToken = user => {
@@ -16,7 +17,68 @@ signToken = user => {
 }
 
 
+
+
+
 module.exports = {
+
+  verifyMail: async (req, res, next) => {
+    console.log("req.value", req.value.body)
+
+    const { email, accessCode } = req.value.body;
+    const dateNow = new Date().getTime();
+    const difference10Min = 600000;
+    // Check if there is a user with the same email
+    const foundUser = await User.findOne({ "local.email": email });
+
+    if (!foundUser)
+      return res.status(403).json({ error: "Email is not in database" })
+
+    if (dateNow - foundUser.local.accessCodeTime.getTime() > difference10Min)
+      return res.status(403).json({ error: "Verification code has expired" })
+
+    if (foundUser.local.accessNumberTry < 0)
+      return res.status(403).json({ error: "You tried verifying email too many times. Resend email" })
+   
+    if (foundUser.local.accessCode !== accessCode) {
+      foundUser.local.accessNumberTry--;
+      await foundUser.save();
+
+      if (foundUser.local.accessNumberTry < 0)
+        return res.status(403).json({ error: "Wrong verification code. You tried too many times. Resend email" })
+
+      return res.status(403).json({ error: "Wrong verification code" })
+    }
+    foundUser.local.verified = true;
+    foundUser.local.accessCode = null;
+    foundUser.local.accessCodeTime = null;
+    foundUser.local.accessNumberTry = null;
+    await foundUser.save();
+
+
+    // Generate the token
+    const token = signToken(foundUser);
+    // Respond with token
+    return res.status(200).json({ token })
+
+   
+  },
+  resendVerificationMail: async (req, res, next) => {
+    const { email } = req.value.body;
+    const user = await User.findOne({ "local.email": email });
+    if (!user) return res.status(403).json({ error: 'Email is not in database' });
+    const accessCode = Math.random().toString().slice(2, 7);
+    user.local.accessCode = accessCode;
+    user.local.accessCodeTime = new Date();
+    user.local.accessNumberTry = 3;
+    await user.save();
+    console.log("accessCode", accessCode)
+    //sendEmail(to, name, code)
+    sendEmail(email, user.name, accessCode);
+
+    res.status(204).end()
+  },
+
   signUp: async (req, res, next) => {
     const { email, password, name } = req.value.body;
 
@@ -45,6 +107,7 @@ module.exports = {
 
     // Create a new user
 
+    const accessCode = Math.random().toString().slice(2, 7);
 
     const newUser = new User({
       method: 'local',
@@ -53,6 +116,7 @@ module.exports = {
       local: {
         email: email,
         password: password,
+        accessCode: accessCode
       },
       statistics: {
         trustVote: trustVote.id
@@ -70,15 +134,22 @@ module.exports = {
     //save newUser with hashed password
     await newUser.save();
 
-    // Generate the token
-    const token = signToken(newUser);
-    // Respond with token
 
-    res.status(200).json({ token });
+
+
+    console.log("accessCode", accessCode)
+
+    //sendEmail(to, name, code)
+    sendEmail(email, newUser.name, accessCode);
+
+
+    res.status(204).end();
   },
 
   signIn: async (req, res, next) => {
     // Generate token
+    if (!req.user.local.verified) return res.status(403).json({ error: "email is not verified" });
+
     const token = signToken(req.user);
     res.status(200).json({ token });
   },
