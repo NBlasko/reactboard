@@ -178,14 +178,14 @@ class SingleBlog extends Component {
 
 const mapStateToProps = (state) => {
     let seen, numberOfComments, trustVote, userVotedUp, userVotedDown, sbm, likeVote, userLiked, userDisliked;
-    if (state.singleBlogMessage && state.singleBlogMessage.statistics) {
+    if (state.singleBlogMessage && state.singleBlogMessage) {
         sbm = state.singleBlogMessage;
-        seen = sbm.statistics.seen;
-        numberOfComments = sbm.statistics.numberOfComments;
-        trustVote = sbm.statistics.trustVote;
+        seen = sbm.seen;
+        numberOfComments = sbm.numberOfComments;
+        trustVote = sbm.trustVote;
         userVotedUp = sbm.UserVotedUp;
         userVotedDown = sbm.UserVotedDown;
-        likeVote = sbm.statistics.likeVote;
+        likeVote = sbm.likeVote;
         userLiked = sbm.Like;
         userDisliked = sbm.Dislike;
     }

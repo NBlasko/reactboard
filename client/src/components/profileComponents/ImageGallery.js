@@ -98,7 +98,7 @@ const mapStateToProps = (state) => {
 
     let returnedObject = {}
 
-    if (state.searchedProfile && state.searchedProfile.statistics) {
+    if (state.searchedProfile && state.searchedProfile) {
         searchedProfile = state.searchedProfile;
         returnedObject = {
             admin: searchedProfile.admin

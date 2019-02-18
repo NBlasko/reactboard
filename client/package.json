@@ -19,7 +19,7 @@
     "uuid": "^3.3.2"
   },
   "scripts": {
-    "start": "HTTPS=true react-scripts start",
+    "start": "HTTPS=true BROWSER='Google Chrome' react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"

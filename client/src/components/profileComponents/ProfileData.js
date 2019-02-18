@@ -52,9 +52,9 @@ class ProfileData extends Component {
         if (sp) {
             admin = sp.admin;
             name = sp.name;
-            trustUp = sp.statistics.trustVote.number.Up;
-            trustDown = sp.statistics.trustVote.number.Down;
-            if (admin) coins = sp.statistics.coins.total;
+            trustUp = sp.trustVote.number.Up;
+            trustDown = sp.trustVote.number.Down;
+            if (admin) coins = sp.coins.total;
             if (trustUp + trustDown)
                 totalTrust = Math.round(trustUp / (trustUp + trustDown) * 100) //|| 50
         }
@@ -119,7 +119,7 @@ class ProfileData extends Component {
 
 const mapStateToProps = (state) => {
     let searchedProfile;
-    if (state.searchedProfile && state.searchedProfile.statistics) {
+    if (state.searchedProfile && state.searchedProfile) {
         searchedProfile = state.searchedProfile;
     }
     return ({

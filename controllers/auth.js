@@ -125,9 +125,7 @@ module.exports = {
         password: password,
         accessCode: accessCode
       },
-      statistics: {
-        trustVote: trustVote.id
-      },
+        trustVote: trustVote.id    
     });
 
 

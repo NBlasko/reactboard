@@ -84,7 +84,7 @@ module.exports = {
         if (!admin)
             return res.status(403).json({ err: "Forbidden" })
 
-        if (admin.statistics.coins.total < 3 && admin.publicID !== publicID)
+        if (admin.coins.total < 3 && admin.publicID !== publicID)
             return res.status(403).json({ error: "You don\'t have enough coins" })
 
 

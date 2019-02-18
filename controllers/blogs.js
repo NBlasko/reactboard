@@ -8,16 +8,21 @@ const User = require('../models/auth');
 module.exports = {
 
     index: async (req, res, next) => {
-        //  console.log("req", req.value.query)
+
         let { skip, criteria } = req.value.query;
         let newCriteria = { "date": -1 }
-        if (criteria === "mostseenblogs") newCriteria = { "statistics.seen": -1 };
+        if (criteria === "mostseenblogs") newCriteria = { "seen": -1 };
         if (criteria === "mostlikedblogs") newCriteria = { "difference": -1 };
         if (criteria === "new") newCriteria = { "date": -1 };
         skip = parseInt(skip)
         const blogs = await Blog
-            .find({}, "statistics title author body publicID authorsPublicID date difference image.galleryMongoID")
-            .populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" })
+            .find({},
+                `trustVote likeVote seen numberOfComments title author body publicID authorsPublicID 
+                date difference image.galleryMongoID`)
+            .populate({
+                path: 'trustVote likeVote',
+                select: "number"
+            })
             .skip(skip)
             .limit(5)
             .sort(newCriteria)
@@ -28,12 +33,26 @@ module.exports = {
         let result = [], bodySliced;
         blogs.forEach((v) => {
             //  console.log("v", v)
-            const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
+            const {
+                trustVote,
+                likeVote,
+                title,
+                author,
+                body,
+                publicID,
+                authorsPublicID,
+                numberOfComments,
+                seen,
+                date
+            } = v;
             if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
             else bodySliced = body;
             const image = (v.image) ? v.image.galleryMongoID : null
             result.push({
-                statistics,
+                trustVote,
+                likeVote,
+                numberOfComments,
+                seen,
                 title,
                 author,
                 body: bodySliced,
@@ -48,12 +67,12 @@ module.exports = {
 
 
     searchBlogs: async (req, res, next) => {
-        console.log("reqSearch", req.value.query.searchText)
+
         let { searchText } = req.value.query;
         const regexSearch = new RegExp(searchText, "i");
         const blogs = await Blog
-            .find({ title: regexSearch }, "statistics title author body publicID authorsPublicID date difference image.galleryMongoID")
-            .populate({ path: 'statistics.trustVote statistics.likeVote', select: "number" })
+            .find({ title: regexSearch }, "trustVote likeVote seen numberOfComments title author body publicID authorsPublicID date difference image.galleryMongoID")
+            .populate({ path: 'trustVote likeVote', select: "number" })
             .limit(10)
             .sort({ "date": -1 })
 
@@ -63,31 +82,16 @@ module.exports = {
         let result = [], bodySliced;
         blogs.forEach(function (v) {
             //     console.log("v", v)
-            const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
+            const { trustVote, likeVote, numberOfComments, seen, title, author, body, publicID, authorsPublicID, date } = v;
             if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
             else bodySliced = body;
             const image = (v.image) ? v.image.galleryMongoID : null;
 
-            const filteredStatistics = {
-                likeVote: {
-                    number:
-                    {
-                        Up: statistics.likeVote.number.Up,
-                        Down: statistics.likeVote.number.Down
-                    }
-                },
-                trustVote: {
-                    number:
-                    {
-                        Up: statistics.trustVote.number.Up,
-                        Down: statistics.trustVote.number.Down
-                    }
-                },
-                numberOfComments: statistics.numberOfComments,
-                seen: statistics.seen
 
-            }
-            result.push({ statistics: filteredStatistics, title, author, body: bodySliced, publicID, authorsPublicID, date, image })
+            result.push({
+                likeVote, trustVote, seen, numberOfComments,
+                title, author, body: bodySliced, publicID, authorsPublicID, date, image
+            })
         });
         res.status(200).json({ result });
     },
@@ -95,15 +99,13 @@ module.exports = {
 
 
     newBlog: async (req, res, next) => {
-        const likeVote = await new LikeVote({
+        const likeVote = new LikeVote({
             authorId: req.user.publicID
         })
         await likeVote.save();
 
 
-
         const { imageId } = req.value.body;
-        //  console.log("loggg", req.user)
 
         const gallery = await ImagesGallery.findOne({ authorId: req.user.publicID })//.select({ images: {$elemMatch: {_id: id}} } )
         if (!gallery) return res.status(404).json({ error: "image doesn\'t exist or forbidden" });
@@ -125,13 +127,14 @@ module.exports = {
             imageID: imageObject.imageID,
             galleryMongoID: imageObject._id
         }
-        blog.statistics.trustVote = req.user.statistics.trustVote;
-        blog.statistics.likeVote = likeVote.id;
+        blog.trustVote = req.user.trustVote;
+        blog.likeVote = likeVote.id;
         await blog.save();
 
         //add coins to user Profile
         const user = await User.findOne({ publicID: req.user.publicID })
-        user.statistics.coins.total += 10;
+        user.coins.total += 10;
+
         await user.save();
 
 
@@ -142,15 +145,22 @@ module.exports = {
     getSingleBlog: async (req, res, next) => {
         const { blogId } = req.value.params; //value is new added property created with module helpers/routeHelpers
         let blog = await Blog.findOne({ publicID: blogId })
-            .populate({ path: 'statistics.trustVote statistics.likeVote'/*, select: "number"*/ });
-        //  console.log("blog", blog)
-        const admin = req.user.publicID === blog.authorsPublicID;
-        if (req.user.statistics.coins.total < 3 && !admin)
-            return res.status(403).json({ error: "You don\'t have enough coins" })
+            .populate({ path: 'trustVote likeVote'/*, select: "number"*/ });
 
-        blog.statistics.seen += 1;
+        const admin = req.user.publicID === blog.authorsPublicID;
+
+
+
+        if (req.user.coins.total < 3 && !admin) {
+
+            return res.status(403).json({ error: "You don\'t have enough coins" })
+        }
+
+
+        blog.seen += 1;
         await blog.save();
-        const { statistics, title, author, body, authorsPublicID, publicID, date, } = blog;
+        const { trustVote, likeVote, numberOfComments, seen,
+            title, author, body, authorsPublicID, publicID, date, } = blog;
 
         let Up = 0,
             Down = 0,
@@ -158,9 +168,9 @@ module.exports = {
             Like = 0,
             Dislike = 0,
             likeNumber = { Like: 0, Dislike: 0 };
-        if (statistics.trustVote) {
-            Up = statistics.trustVote.voterId.Up;
-            Down = statistics.trustVote.voterId.Down;
+        if (trustVote) {
+            Up = trustVote.voterId.Up;
+            Down = trustVote.voterId.Down;
             Up = Up.find(function (element) {
                 return element.voterId === req.user.publicID
             });
@@ -171,12 +181,12 @@ module.exports = {
             });
             if (Down) Down = 1;
             else Down = 0;
-            number = statistics.trustVote.number;
+            number = trustVote.number;
         }
 
-        if (statistics.likeVote) {
-            Like = statistics.likeVote.voterId.Up;
-            Dislike = statistics.likeVote.voterId.Down;
+        if (likeVote) {
+            Like = likeVote.voterId.Up;
+            Dislike = likeVote.voterId.Down;
             Like = Like.find(function (element) {
                 return element.voterId === req.user.publicID
             });
@@ -187,21 +197,23 @@ module.exports = {
             });
             if (Dislike) Dislike = 1;
             else Dislike = 0;
-            likeNumber = statistics.likeVote.number;
+            likeNumber = likeVote.number;
         }
 
 
-        const reducedStatistics = {   //throw out unnecessary things to go on client side
-            seen: statistics.seen,
-            numberOfComments: statistics.numberOfComments,
-            likeVote: {
-                number: likeNumber
-            },   //i ovo ce da vidimo da li ce da ostane
-            trustVote: {
-                number
-            }
-        }
-        const result = { statistics: reducedStatistics, title, author, body, authorsPublicID, publicID, date, UserVotedUp: Up, UserVotedDown: Down, Like, Dislike };
+
+        const result = {
+            numberOfComments,
+            seen,
+            likeVote:
+                { number: likeVote.number },
+            trustVote:
+                { number },
+            title, author, body, authorsPublicID,
+            publicID, date, UserVotedUp: Up,
+            UserVotedDown: Down,
+            Like, Dislike
+        };
         if (blog.image) result.image = blog.image.galleryMongoID;
 
 
@@ -209,12 +221,10 @@ module.exports = {
         //remove coins from user profile
         if (!admin) {
             const user = await User.findOne({ publicID: req.user.publicID })
-            user.statistics.coins.total -= 3;   //smanjicu na 3 kasnije
+            user.coins.total -= 3;
             await user.save();
-            console.log("b1")
-        }
-        console.log("b2")
 
+        }
 
         res.status(200).json(result);
     },
@@ -228,16 +238,16 @@ module.exports = {
 
         await newComment.save(); //save new product in mongodb;
         blog.comments.push(newComment.id) // push new product into  the array of products that are property of userSchema
-        blog.statistics.numberOfComments += 1;
+        blog.numberOfComments += 1;
         await blog.save(); // save modified user to mongodb 
 
 
         //add coins to user profile
         const user = await User.findOne({ publicID: req.user.publicID })
-        user.statistics.coins.total += 5;
+        user.coins.total += 5;
         await user.save();
 
-        res.status(200).json({ newComment, numberOfComments: blog.statistics.numberOfComments });
+        res.status(200).json({ newComment, numberOfComments: blog.numberOfComments });
 
 
     },
@@ -248,12 +258,24 @@ module.exports = {
 
         const { blogId } = req.value.params;
         const blog = await Blog.findOne({ publicID: blogId }, "authorsPublicID")
-        const admin = req.user.publicID === blog.authorsPublicID;
-        if (req.user.statistics.coins.total < 1 && !admin)
-            return res.status(403).json({ error: "You don\'t have enough coins" })
-
         let { skip } = req.query
         skip = parseInt(skip)
+        const admin = req.user.publicID === blog.authorsPublicID;
+
+        console.log(
+            "total<3 ", req.user.coins.total < 3,
+            "SKIIIIIIIIIIIIIIIIIIIIIIP", skip,
+            "!admin", !admin
+        )
+        /* no coins and not an admin can not fetch comments
+        
+        skip === 0 is initial skip for first 5 comments,
+        
+        */
+        if (req.user.coins.total < 3 && skip === 0 && !admin)
+            return res.status(403).json({ error: "You don\'t have enough coins" })
+
+
         const comments = await Comment
             .find({ blogsPublicID: blogId })
             .skip(skip)
@@ -264,8 +286,8 @@ module.exports = {
 
     newBlogsLike: async (req, res, next) => {
         const { blogId } = req.value.params;  //izvadis iz url javni id bloga
-        let blog = await Blog.findOne({ publicID: blogId }).populate({ path: 'statistics.likeVote' }); //nadjes taj blog
-        let likeVote = blog.statistics.likeVote; // await LikeVote.findOne({ authorId: blog.publicID })   //trazis da li je vec neko do sada dao trust , tj da li je kolekcija obrazovana kod tog Usera
+        let blog = await Blog.findOne({ publicID: blogId }).populate({ path: 'likeVote' }); //nadjes taj blog
+        let likeVote = blog.likeVote; // await LikeVote.findOne({ authorId: blog.publicID })   //trazis da li je vec neko do sada dao trust , tj da li je kolekcija obrazovana kod tog Usera
 
         let UserLiked = 0, UserDisliked = 0;
         const foundUp = likeVote.voterId.Up.find((element) => {
@@ -341,8 +363,8 @@ module.exports = {
         await Comment.deleteMany({ blogsPublicID: blogId, authorsPublicID: req.user.publicID });
 
 
-        //delete likevote _id: blog.statistics.likeVote._id
-        await LikeVote.deleteOne({ _id: blog.statistics.likeVote._id, authorId: req.user.publicID });
+        //delete likevote _id: blog.likeVote._id
+        await LikeVote.deleteOne({ _id: blog.likeVote._id, authorId: req.user.publicID });
 
 
         // delete blog itslef blogsPublicID

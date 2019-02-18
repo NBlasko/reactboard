@@ -11,20 +11,18 @@ const userSchema = new Schema({
   name: String,
   publicID: String,
 
-  statistics: {
-    trustVote: {
-      type: Schema.Types.ObjectId,
-      ref: 'trustvote'
+  trustVote: {
+    type: Schema.Types.ObjectId,
+    ref: 'trustvote'
+  },
+  coins: {
+    date: {
+      type: Date,
+      default: Date.now            // vreme.toISOString()
     },
-    coins: {
-      date: {
-        type: Date,
-        default: Date.now            // vreme.toISOString()
-      },
-      total: {
-        type: Number,
-        default: 20
-      },
+    total: {
+      type: Number,
+      default: 20
     }
   },
   local: {
@@ -42,7 +40,7 @@ const userSchema = new Schema({
     },
     accessCodeTime: {
       type: Date,
-      default: Date.now 
+      default: Date.now
     },
     accessNumberTry: {
       type: Number,

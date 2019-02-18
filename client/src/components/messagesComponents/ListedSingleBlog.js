@@ -20,7 +20,7 @@ class ListedSingleBlog extends Component {
     render() {
         const { message } = this.props;
         //console.log("message", message)
-        const { trustVote, likeVote } = message.statistics;
+        const { trustVote, likeVote } = message;
         let trustPercent = 50, likePercent = 50;
         if (trustVote && trustVote.number.Up + trustVote.number.Down !== 0) {
             trustPercent = Math.round(trustVote.number.Up / (trustVote.number.Up + trustVote.number.Down) * 100);
@@ -57,9 +57,9 @@ class ListedSingleBlog extends Component {
                         <h4><Link to={'../blog/' + message.publicID}> {message.title}</Link>  <small className="text-muted"> by {message.author} </small></h4>
                         <p>{message.body}</p>
                         <span className="small pr-3"> <i className="fa fa-check-square-o"></i> {trustPercent}% </span>
-                        <span className="small pr-3"> <i className="fa fa-eye"></i> {message.statistics.seen} </span>
+                        <span className="small pr-3"> <i className="fa fa-eye"></i> {message.seen} </span>
                         <span className="small pr-3"> <i className="fa fa-thumbs-up"></i> {likePercent}% </span>
-                        <span className="small pr-3"> <i className="fa fa-comment"></i> {message.statistics.numberOfComments} </span>
+                        <span className="small pr-3"> <i className="fa fa-comment"></i> {message.numberOfComments} </span>
                         {// u komentar dok ne sredim dugme za brisanje   <button className="btn btn-danger" id={message.publicID} onClick={this.handleClick} > &times; </button>
                         }
                         <small className="text-muted"> {localDate.slice(0, -3)} </small>
