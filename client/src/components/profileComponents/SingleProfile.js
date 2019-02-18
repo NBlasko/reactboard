@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import ImageGallery from './ImageGallery';
 import ProfileData from './ProfileData';
 import ProfileMessages from './ProfileMessages'
+
 class SingleProfile extends Component {
 
-   
     render() {
        
         return (

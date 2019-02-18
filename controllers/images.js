@@ -37,6 +37,7 @@ module.exports = {
     singleImage: async (req, res, next) => {
         //    console.log("stizem query", req.query)
         const { imageQueryID, publicID } = req.query;
+
         const admin = await User.findOne({ imageQueryID: imageQueryID })
         //  console.log("a", admin)
         if (!admin)
@@ -52,6 +53,8 @@ module.exports = {
             method: 'GET',
             encoding: null
         };
+
+
 
         request(requestSettings, function (error, response, body) {
             //   var base64 = Buffer.from(body).toString('base64');
@@ -80,6 +83,10 @@ module.exports = {
         //  console.log("a", admin)
         if (!admin)
             return res.status(403).json({ err: "Forbidden" })
+
+        if (admin.statistics.coins.total < 3 && admin.publicID !== publicID)
+            return res.status(403).json({ error: "You don\'t have enough coins" })
+
 
         const gallery = await ImagesGallery.findOne({ authorId: publicID }).select({ images: { $elemMatch: { _id: singleImageID } } })
         // console.log("gallery",gallery)
@@ -124,8 +131,8 @@ module.exports = {
         }
 
         //remove id of image from all blogs
-       await Blog.updateMany({'image.galleryMongoID' : id}, { image: null})
-        
+        await Blog.updateMany({ 'image.galleryMongoID': id }, { image: null })
+
         res.status(200).json({ id });
     },
     setProfileImage: async (req, res, next) => {

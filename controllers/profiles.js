@@ -16,6 +16,8 @@ module.exports = {
     },
 
     getSingleProfile: async (req, res, next) => {
+
+
         const { publicID } = req.value.params; //value is new added property created with module helpers/routeHelpers
         const profile = await User.findOne({ publicID }, "statistics name publicID image")
             .populate({ path: 'statistics.trustVote', select: "number" })
@@ -30,36 +32,55 @@ module.exports = {
             statistics: newStatistics,
             name,
             admin//,
-          //  image
+            //  image
         }
+
+        if (req.user.statistics.coins.total < 3 && !admin)
+            return res.status(403).json({ error: "You don\'t have enough coins" })
+
+
+        //remove coins from user profile
+        if (!admin) {
+            const user = await User.findOne({ publicID: req.user.publicID })
+            user.statistics.coins.total -= 3;   //smanjicu na 3 kasnije
+            await user.save();
+            console.log("1")
+        }
+        console.log("2")
         res.status(200).json(result);
     },
     searchProfiles: async (req, res, next) => {
         console.log("reqSearch", req.value.query.searchText)
-      let { searchText } = req.value.query;
-      const regexSearch = new RegExp(searchText,"i");
-      const profiles = await User
-          .find({name: regexSearch}, "statistics.trustVote name publicID image")
-          .populate({ path: 'statistics.trustVote', select: "number" })
-          .limit(10)
-          .sort({ "_id": -1 })
+        let { searchText } = req.value.query;
+        const regexSearch = new RegExp(searchText, "i");
+        const profiles = await User
+            .find({ name: regexSearch }, "statistics.trustVote name publicID image")
+            .populate({ path: 'statistics.trustVote', select: "number" })
+            .limit(10)
+            .sort({ "_id": -1 })
 
 
-      //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
-      //PublicID  zadrzavam u listi profila kako bih napravio link koji vodi ka profilu tog authora i da nabavim sliku
-      let result = [];
-      profiles.forEach(function (v) {
-         console.log("v", v)
-          const { statistics, name, publicID } = v;
+        //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
+        //PublicID  zadrzavam u listi profila kako bih napravio link koji vodi ka profilu tog authora i da nabavim sliku
+        let result = [];
+        profiles.forEach(function (v) {
+            console.log("v", v)
+            const { statistics, name, publicID } = v;
 
-          result.push({ trustVote: statistics.trustVote.number, name, publicID })
-      });
-      res.status(200).json({result});
-  },
+            result.push({ trustVote: statistics.trustVote.number, name, publicID })
+        });
+        res.status(200).json({ result });
+    },
 
     getProfileMessages: async (req, res, next) => {
 
+
+
         let { skip, authorsPublicID } = req.value.query;
+
+        if (req.user.statistics.coins.total < 3 && req.user.publicID !== authorsPublicID)
+            return res.status(403).json({ error: "You don\'t have enough coins" })
+
         skip = parseInt(skip)
         const blogs = await Blog
             .find({ authorsPublicID }, "statistics title author body publicID authorsPublicID date difference image.galleryMongoID")
@@ -77,7 +98,7 @@ module.exports = {
             if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
             else bodySliced = body;
             console.log("v", v)
-            const imageId = (image && image.galleryMongoID)? image.galleryMongoID : null;
+            const imageId = (image && image.galleryMongoID) ? image.galleryMongoID : null;
             result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date, image: imageId })
         });
         res.status(200).json(result);

@@ -2,6 +2,8 @@ const Blog = require('../models/blog');
 const Comment = require('../models/comment');
 const LikeVote = require('../models/likeVote');
 const ImagesGallery = require('../models/imagesGallery');
+const User = require('../models/auth');
+
 
 module.exports = {
 
@@ -24,13 +26,22 @@ module.exports = {
         //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
         //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
         let result = [], bodySliced;
-        blogs.forEach(function (v) {
+        blogs.forEach((v) => {
             //  console.log("v", v)
             const { statistics, title, author, body, publicID, authorsPublicID, date } = v;
             if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
             else bodySliced = body;
             const image = (v.image) ? v.image.galleryMongoID : null
-            result.push({ statistics, title, author, body: bodySliced, publicID, authorsPublicID, date, image })
+            result.push({
+                statistics,
+                title,
+                author,
+                body: bodySliced,
+                publicID,
+                authorsPublicID,
+                date,
+                image
+            })
         });
         res.status(200).json(result);
     },
@@ -118,20 +129,35 @@ module.exports = {
         blog.statistics.likeVote = likeVote.id;
         await blog.save();
 
+        //add coins to user Profile
+        const user = await User.findOne({ publicID: req.user.publicID })
+        user.statistics.coins.total += 10;
+        await user.save();
+
+
         res.status(200).json({ authorsPublicID: blog.authorsPublicID, publicID: blog.publicID });   //za link ka profilu i link ka blogu
     },
 
 
     getSingleBlog: async (req, res, next) => {
         const { blogId } = req.value.params; //value is new added property created with module helpers/routeHelpers
-        let blog = await Blog.findOne({ publicID: blogId }).populate({ path: 'statistics.trustVote statistics.likeVote'/*, select: "number"*/ });
+        let blog = await Blog.findOne({ publicID: blogId })
+            .populate({ path: 'statistics.trustVote statistics.likeVote'/*, select: "number"*/ });
         //  console.log("blog", blog)
+        const admin = req.user.publicID === blog.authorsPublicID;
+        if (req.user.statistics.coins.total < 3 && !admin)
+            return res.status(403).json({ error: "You don\'t have enough coins" })
+
         blog.statistics.seen += 1;
         await blog.save();
         const { statistics, title, author, body, authorsPublicID, publicID, date, } = blog;
 
-        let Up = 0, Down = 0, number = { Up: 0, Down: 0 },
-            Like = 0, Dislike = 0, likeNumber = { Like: 0, Dislike: 0 };
+        let Up = 0,
+            Down = 0,
+            number = { Up: 0, Down: 0 },
+            Like = 0,
+            Dislike = 0,
+            likeNumber = { Like: 0, Dislike: 0 };
         if (statistics.trustVote) {
             Up = statistics.trustVote.voterId.Up;
             Down = statistics.trustVote.voterId.Down;
@@ -177,6 +203,19 @@ module.exports = {
         }
         const result = { statistics: reducedStatistics, title, author, body, authorsPublicID, publicID, date, UserVotedUp: Up, UserVotedDown: Down, Like, Dislike };
         if (blog.image) result.image = blog.image.galleryMongoID;
+
+
+
+        //remove coins from user profile
+        if (!admin) {
+            const user = await User.findOne({ publicID: req.user.publicID })
+            user.statistics.coins.total -= 3;   //smanjicu na 3 kasnije
+            await user.save();
+            console.log("b1")
+        }
+        console.log("b2")
+
+
         res.status(200).json(result);
     },
 
@@ -191,13 +230,28 @@ module.exports = {
         blog.comments.push(newComment.id) // push new product into  the array of products that are property of userSchema
         blog.statistics.numberOfComments += 1;
         await blog.save(); // save modified user to mongodb 
+
+
+        //add coins to user profile
+        const user = await User.findOne({ publicID: req.user.publicID })
+        user.statistics.coins.total += 5;
+        await user.save();
+
         res.status(200).json({ newComment, numberOfComments: blog.statistics.numberOfComments });
+
 
     },
 
 
     getBlogsComments: async (req, res, next) => {   //ovo da aktiviram na neko dugme ili skrolovanjem na dno bloga, da dobacim komentare
-        const { blogId } = req.value.params;   //f
+
+
+        const { blogId } = req.value.params;
+        const blog = await Blog.findOne({ publicID: blogId }, "authorsPublicID")
+        const admin = req.user.publicID === blog.authorsPublicID;
+        if (req.user.statistics.coins.total < 1 && !admin)
+            return res.status(403).json({ error: "You don\'t have enough coins" })
+
         let { skip } = req.query
         skip = parseInt(skip)
         const comments = await Comment
@@ -205,7 +259,6 @@ module.exports = {
             .skip(skip)
             .limit(5)
             .sort({ date: -1 })
-
         res.status(200).json(comments);
     },
 
@@ -268,12 +321,10 @@ module.exports = {
         await likeVote.save();
         await blog.save();
 
-        /*potrebno je srediti da
-            1. ne mogu da glasaju dva puta tj da undo svoj glas   Uradjeno
-            2. da se smanjuju coins
+        /*potrebno je srediti da se smanjuju coins
         */
         const newLikeVote = {
-            number: likeVote.number   //idea behind this object is tosend it like in the previous version, to not mess up reducers in redux and data in components
+            number: likeVote.number   //idea behind this object is to send it like in the previous version, to not mess up reducers in redux and data in components
         }
         const result = { likeVote: newLikeVote, UserLiked, UserDisliked }
         res.status(200).json(result);

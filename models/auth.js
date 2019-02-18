@@ -23,7 +23,7 @@ const userSchema = new Schema({
       },
       total: {
         type: Number,
-        default: 100
+        default: 20
       },
     }
   },

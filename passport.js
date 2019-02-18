@@ -163,7 +163,7 @@ passport.use('facebookToken', new FacebookTokenStrategy({
       method: 'facebook',
       publicID: trustVote.authorId,
       name: profile.displayName,
-      google: {
+      facebook: {
         id: profile.id,
         email: profile.emails[0].value,
       },

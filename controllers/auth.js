@@ -31,15 +31,22 @@ module.exports = {
     // Check if there is a user with the same email
     const foundUser = await User.findOne({ "local.email": email });
 
+
+
     if (!foundUser)
       return res.status(403).json({ error: "Email is not in database" })
+
+    //  if User is already verified, this should not happen, BUT, never trust a client side :)
+    if (foundUser.local && foundUser.local.verified) {
+      return res.status(400).json({ error: "You are already verified" })
+    }
 
     if (dateNow - foundUser.local.accessCodeTime.getTime() > difference10Min)
       return res.status(403).json({ error: "Verification code has expired" })
 
     if (foundUser.local.accessNumberTry < 0)
       return res.status(403).json({ error: "You tried verifying email too many times. Resend email" })
-   
+
     if (foundUser.local.accessCode !== accessCode) {
       foundUser.local.accessNumberTry--;
       await foundUser.save();
@@ -61,7 +68,7 @@ module.exports = {
     // Respond with token
     return res.status(200).json({ token })
 
-   
+
   },
   resendVerificationMail: async (req, res, next) => {
     const { email } = req.value.body;
