@@ -257,49 +257,28 @@ module.exports = {
 
     getBlogsComments: async (req, res, next) => {   //ovo da aktiviram na neko dugme ili skrolovanjem na dno bloga, da dobacim komentare
 
-        console.log("req.query", req.query)
+      //  console.log("req.value", req.value)
         const { blogId } = req.value.params;
         const blog = await Blog.findOne({ publicID: blogId }, "authorsPublicID")
 
 
-
-        /*
-        
-        
-        
-         //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-          //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111 //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-           //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-            //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-             //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-              //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-               //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-                //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-                 //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-                  //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
-        
-        */
-
-        let { skip} = req.query  //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+        let { skip } = req.value.query  
         skip = parseInt(skip)
         const admin = req.user.publicID === blog.authorsPublicID;
 
-        
-       
         /*variable chargedForPage is a boolean that 
         determines is this the page you paid to view
         */
         const chargedForPage = blogId === req.user.coins.pageQueryID;
 
         /* no coins, and not an admin can not fetch comments */
-        console.log(
+     /*   console.log(
             "!chargedForPage", !chargedForPage,
             "!admin", !admin
-        )
+        )*/
 
         if (!chargedForPage && !admin)
             return res.status(403).json({ error: "You don\'t have enough coins" })
-
 
         const comments = await Comment
             .find({ blogsPublicID: blogId })

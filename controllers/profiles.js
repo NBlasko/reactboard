@@ -51,7 +51,7 @@ module.exports = {
         res.status(200).json(result);
     },
     searchProfiles: async (req, res, next) => {
-        console.log("reqSearch", req.value.query.searchText)
+     //   console.log("reqSearch", req.value.query.searchText)
         let { searchText } = req.value.query;
         const regexSearch = new RegExp(searchText, "i");
         const profiles = await User
@@ -75,7 +75,7 @@ module.exports = {
 
     getProfileMessages: async (req, res, next) => {
 
-        console.log("total stiglo")
+    //    console.log("total stiglo")
 
         let { skip, authorsPublicID} = req.value.query;
         const admin = req.user.publicID === authorsPublicID

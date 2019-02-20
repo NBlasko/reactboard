@@ -25,12 +25,11 @@ router.route('/:blogId')
   .delete(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.deleteSingleBlog);
 
   router.route('/:blogId/comments')
-  .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.getBlogsComments)  //query is not verified yet
+  .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), validateQueryString(schemas.skipSchema), BlogController.getBlogsComments)
   .post(passportJWT, validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.commentSchema), BlogController.newBlogsComment);
 
 
 router.route('/:blogId/like')
-  // .get(passportJWT, BlogController.index)  //no need to vaidate because there are no inputs in get all
   .post(passportJWT, validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.likeSchema), BlogController.newBlogsLike);   //hit a like/dislike on a blog
 
 

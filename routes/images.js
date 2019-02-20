@@ -11,15 +11,7 @@ const parser = require('../helpers/uploadHelpers')
 
 //this one is used for profile image on profile page and on searched profiles
 router.route('/')
-    .get(ImageController.fetchProfileImage)  //no need to vaidate because there are no inputs in get all
-
-
-/*
-router.route('/gallery')
-    .get(ImageController.singleImage)  //no need to vaidate because there are no inputs in get all
-
-
-*/
+    .get(validateQueryString(schemas.imageQueryIDpublicIDSchema),ImageController.fetchProfileImage)
 
 
 //ovo iznad ce na kraju biti modifikovano ili obrisano
@@ -33,7 +25,7 @@ router.route('/gallerylist')  //add list of images id's to redux
     .get(passportJWT, validateQueryString(schemas.skipAuthorsPublicIDSchema), ImageController.gallerylist);
 
 router.route('/galleryImage')
-    .get(ImageController.singleGalleryImage)  //sends an image to <img /> tag in gallery
+    .get(validateQueryString(schemas.singleGalleryImageSchema), ImageController.singleGalleryImage)  //sends an image to <img /> tag in gallery
     .post(passportJWT, parser.single("image"), ImageController.newGalleryImage); //uploads image in gallery
 
 router.route('/galleryImage/:id')  //deletes an image with the given id from gallery

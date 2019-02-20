@@ -31,6 +31,7 @@ module.exports = {
         }
     },
     validateQueryString: (schema) => {
+       
         return (req, res, next) => {
             const result = Joi.validate(req.query, schema);
             if (result.error) {
@@ -91,9 +92,22 @@ module.exports = {
             skip: Joi.number().integer().min(0).required(),
             authorsPublicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
         }),
+        skipSchema: Joi.object().keys({
+            skip: Joi.number().integer().min(0).required(),
+        }),
         searchCriteriaSchema: Joi.object().keys({
             searchText: Joi.string().required()
         }),
-
+        imageQueryIDpublicIDSchema: Joi.object().keys({
+            imageQueryID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
+            publicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
+            refreshID: Joi.number().integer().min(0)
+        }),
+        singleGalleryImageSchema: Joi.object().keys({
+            imageQueryID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
+            publicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
+            singleImageID: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
+            refreshID: Joi.number().integer().min(0)
+        }),
     }
 }

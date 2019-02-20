@@ -29,14 +29,14 @@ module.exports = {
 
         //  console.log("niz", galery.images);
         await galery.save();
-        console.log("niz", galery.images[galery.images.length - 1]);
+      //  console.log("niz", galery.images[galery.images.length - 1]);
         res.status(200).json({ id: galery.images[galery.images.length - 1]._id });
     },
 
 
     fetchProfileImage: async (req, res, next) => {
         //    console.log("stizem query", req.query)
-        const { imageQueryID, publicID } = req.query;
+        const { imageQueryID, publicID } = req.value.query;
 
         const user = await User.findOne({ imageQueryID: imageQueryID })
         /*  if user is not found, that means that imageQuery doesn/'t exist
@@ -81,7 +81,7 @@ module.exports = {
     },
     singleGalleryImage: async (req, res, next) => {
 
-        const { imageQueryID, publicID, singleImageID } = req.query;
+        const { imageQueryID, publicID, singleImageID } = req.value.query;
         const user = await User.findOne({ imageQueryID: imageQueryID })
 
 
@@ -112,7 +112,7 @@ module.exports = {
 
     deleteGalleryImage: async (req, res, next) => {
         const { id } = req.value.params;
-        console.log("loggg user", req.user)
+     //   console.log("loggg user", req.user)
 
         const gallery = await ImagesGallery.findOne({ authorId: req.user.publicID })//.select({ images: {$elemMatch: {_id: id}} } )
         if (!gallery) return res.status(404).json({ error: "image doesn\'t exist or forbidden" });
