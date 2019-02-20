@@ -25,7 +25,7 @@ router.route('/:blogId')
   .delete(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.deleteSingleBlog);
 
   router.route('/:blogId/comments')
-  .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.getBlogsComments)
+  .get(passportJWT, validateParam(schemas.idSchema, 'blogId'), BlogController.getBlogsComments)  //query is not verified yet
   .post(passportJWT, validateParam(schemas.idSchema, 'blogId'), validateBody(schemas.commentSchema), BlogController.newBlogsComment);
 
 

@@ -31,10 +31,13 @@
         [] delete button is visible in non-admin image galleries (next time I checked everithing was fine)
         [] button for "load more images" in image gallery apear when the gallery is empty and
         the button is not desapearing when it is clicked
+        [] searchedProfile delete data on unmount
 
 [] structure code, 
         [] max 200 lines per file
         [] break into smaller components
         [] add all explanation comments for code
         [] chenge bootstrap into reactstrap as much as you can
+
+
 [] deploy

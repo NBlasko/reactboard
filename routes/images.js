@@ -4,35 +4,35 @@ const passportJWT = passport.authenticate('jwt', { session: false });
 
 const router = require('express-promise-router')();
 const ImageController = require('../controllers/images');
-const {validateBody,validateParam,validateQueryString, schemas } = require('../helpers/routeHelpers')
+const { validateBody, validateParam, validateQueryString, schemas } = require('../helpers/routeHelpers')
 
-const  parser = require('../helpers/uploadHelpers')
+const parser = require('../helpers/uploadHelpers')
 
 
-
+//this one is used for profile image on profile page and on searched profiles
 router.route('/')
-    .get(ImageController.singleImage)  //no need to vaidate because there are no inputs in get all
- 
+    .get(ImageController.fetchProfileImage)  //no need to vaidate because there are no inputs in get all
 
 
+/*
 router.route('/gallery')
     .get(ImageController.singleImage)  //no need to vaidate because there are no inputs in get all
 
-   
- 
+
+*/
 
 
 //ovo iznad ce na kraju biti modifikovano ili obrisano
 
-router.route('/profileimage') 
+router.route('/profileimage')
     .post(passportJWT, validateBody(schemas.mongoIdSchema), ImageController.setProfileImage);
 
 
-    
+
 router.route('/gallerylist')  //add list of images id's to redux
     .get(passportJWT, validateQueryString(schemas.skipAuthorsPublicIDSchema), ImageController.gallerylist);
 
-router.route('/galleryImage')  
+router.route('/galleryImage')
     .get(ImageController.singleGalleryImage)  //sends an image to <img /> tag in gallery
     .post(passportJWT, parser.single("image"), ImageController.newGalleryImage); //uploads image in gallery
 

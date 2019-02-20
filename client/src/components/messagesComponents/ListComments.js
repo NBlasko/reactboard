@@ -16,7 +16,7 @@ class ListComments extends Component {
 
     }
     componentDidMount() {
-        this.props.getNewCommentsAction(this.props.blogID, 0);
+        this.props.getNewCommentsAction(this.props.blogID, 0, this.props.coinQueryID);
         window.addEventListener('scroll', this.handleScroll);
     }
     componentWillUnmount() {
@@ -47,7 +47,7 @@ class ListComments extends Component {
             const bottomOffset = 20;
             if (pageOffset > lastDivOffset - bottomOffset) {
                 this.setState({ loading: true })   //I wanted two call here on setState
-                this.props.getCommentsAction(this.props.blogID, this.state.skip);
+                this.props.getCommentsAction(this.props.blogID, this.state.skip, this.props.coinQueryID);
                
             }
         }
@@ -69,9 +69,15 @@ class ListComments extends Component {
 }
 
 const mapStateToProps = (state) => {
-    return {
-        comments: state.comments
+    const {coins }= state.singleBlogMessage;
+    const result = {
+        comments: state.comments,
     }
+    if (coins) {
+        result.coinQueryID = coins.coinQueryID;
+        result.pageQueryID = coins.pageQueryID;
+     }
+    return result
 }
 
 export default connect(mapStateToProps, { getCommentsAction, deleteAllCommentsAction, getNewCommentsAction })(ListComments);

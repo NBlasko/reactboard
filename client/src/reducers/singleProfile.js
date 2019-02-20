@@ -1,6 +1,7 @@
 import {
     GET_SINGLE_USER,
-    REMOVE_USER_PROFILE
+    REMOVE_USER_PROFILE,
+    REMOVE_SINGLE_USER
 } from '../constants'
 
 const initialstate = null;
@@ -12,6 +13,9 @@ const singleUserAction = (state = initialstate, action) => {
             return action.payload;
 
         case REMOVE_USER_PROFILE:
+            return initialstate;
+
+        case REMOVE_SINGLE_USER:
             return initialstate;
 
         default:

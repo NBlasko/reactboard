@@ -62,7 +62,7 @@ class AddMessage extends Component {
                         </div>
                     </div>
                     <div>
-                        <ImageGallery routeProps={this.props.routeProps} />
+                        <ImageGallery routeProps={this.props.routeProps}/>
                     </div>
                     <div className="text-right">
                         <button className="btn btn-secondary" onClick={this.addMessage}> Enter </button>

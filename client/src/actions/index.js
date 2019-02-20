@@ -4,7 +4,7 @@ import {
   ADD_MESSAGE, GET_MESSAGES, GET_NEW_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES,
   GET_SINGLE_MESSAGE, DELETE_SINGLE_MESSAGE,
   GET_COMMENTS, GET_NEW_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT,
-  GET_SINGLE_USER, SEARCH_PROFILES, REMOVE_PROFILES, ADD_PROFILE_TRUST,
+  GET_SINGLE_USER,REMOVE_SINGLE_USER,  SEARCH_PROFILES, REMOVE_PROFILES, ADD_PROFILE_TRUST,
   GET_GALLERY_LIST, GET_NEW_GALLERY_LIST, REMOVE_GALLERY_IMAGE, REMOVE_GALLERY_LIST,
   ADD_GALLERY_IMAGE, SET_PROFILE_IMAGE, SET_BLOG_IMAGE, REMOVE_PREVIEW_BLOG_IMAGE,
   ADD_BLOGS_LIKE,
@@ -167,14 +167,15 @@ export const getSingleMessageAction = (blogID) => dispatch => {
 };
 
 
-export const getCommentsAction = (blogID, skip) => dispatch => {
+export const getCommentsAction = (blogID, skip, coinQueryID) => dispatch => {
   axios({
     method: 'GET',
     headers: {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs/' + blogID + '/comments?skip=' + skip,
+    url: SERVERURL + 'api/blogs/' + blogID
+     + '/comments?skip=' + skip + '&coinQueryID=' + coinQueryID,
   }).then(res => {
     dispatch({
       type: GET_COMMENTS,
@@ -184,14 +185,15 @@ export const getCommentsAction = (blogID, skip) => dispatch => {
     .catch(err => console.log(err));
 };
 
-export const getNewCommentsAction = (blogID, skip) => dispatch => {
+export const getNewCommentsAction = (blogID, skip, coinQueryID) => dispatch => {
   axios({
     method: 'GET',
     headers: {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs/' + blogID + '/comments?skip=' + skip,
+    url: SERVERURL + 'api/blogs/' + blogID
+     + '/comments?skip=' + skip + '&coinQueryID=' + coinQueryID,
   }).then(res => {
     dispatch({
       type: GET_NEW_COMMENTS,
@@ -285,6 +287,14 @@ export const getSingleUserAction = (publicID) => dispatch => {
 };
 
 
+
+export const removeSingleUserAction = () => ({
+  type: REMOVE_SINGLE_USER,
+});
+
+
+
+
 export const searchProfilesAction = (searchText) => dispatch => {
   axios({
     method: 'GET',
@@ -309,7 +319,7 @@ export const removeProfilesAction = () => ({
   type: REMOVE_PROFILES,
 });
 
-export const getProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
+export const getProfileMessagesAction = (skip, authorsPublicID, coinQueryID) => dispatch => {
 
   axios({
     method: 'GET',
@@ -317,7 +327,8 @@ export const getProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/profiles?skip=' + skip + '&authorsPublicID=' + authorsPublicID,
+    url: SERVERURL + 'api/profiles?skip=' + skip + '&authorsPublicID='
+      + authorsPublicID + '&coinQueryID=' + coinQueryID,
   }).then(res => {
     dispatch({
       type: GET_MESSAGES,
@@ -327,7 +338,7 @@ export const getProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
     .catch(err => console.log(err));
 };
 
-export const getNewProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
+export const getNewProfileMessagesAction = (skip, authorsPublicID, coinQueryID) => dispatch => {
 
   axios({
     method: 'GET',
@@ -335,7 +346,8 @@ export const getNewProfileMessagesAction = (skip, authorsPublicID) => dispatch =
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/profiles?skip=' + skip + '&authorsPublicID=' + authorsPublicID,
+    url: SERVERURL + 'api/profiles?skip='
+      + skip + '&authorsPublicID=' + authorsPublicID + '&coinQueryID=' + coinQueryID,
   }).then(res => {
     dispatch({
       type: GET_NEW_MESSAGES,
@@ -371,7 +383,7 @@ export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
 
 
 
-export const getGalleryListAction = (skip, authorsPublicID) => dispatch => {
+export const getGalleryListAction = (skip, authorsPublicID, coinQueryID) => dispatch => {
 
   axios({
     method: 'GET',
@@ -379,7 +391,8 @@ export const getGalleryListAction = (skip, authorsPublicID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/images/gallerylist?skip=' + skip + '&authorsPublicID=' + authorsPublicID,
+    url: SERVERURL + 'api/images/gallerylist?skip='
+      + skip + '&authorsPublicID=' + authorsPublicID + '&coinQueryID=' + coinQueryID,
   }).then(res => {
     dispatch({
       type: GET_GALLERY_LIST,
@@ -389,7 +402,7 @@ export const getGalleryListAction = (skip, authorsPublicID) => dispatch => {
     .catch(err => console.log(err));
 };
 
-export const getNewGalleryListAction = (skip, authorsPublicID) => dispatch => {
+export const getNewGalleryListAction = (skip, authorsPublicID, coinQueryID) => dispatch => {
 
   axios({
     method: 'GET',
@@ -397,7 +410,8 @@ export const getNewGalleryListAction = (skip, authorsPublicID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/images/gallerylist?skip=' + skip + '&authorsPublicID=' + authorsPublicID,
+    url: SERVERURL + 'api/images/gallerylist?skip='
+      + skip + '&authorsPublicID=' + authorsPublicID + '&coinQueryID=' + coinQueryID,
   }).then(res => {
     dispatch({
       type: GET_NEW_GALLERY_LIST,  //this one overwrites the state, not just adds new elements in the list

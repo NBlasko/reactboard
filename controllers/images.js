@@ -34,14 +34,17 @@ module.exports = {
     },
 
 
-    singleImage: async (req, res, next) => {
+    fetchProfileImage: async (req, res, next) => {
         //    console.log("stizem query", req.query)
         const { imageQueryID, publicID } = req.query;
 
-        const admin = await User.findOne({ imageQueryID: imageQueryID })
-        //  console.log("a", admin)
-        if (!admin)
+        const user = await User.findOne({ imageQueryID: imageQueryID })
+        /*  if user is not found, that means that imageQuery doesn/'t exist
+        that way we authenticate images vith only a URL and no axios/fetch
+        */
+        if (!user)
             return res.status(403).json({ err: "Forbidden" })
+
 
 
         const blogsAuthor = await User.findOne({ publicID: publicID })
@@ -54,8 +57,6 @@ module.exports = {
             encoding: null
         };
 
-
-
         request(requestSettings, function (error, response, body) {
             //   var base64 = Buffer.from(body).toString('base64');
             res.send(body);
@@ -64,9 +65,12 @@ module.exports = {
 
     gallerylist: async (req, res, next) => {
 
+      
         let { skip, authorsPublicID } = req.value.query;
         skip = parseInt(skip)
-        const gallery = await ImagesGallery.findOne({ authorId: authorsPublicID }, "images._id")
+
+        /* gallery is private, only admin can see it*/
+        const gallery = await ImagesGallery.findOne({ authorId: req.user.publicID }, "images._id")
 
         const l = gallery.images.length;
         const a = (l - skip - 5 >= 0) ? l - skip - 5 : 0;
@@ -78,14 +82,14 @@ module.exports = {
     singleGalleryImage: async (req, res, next) => {
 
         const { imageQueryID, publicID, singleImageID } = req.query;
-        // console.log("singleGalleryImage query",req.query)
-        const admin = await User.findOne({ imageQueryID: imageQueryID })
-        //  console.log("a", admin)
-        if (!admin)
-            return res.status(403).json({ err: "Forbidden" })
+        const user = await User.findOne({ imageQueryID: imageQueryID })
 
-        if (admin.coins.total < 3 && admin.publicID !== publicID)
-            return res.status(403).json({ error: "You don\'t have enough coins" })
+
+        /*  if user is not found, that means that imageQuery doesn/'t exist
+        that way we authenticate images vith only a URL and no axios/fetch
+        */
+        if (!user)
+            return res.status(403).json({ err: "Forbidden" })
 
 
         const gallery = await ImagesGallery.findOne({ authorId: publicID }).select({ images: { $elemMatch: { _id: singleImageID } } })
@@ -135,10 +139,9 @@ module.exports = {
 
         res.status(200).json({ id });
     },
+
     setProfileImage: async (req, res, next) => {
         const { param } = req.value.body;
-
-
 
         const gallery = await ImagesGallery.findOne({ authorId: req.user.publicID }).select({ images: { $elemMatch: { _id: param } } })
         if (!gallery) return res.status(404).json({ error: "image doesn\'t exist or forbidden" });

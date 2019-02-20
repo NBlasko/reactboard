@@ -19,7 +19,7 @@ module.exports = {
     },
     validateBody: (schema) => {
         return (req, res, next) => {
-            
+
             const result = Joi.validate(req.body, schema);
             if (result.error) {
                 return res.status(400).json({ error: result.error.details[0].message });
@@ -68,7 +68,7 @@ module.exports = {
             param: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required()  // param, becuse I named it like that above, in validateParam method
         }),
         mongoIdSchema: Joi.object().keys({
-            param: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required() 
+            param: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required()
         }),
         commentSchema: Joi.object().keys({
             author: Joi.string().required(),
@@ -79,7 +79,7 @@ module.exports = {
         trustSchema: Joi.object().keys({
             trust: Joi.number().integer().min(0).max(1).required()
         }),
-        
+
         likeSchema: Joi.object().keys({
             like: Joi.number().integer().min(0).max(1).required()
         }),
@@ -89,11 +89,12 @@ module.exports = {
         }),
         skipAuthorsPublicIDSchema: Joi.object().keys({
             skip: Joi.number().integer().min(0).required(),
-            authorsPublicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required()
+            authorsPublicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
+            coinQueryID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required()
         }),
         searchCriteriaSchema: Joi.object().keys({
             searchText: Joi.string().required()
-          }),
+        }),
 
     }
 }

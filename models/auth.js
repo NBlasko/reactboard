@@ -22,9 +22,19 @@ const userSchema = new Schema({
     },
     total: {
       type: Number,
-      default: 20
-    }
+      default: 30
+    },
+
+    /* when client want's to acces profile or blog, he is being charged.
+    In turn, he gets coinQueryID so he can acces those pages and pageQueryID
+    which determines for which page has clint paid for access */
+    coinQueryID: {
+      type: String,
+      default: uuidv4
+    },
+    pageQueryID: String,
   },
+  
   local: {
     email: {
       type: String,

@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import SingleImageInGallery from './SingleImageInGallery'
-import { getGalleryListAction, getNewGalleryListAction ,removeGalleryListAction } from '../../actions'
+import {
+    getGalleryListAction,
+    getNewGalleryListAction,
+    removeGalleryListAction
+} from '../../actions'
 import ImageUploadClass from './ImageUploadClass';
 
 class ImageGallery extends Component {
@@ -17,22 +21,33 @@ class ImageGallery extends Component {
     }
 
     handleClick() {
-        if (!this.state.loading && !this.state.emptyAJAX && this.props.galleryList && this.props.galleryList[0]) {
+        if (!this.state.loading && !this.state.emptyAJAX
+            && this.props.galleryList && this.props.galleryList[0]) {
             this.setState({ loading: true })   //I wanted two call here on setState
-            if (this.props.routeProps.match.path !== "/addmessage") this.props.getGalleryListAction(this.props.galleryList.length, this.props.routeProps.match.params.id);
+            if (this.props.routeProps.match.path !== "/addmessage")
+                this.props.getGalleryListAction(
+                    this.props.galleryList.length,
+                    this.props.routeProps.match.params.id,
+                    this.props.coinQueryID);
 
 
         }
         if (this.props.routeProps.match.path === "/addmessage") {
-            const l = (this.props.galleryList && this.props.galleryList.length) ? this.props.galleryList.length : 0
-            this.props.getGalleryListAction(l, this.props.publicID)
+            const l = (
+                this.props.galleryList
+                && this.props.galleryList.length
+            ) ? this.props.galleryList.length : 0
+            this.props.getGalleryListAction(l, this.props.publicID, this.props.coinQueryID)
         }
     }
 
     componentDidMount() {
         this.setState({ matchPath: this.props.routeProps.match.path })
         if (this.props.routeProps.match.path !== "/addmessage")
-            this.props.getNewGalleryListAction(0, this.props.routeProps.match.params.id);
+            this.props.getNewGalleryListAction(
+                0,
+                this.props.routeProps.match.params.id,
+                this.props.coinQueryID);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -40,7 +55,11 @@ class ImageGallery extends Component {
         if (this.props.routeProps.match.path !== this.state.matchPath)
             this.setState({ matchPath: this.props.routeProps.match.path })
         if (prevProps.routeProps.match.url !== this.props.routeProps.match.url)
-            this.props.getNewGalleryListAction(0, this.props.routeProps.match.params.id)
+            this.props.getNewGalleryListAction(
+                0,
+                this.props.routeProps.match.params.id,
+                this.props.coinQueryID
+            )
     }
 
 
@@ -62,26 +81,54 @@ class ImageGallery extends Component {
     render() {
 
 
-        // napravi action da dobaci niz slika sa svojim podacima po url param i ako je korisnik koji trazi slike da pogleda ulogovan
+        // napravi action da dobaci niz slika sa svojim podacima
+        // po url param i ako je korisnik koji trazi slike da pogleda ulogovan
+        console.log("this.props.publicID", this.props.publicID,
+            "this.props.routeProps.match", this.props.routeProps.match)
 
         const imageGalleryList
-            = (this.props.galleryList && this.state.matchPath === this.props.routeProps.match.path) ? this.props.galleryList.map((singleImage) =>
-                <SingleImageInGallery key={singleImage._id} routeProps={this.props.routeProps} singleImage={singleImage} />)
+            = (this.props.galleryList
+                && this.state.matchPath === this.props.routeProps.match.path
+            )
+                ? this.props.galleryList.map((singleImage) =>
+                    <SingleImageInGallery
+                        key={singleImage._id}
+                        routeProps={this.props.routeProps}
+                        singleImage={singleImage}
+                    />)
                 : null;
         return (
 
             <div >
-                
-                {(this.props.admin) ? <ImageUploadClass /> : null}
-                <hr />
-                <h2 className = "text-dark">Image Gallery</h2>
-                <div className="row">
+                {
+                    (   /* render everything*/
+                        /* if you are viewing your own profile */
+                        this.props.publicID === this.props.routeProps.match.params.id
+                        /* or you want to add a message*/
+                        || this.props.routeProps.match.path === `/addmessage`
+                    )
+                        ?
+                        <div>
+                            <ImageUploadClass />
 
-                    {imageGalleryList}
+                            <hr />
+                            <h2 className="text-dark">Image Gallery</h2>
+                            <div className="row">
 
-                </div>
-                {(this.state.emptyAJAX) ? <div> There are no more images... </div> :
-                    <button className="btn btn-primary mt-2" onClick={this.handleClick}> Load more images </button>
+                                {imageGalleryList}
+
+                            </div>
+                            {(this.state.emptyAJAX)
+                                ? <div> There are no more images... </div>
+                                : <button
+                                    className="btn btn-primary mt-2"
+                                    onClick={this.handleClick}>
+                                    Load more images
+                             </button>
+                            }
+                        </div>
+                        :
+                        null
                 }
             </div>
 
@@ -101,8 +148,7 @@ const mapStateToProps = (state) => {
     if (state.searchedProfile && state.searchedProfile) {
         searchedProfile = state.searchedProfile;
         returnedObject = {
-            admin: searchedProfile.admin
-
+            coinQueryID: searchedProfile.coins.coinQueryID
         }
     }
     returnedObject.publicID = state.user.publicID
@@ -110,4 +156,8 @@ const mapStateToProps = (state) => {
     if (state.galleryList) returnedObject.galleryList = state.galleryList
     return (returnedObject);
 }
-export default connect(mapStateToProps, { getGalleryListAction, getNewGalleryListAction, removeGalleryListAction })(ImageGallery);
+export default connect(mapStateToProps, {
+    getGalleryListAction,
+    getNewGalleryListAction,
+    removeGalleryListAction
+})(ImageGallery);

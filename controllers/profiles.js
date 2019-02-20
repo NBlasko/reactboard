@@ -1,7 +1,7 @@
 const Blog = require('../models/blog');
 const User = require('../models/auth');
 
-
+const uuidv4 = require('uuid/v4');
 
 
 
@@ -21,7 +21,7 @@ module.exports = {
         const { publicID } = req.value.params; //value is new added property created with module helpers/routeHelpers
         const profile = await User.findOne({ publicID }, "trustVote coins name publicID")
             .populate({ path: 'trustVote', select: "number" })
-        const { trustVote, coins, name, image } = profile;
+        const { trustVote, coins, name } = profile;
         // ne secam se sta sam ovde hteo da uradim :)
         //po kliknutom linku imena klijenta da nas odvede na ovaj end point gde je profil korisnika, tipa ime statistika, blogovi
         const admin = (profile.id === req.user.id) ? true : false;
@@ -29,10 +29,13 @@ module.exports = {
         const result = {
             trustVote,
             name,
-            admin//,
-            //  image
+            admin,
+            coins: {
+                ...req.user.coins,
+                pageQueryID: publicID
+            }
         }
-        if (admin) result.coins = coins;
+
         if (req.user.coins.total < 3 && !admin) {
             return res.status(403).json({ error: "You don\'t have enough coins" })
         }
@@ -41,8 +44,12 @@ module.exports = {
         if (!admin) {
             const user = await User.findOne({ publicID: req.user.publicID })
             user.coins.total -= 3;
+            user.coins.coinQueryID = uuidv4();
+            user.coins.pageQueryID = publicID;
+            result.coins.coinQueryID = user.coins.coinQueryID;
             await user.save();
         }
+
         res.status(200).json(result);
     },
     searchProfiles: async (req, res, next) => {
@@ -60,7 +67,7 @@ module.exports = {
         //PublicID  zadrzavam u listi profila kako bih napravio link koji vodi ka profilu tog authora i da nabavim sliku
         let result = [];
         profiles.forEach(function (v) {
-            console.log("v", v)
+            //   console.log("v", v)
             const { trustVote, name, publicID } = v;
 
             result.push({ trustVote: trustVote.number, name, publicID })
@@ -70,22 +77,36 @@ module.exports = {
 
     getProfileMessages: async (req, res, next) => {
 
+        console.log("total stiglo")
 
-
-        let { skip, authorsPublicID } = req.value.query;
+        let { skip, authorsPublicID, coinQueryID } = req.value.query;
         const admin = req.user.publicID === authorsPublicID
-        console.log("skip", skip)
+
+        /*variable chargedForID will be true even if user is viewing own profile,
+         but not to worry, coins will not be removed
+         In general, if you are not an admin, chargedForID is a proof that you paid
+         to see some page 
+        */
+        const chargedForID = coinQueryID === req.user.coins.coinQueryID;
+
+        /*variable chargedForPage is a boolean that 
+        determines is this the page you paid to view
+        */
+        const chargedForPage = authorsPublicID === req.user.coins.pageQueryID;
         /* no coins, and not an admin can not fetch comments */
 
-        console.log("total< 3", req.user.coins.total < 3,
-            "!admin", !admin
+        console.log(
+            "authorsPublicID", authorsPublicID,
+            "req.user.coins.pageQueryID", req.user.coins.pageQueryID,
+            "!admin", !admin,
+            "!chargedForID", !chargedForID,
+            "!chargedForPage", !chargedForPage
         )
-        skip = parseInt(skip)
-        if (req.user.coins.total < 3 && skip === 0 && !admin)
 
+        if (!chargedForID && !admin && !chargedForPage)
             return res.status(403).json({ error: "You don\'t have enough coins" })
 
-
+        skip = parseInt(skip)
         const blogs = await Blog
             .find({ authorsPublicID },
                 `trustVote likeVote seen numberOfComments 
@@ -130,7 +151,9 @@ module.exports = {
             if (foundUp) {
                 trustVote.number.Up--;
                 UserVotedUp = 0;
-                trustVote.voterId.Up = trustVote.voterId.Up.filter(item => item.voterId !== req.user.publicID)
+                trustVote.voterId.Up = trustVote.voterId.Up.filter(
+                    item => item.voterId !== req.user.publicID
+                )
             }
             else {
                 trustVote.voterId.Up.push({ voterId: req.user.publicID })

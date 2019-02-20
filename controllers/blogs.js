@@ -3,7 +3,7 @@ const Comment = require('../models/comment');
 const LikeVote = require('../models/likeVote');
 const ImagesGallery = require('../models/imagesGallery');
 const User = require('../models/auth');
-
+const uuidv4 = require('uuid/v4');
 
 module.exports = {
 
@@ -71,7 +71,8 @@ module.exports = {
         let { searchText } = req.value.query;
         const regexSearch = new RegExp(searchText, "i");
         const blogs = await Blog
-            .find({ title: regexSearch }, "trustVote likeVote seen numberOfComments title author body publicID authorsPublicID date difference image.galleryMongoID")
+            .find({ title: regexSearch },
+                "trustVote likeVote seen numberOfComments title author body publicID authorsPublicID date difference image.galleryMongoID")
             .populate({ path: 'trustVote likeVote', select: "number" })
             .limit(10)
             .sort({ "date": -1 })
@@ -150,12 +151,9 @@ module.exports = {
         const admin = req.user.publicID === blog.authorsPublicID;
 
 
-
-        if (req.user.coins.total < 3 && !admin) {
-
+        if (req.user.coins.total < 3 && !admin) { ///dorada je potrebna 
             return res.status(403).json({ error: "You don\'t have enough coins" })
         }
-
 
         blog.seen += 1;
         await blog.save();
@@ -166,8 +164,8 @@ module.exports = {
             Down = 0,
             number = { Up: 0, Down: 0 },
             Like = 0,
-            Dislike = 0,
-            likeNumber = { Like: 0, Dislike: 0 };
+            Dislike = 0;
+        //  likeNumber = { Like: 0, Dislike: 0 };
         if (trustVote) {
             Up = trustVote.voterId.Up;
             Down = trustVote.voterId.Down;
@@ -197,10 +195,8 @@ module.exports = {
             });
             if (Dislike) Dislike = 1;
             else Dislike = 0;
-            likeNumber = likeVote.number;
+            //    likeNumber = likeVote.number;
         }
-
-
 
         const result = {
             numberOfComments,
@@ -212,18 +208,25 @@ module.exports = {
             title, author, body, authorsPublicID,
             publicID, date, UserVotedUp: Up,
             UserVotedDown: Down,
-            Like, Dislike
+            Like,
+            Dislike,
+            coins: {
+                ...req.user.coins,
+                pageQueryID: blogId
+            }
         };
+        //   result.coins.pageQueryID = blogId;
         if (blog.image) result.image = blog.image.galleryMongoID;
-
 
 
         //remove coins from user profile
         if (!admin) {
             const user = await User.findOne({ publicID: req.user.publicID })
             user.coins.total -= 3;
+            user.coins.pageQueryID = blogId;
+            user.coins.coinQueryID = uuidv4();
+            result.coins = user.coins;
             await user.save();
-
         }
 
         res.status(200).json(result);
@@ -255,24 +258,54 @@ module.exports = {
 
     getBlogsComments: async (req, res, next) => {   //ovo da aktiviram na neko dugme ili skrolovanjem na dno bloga, da dobacim komentare
 
-
+        console.log("req.query", req.query)
         const { blogId } = req.value.params;
         const blog = await Blog.findOne({ publicID: blogId }, "authorsPublicID")
-        let { skip } = req.query
+
+
+
+        /*
+        
+        
+        
+         //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+          //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111 //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+           //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+            //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+             //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+              //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+               //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+                //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+                 //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+                  //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+        
+        */
+
+        let { skip, coinQueryID } = req.query  //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
         skip = parseInt(skip)
         const admin = req.user.publicID === blog.authorsPublicID;
 
+        /*variable chargedForID will be true even if user is viewing own blog,
+           but not to worry, coins will not be removed
+           In general, if you are not an blog owner, chargedForID is a proof that you paid
+           to see some page 
+          */
+
+        // test bez coinQueryID   const chargedForID = coinQueryID === req.user.coins.coinQueryID;
+
+        /*variable chargedForPage is a boolean that 
+        determines is this the page you paid to view
+        */
+        const chargedForPage = blogId === req.user.coins.pageQueryID;
+
+        /* no coins, and not an admin can not fetch comments */
         console.log(
-            "total<3 ", req.user.coins.total < 3,
-            "SKIIIIIIIIIIIIIIIIIIIIIIP", skip,
+            "chargedForID", chargedForID,
+            "chargedForPage", chargedForPage,
             "!admin", !admin
         )
-        /* no coins and not an admin can not fetch comments
-        
-        skip === 0 is initial skip for first 5 comments,
-        
-        */
-        if (req.user.coins.total < 3 && skip === 0 && !admin)
+
+        if (!chargedForID && !chargedForPage && !admin)
             return res.status(403).json({ error: "You don\'t have enough coins" })
 
 

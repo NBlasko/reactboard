@@ -17,7 +17,11 @@ class ProfileMessages extends Component {
     }
     componentDidMount() {
         //console.log("props mount in listmessages", this.props.authorsPublicID)
-        this.props.getNewProfileMessagesAction(0, this.props.authorsPublicID);
+        this.props.getNewProfileMessagesAction(
+            0,   /* initial skip*/
+            this.props.authorsPublicID,
+            this.props.coinQueryID
+        );
         window.addEventListener('scroll', this.handleScroll)
     }
     componentWillUnmount() {
@@ -27,7 +31,11 @@ class ProfileMessages extends Component {
 
     componentDidUpdate(prevProps) {
         if (prevProps.authorsPublicID !== this.props.authorsPublicID)
-            this.props.getNewProfileMessagesAction(0, this.props.authorsPublicID);
+            this.props.getNewProfileMessagesAction(
+                0, /*initial skip*/
+                this.props.authorsPublicID,
+                this.props.coinQueryID
+            );
     }
 
     componentWillReceiveProps(newProps) {
@@ -37,7 +45,10 @@ class ProfileMessages extends Component {
                 return { skip: previousState.skip + 5 };
             });
         this.setState({ loading: false, numberOfmessages: newProps.messages.length });
-        if (this.state.numberOfmessages === newProps.messages.length && newProps.messages.length !== -1)
+        if (
+            this.state.numberOfmessages === newProps.messages.length
+            && newProps.messages.length !== -1
+        )
             this.setState({ emptyAJAX: true })
 
     }
@@ -51,8 +62,12 @@ class ProfileMessages extends Component {
             const pageOffset = window.pageYOffset + window.innerHeight;
             const bottomOffset = 20;
             if (pageOffset > lastDivOffset - bottomOffset) {
-                this.setState({ loading: true })   //I wanted two call here on setState
-                this.props.getProfileMessagesAction(this.state.skip, this.props.authorsPublicID);
+                this.setState({ loading: true })   //I wanted to call here on setState
+                this.props.getProfileMessagesAction(
+                    this.state.skip,
+                    this.props.authorsPublicID,
+                    this.props.coinQueryID
+                );
             }
         }
     }
@@ -73,7 +88,8 @@ class ProfileMessages extends Component {
 const mapStateToProps = (state) => {
     return {
         messages: state.messages,
-        imageQueryID: state.user.imageQueryID
+        imageQueryID: state.user.imageQueryID,
+        coinQueryID: state.searchedProfile.coins.coinQueryID,
     }
 }
 
