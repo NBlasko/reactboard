@@ -44,9 +44,7 @@ module.exports = {
         if (!admin) {
             const user = await User.findOne({ publicID: req.user.publicID })
             user.coins.total -= 3;
-            user.coins.coinQueryID = uuidv4();
             user.coins.pageQueryID = publicID;
-            result.coins.coinQueryID = user.coins.coinQueryID;
             await user.save();
         }
 
@@ -79,16 +77,11 @@ module.exports = {
 
         console.log("total stiglo")
 
-        let { skip, authorsPublicID, coinQueryID } = req.value.query;
+        let { skip, authorsPublicID} = req.value.query;
         const admin = req.user.publicID === authorsPublicID
 
-        /*variable chargedForID will be true even if user is viewing own profile,
-         but not to worry, coins will not be removed
-         In general, if you are not an admin, chargedForID is a proof that you paid
-         to see some page 
-        */
-        const chargedForID = coinQueryID === req.user.coins.coinQueryID;
-
+        
+  
         /*variable chargedForPage is a boolean that 
         determines is this the page you paid to view
         */
@@ -99,11 +92,10 @@ module.exports = {
             "authorsPublicID", authorsPublicID,
             "req.user.coins.pageQueryID", req.user.coins.pageQueryID,
             "!admin", !admin,
-            "!chargedForID", !chargedForID,
             "!chargedForPage", !chargedForPage
         )
 
-        if (!chargedForID && !admin && !chargedForPage)
+        if ( !admin && !chargedForPage)
             return res.status(403).json({ error: "You don\'t have enough coins" })
 
         skip = parseInt(skip)

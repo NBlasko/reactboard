@@ -167,7 +167,7 @@ export const getSingleMessageAction = (blogID) => dispatch => {
 };
 
 
-export const getCommentsAction = (blogID, skip, coinQueryID) => dispatch => {
+export const getCommentsAction = (blogID, skip) => dispatch => {
   axios({
     method: 'GET',
     headers: {
@@ -175,7 +175,7 @@ export const getCommentsAction = (blogID, skip, coinQueryID) => dispatch => {
       'Cache-Control': 'no-cache'
     },
     url: SERVERURL + 'api/blogs/' + blogID
-     + '/comments?skip=' + skip + '&coinQueryID=' + coinQueryID,
+     + '/comments?skip=' + skip,
   }).then(res => {
     dispatch({
       type: GET_COMMENTS,
@@ -185,7 +185,7 @@ export const getCommentsAction = (blogID, skip, coinQueryID) => dispatch => {
     .catch(err => console.log(err));
 };
 
-export const getNewCommentsAction = (blogID, skip, coinQueryID) => dispatch => {
+export const getNewCommentsAction = (blogID, skip) => dispatch => {
   axios({
     method: 'GET',
     headers: {
@@ -193,7 +193,7 @@ export const getNewCommentsAction = (blogID, skip, coinQueryID) => dispatch => {
       'Cache-Control': 'no-cache'
     },
     url: SERVERURL + 'api/blogs/' + blogID
-     + '/comments?skip=' + skip + '&coinQueryID=' + coinQueryID,
+     + '/comments?skip=' + skip,
   }).then(res => {
     dispatch({
       type: GET_NEW_COMMENTS,
@@ -319,7 +319,7 @@ export const removeProfilesAction = () => ({
   type: REMOVE_PROFILES,
 });
 
-export const getProfileMessagesAction = (skip, authorsPublicID, coinQueryID) => dispatch => {
+export const getProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
 
   axios({
     method: 'GET',
@@ -328,7 +328,7 @@ export const getProfileMessagesAction = (skip, authorsPublicID, coinQueryID) => 
       'Cache-Control': 'no-cache'
     },
     url: SERVERURL + 'api/profiles?skip=' + skip + '&authorsPublicID='
-      + authorsPublicID + '&coinQueryID=' + coinQueryID,
+      + authorsPublicID,
   }).then(res => {
     dispatch({
       type: GET_MESSAGES,
@@ -338,7 +338,7 @@ export const getProfileMessagesAction = (skip, authorsPublicID, coinQueryID) => 
     .catch(err => console.log(err));
 };
 
-export const getNewProfileMessagesAction = (skip, authorsPublicID, coinQueryID) => dispatch => {
+export const getNewProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
 
   axios({
     method: 'GET',
@@ -347,7 +347,7 @@ export const getNewProfileMessagesAction = (skip, authorsPublicID, coinQueryID) 
       'Cache-Control': 'no-cache'
     },
     url: SERVERURL + 'api/profiles?skip='
-      + skip + '&authorsPublicID=' + authorsPublicID + '&coinQueryID=' + coinQueryID,
+      + skip + '&authorsPublicID=' + authorsPublicID,
   }).then(res => {
     dispatch({
       type: GET_NEW_MESSAGES,
@@ -383,7 +383,7 @@ export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
 
 
 
-export const getGalleryListAction = (skip, authorsPublicID, coinQueryID) => dispatch => {
+export const getGalleryListAction = (skip, authorsPublicID) => dispatch => {
 
   axios({
     method: 'GET',
@@ -392,7 +392,7 @@ export const getGalleryListAction = (skip, authorsPublicID, coinQueryID) => disp
       'Cache-Control': 'no-cache'
     },
     url: SERVERURL + 'api/images/gallerylist?skip='
-      + skip + '&authorsPublicID=' + authorsPublicID + '&coinQueryID=' + coinQueryID,
+      + skip + '&authorsPublicID=' + authorsPublicID,
   }).then(res => {
     dispatch({
       type: GET_GALLERY_LIST,
@@ -402,7 +402,7 @@ export const getGalleryListAction = (skip, authorsPublicID, coinQueryID) => disp
     .catch(err => console.log(err));
 };
 
-export const getNewGalleryListAction = (skip, authorsPublicID, coinQueryID) => dispatch => {
+export const getNewGalleryListAction = (skip, authorsPublicID) => dispatch => {
 
   axios({
     method: 'GET',
@@ -411,7 +411,7 @@ export const getNewGalleryListAction = (skip, authorsPublicID, coinQueryID) => d
       'Cache-Control': 'no-cache'
     },
     url: SERVERURL + 'api/images/gallerylist?skip='
-      + skip + '&authorsPublicID=' + authorsPublicID + '&coinQueryID=' + coinQueryID,
+      + skip + '&authorsPublicID=' + authorsPublicID,
   }).then(res => {
     dispatch({
       type: GET_NEW_GALLERY_LIST,  //this one overwrites the state, not just adds new elements in the list

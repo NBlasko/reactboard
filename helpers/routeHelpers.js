@@ -90,7 +90,6 @@ module.exports = {
         skipAuthorsPublicIDSchema: Joi.object().keys({
             skip: Joi.number().integer().min(0).required(),
             authorsPublicID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required(),
-            coinQueryID: Joi.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/).required()
         }),
         searchCriteriaSchema: Joi.object().keys({
             searchText: Joi.string().required()

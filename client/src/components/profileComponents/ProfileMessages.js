@@ -19,8 +19,8 @@ class ProfileMessages extends Component {
         //console.log("props mount in listmessages", this.props.authorsPublicID)
         this.props.getNewProfileMessagesAction(
             0,   /* initial skip*/
-            this.props.authorsPublicID,
-            this.props.coinQueryID
+            this.props.authorsPublicID
+          
         );
         window.addEventListener('scroll', this.handleScroll)
     }
@@ -33,8 +33,7 @@ class ProfileMessages extends Component {
         if (prevProps.authorsPublicID !== this.props.authorsPublicID)
             this.props.getNewProfileMessagesAction(
                 0, /*initial skip*/
-                this.props.authorsPublicID,
-                this.props.coinQueryID
+                this.props.authorsPublicID 
             );
     }
 
@@ -65,8 +64,8 @@ class ProfileMessages extends Component {
                 this.setState({ loading: true })   //I wanted to call here on setState
                 this.props.getProfileMessagesAction(
                     this.state.skip,
-                    this.props.authorsPublicID,
-                    this.props.coinQueryID
+                    this.props.authorsPublicID
+                   
                 );
             }
         }
@@ -88,8 +87,8 @@ class ProfileMessages extends Component {
 const mapStateToProps = (state) => {
     return {
         messages: state.messages,
-        imageQueryID: state.user.imageQueryID,
-        coinQueryID: state.searchedProfile.coins.coinQueryID,
+        imageQueryID: state.user.imageQueryID
+       
     }
 }
 

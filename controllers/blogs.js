@@ -224,7 +224,6 @@ module.exports = {
             const user = await User.findOne({ publicID: req.user.publicID })
             user.coins.total -= 3;
             user.coins.pageQueryID = blogId;
-            user.coins.coinQueryID = uuidv4();
             result.coins = user.coins;
             await user.save();
         }
@@ -281,18 +280,12 @@ module.exports = {
         
         */
 
-        let { skip, coinQueryID } = req.query  //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
+        let { skip} = req.query  //mora da se validira !!!!!!!!!!!!!!!!!!!!!!1111
         skip = parseInt(skip)
         const admin = req.user.publicID === blog.authorsPublicID;
 
-        /*variable chargedForID will be true even if user is viewing own blog,
-           but not to worry, coins will not be removed
-           In general, if you are not an blog owner, chargedForID is a proof that you paid
-           to see some page 
-          */
-
-        // test bez coinQueryID   const chargedForID = coinQueryID === req.user.coins.coinQueryID;
-
+        
+       
         /*variable chargedForPage is a boolean that 
         determines is this the page you paid to view
         */
@@ -300,12 +293,11 @@ module.exports = {
 
         /* no coins, and not an admin can not fetch comments */
         console.log(
-            "chargedForID", chargedForID,
-            "chargedForPage", chargedForPage,
+            "!chargedForPage", !chargedForPage,
             "!admin", !admin
         )
 
-        if (!chargedForID && !chargedForPage && !admin)
+        if (!chargedForPage && !admin)
             return res.status(403).json({ error: "You don\'t have enough coins" })
 
 

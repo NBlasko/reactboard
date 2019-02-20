@@ -140,12 +140,11 @@ class SingleImageInGallery extends Component {
 const mapStateToProps = (state) => {
     // while we fetch all data, it's better like this 
 
-    const coinQueryID =
-        (state.searchedProfile) ? state.searchedProfile.coins.coinQueryID : "";
+    
     return {
         imageQueryID: state.user.imageQueryID,
-        publicID: state.user.publicID,
-        coinQueryID
+        publicID: state.user.publicID
+     
     }
 }
 export default connect(mapStateToProps, { removeGalleryImageAction, setProfileImageAction, setBlogImageAction })(SingleImageInGallery);

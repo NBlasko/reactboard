@@ -26,12 +26,9 @@ const userSchema = new Schema({
     },
 
     /* when client want's to acces profile or blog, he is being charged.
-    In turn, he gets coinQueryID so he can acces those pages and pageQueryID
+    In turn, he gets pageQueryID
     which determines for which page has clint paid for access */
-    coinQueryID: {
-      type: String,
-      default: uuidv4
-    },
+   
     pageQueryID: String,
   },
   

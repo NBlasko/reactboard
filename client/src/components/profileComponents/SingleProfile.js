@@ -14,14 +14,14 @@ class SingleProfile extends Component {
 
     render() {
         const authorsPublicID = this.props.routeProps.match.params.id;
-        console.log("coinQueryID", this.props.coinQueryID,
+        console.log(
             "pageQueryID", this.props.pageQueryID,
             "authorsPublicID", authorsPublicID
         )
         return (
             <div className="shadow p-3 m-2 bg-white rounded">
                 <ProfileData routeProps={this.props.routeProps} />
-                {(this.props.coinQueryID && this.props.pageQueryID === authorsPublicID) ?
+                {(this.props.pageQueryID === authorsPublicID) ?
                     <div>
                         <ImageGallery routeProps={this.props.routeProps} />
                         <hr />
@@ -40,7 +40,6 @@ const mapStateToProps = (state) => {
 
     if (state.searchedProfile && state.searchedProfile.coins) {
         return ({
-            coinQueryID: state.searchedProfile.coins.coinQueryID,
             pageQueryID: state.searchedProfile.coins.pageQueryID
         })
     }

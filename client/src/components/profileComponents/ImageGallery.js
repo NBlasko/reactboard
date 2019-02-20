@@ -27,8 +27,7 @@ class ImageGallery extends Component {
             if (this.props.routeProps.match.path !== "/addmessage")
                 this.props.getGalleryListAction(
                     this.props.galleryList.length,
-                    this.props.routeProps.match.params.id,
-                    this.props.coinQueryID);
+                    this.props.routeProps.match.params.id);
 
 
         }
@@ -37,7 +36,7 @@ class ImageGallery extends Component {
                 this.props.galleryList
                 && this.props.galleryList.length
             ) ? this.props.galleryList.length : 0
-            this.props.getGalleryListAction(l, this.props.publicID, this.props.coinQueryID)
+            this.props.getGalleryListAction(l, this.props.publicID)
         }
     }
 
@@ -46,8 +45,7 @@ class ImageGallery extends Component {
         if (this.props.routeProps.match.path !== "/addmessage")
             this.props.getNewGalleryListAction(
                 0,
-                this.props.routeProps.match.params.id,
-                this.props.coinQueryID);
+                this.props.routeProps.match.params.id);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -57,8 +55,7 @@ class ImageGallery extends Component {
         if (prevProps.routeProps.match.url !== this.props.routeProps.match.url)
             this.props.getNewGalleryListAction(
                 0,
-                this.props.routeProps.match.params.id,
-                this.props.coinQueryID
+                this.props.routeProps.match.params.id
             )
     }
 
@@ -145,12 +142,7 @@ const mapStateToProps = (state) => {
 
     let returnedObject = {}
 
-    if (state.searchedProfile && state.searchedProfile) {
-        searchedProfile = state.searchedProfile;
-        returnedObject = {
-            coinQueryID: searchedProfile.coins.coinQueryID
-        }
-    }
+
     returnedObject.publicID = state.user.publicID
     returnedObject.number = number;
     if (state.galleryList) returnedObject.galleryList = state.galleryList
