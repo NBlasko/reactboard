@@ -59,8 +59,8 @@ class SingleImageInGallery extends Component {
         }).then(res => {
             this.props.removeGalleryImageAction(res.data.id)
         })
-            .catch(err => {
-                console.log(err)
+            .catch(error => {
+                console.log(error)
                 this.toggleAll();
             });
     }

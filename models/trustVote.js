@@ -6,7 +6,7 @@ const trustVoteSchema = new Schema({
     authorId: {
         type: String,
         default: uuidv1
-    },  //prvo njega trazim, pa ako ne postoji stvorim ga. ako postoji update ga
+    },
     number: {
         Up: {
             type: Number,
@@ -26,13 +26,7 @@ const trustVoteSchema = new Schema({
         }]
     }
 });
-/*
-trustVoteSchema.virtual('difference').get(function () {
-    return this.number.Up - this.number.Down;
-  });
-*/
-  
+
 const TrustVote = mongoose.model('trustvote', trustVoteSchema);
 module.exports = TrustVote;
 
-//kad dobijem njegov id, snimim ga u User i u svaki Blog tog usera

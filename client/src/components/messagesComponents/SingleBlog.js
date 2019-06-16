@@ -71,7 +71,7 @@ class SingleBlog extends Component {
             //setSome state to redirect
             this.setState({ messageDeleted: true, modal: false })
         })
-            .catch(err => console.log(err));
+            .catch(error => console.log(error));
 
 
     }

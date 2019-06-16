@@ -25,9 +25,7 @@ class ImageGallery extends Component {
             && this.props.galleryList && this.props.galleryList[0]) {
             this.setState({ loading: true })   //I wanted two call here on setState
             if (this.props.routeProps.match.path !== "/addmessage")
-                this.props.getGalleryListAction(
-                    this.props.galleryList.length,
-                    this.props.routeProps.match.params.id);
+                this.props.getGalleryListAction(   this.props.galleryList.length);
 
 
         }
@@ -36,16 +34,14 @@ class ImageGallery extends Component {
                 this.props.galleryList
                 && this.props.galleryList.length
             ) ? this.props.galleryList.length : 0
-            this.props.getGalleryListAction(l, this.props.publicID)
+            this.props.getGalleryListAction(l)
         }
     }
 
     componentDidMount() {
         this.setState({ matchPath: this.props.routeProps.match.path })
         if (this.props.routeProps.match.path !== "/addmessage")
-            this.props.getNewGalleryListAction(
-                0,
-                this.props.routeProps.match.params.id);
+            this.props.getNewGalleryListAction(0);
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -53,10 +49,7 @@ class ImageGallery extends Component {
         if (this.props.routeProps.match.path !== this.state.matchPath)
             this.setState({ matchPath: this.props.routeProps.match.path })
         if (prevProps.routeProps.match.url !== this.props.routeProps.match.url)
-            this.props.getNewGalleryListAction(
-                0,
-                this.props.routeProps.match.params.id
-            )
+            this.props.getNewGalleryListAction(0)
     }
 
 
@@ -135,8 +128,7 @@ class ImageGallery extends Component {
 }
 const mapStateToProps = (state) => {
     // console.log("state.galleryList", state)
-    let searchedProfile;
-
+    
     const number = (state.numberOfData) ? state.numberOfData.number : -1
 
 

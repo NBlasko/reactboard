@@ -1,14 +1,11 @@
 
-const sgMail = require('@sendgrid/mail'); //sendgrid library to send emails 
-//sendgrid api key
+/*  sendgrid library to send emails  */
+const sgMail = require('@sendgrid/mail');
+
 sgMail.setApiKey(process.env.API_KEY_SENDGRID);
-
-
 
 const sendEmail = async (to, name, code) => {
 
-    //Get Variables from query string in the search bar
-    // const { recipient, sender, topic, text } = req.query; 
     console.log("mail about to send, sendgrid")
     //Sendgrid Data Requirements
     const msg = {
@@ -28,7 +25,7 @@ const sendEmail = async (to, name, code) => {
 
     //Send Email
     const result = await sgMail.send(msg);
-    console.log("result sendgrid"/*, result*/)
+    // console.log("result sendgrid", result)
 
 }
 

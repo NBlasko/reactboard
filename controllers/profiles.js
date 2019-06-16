@@ -3,55 +3,55 @@ const User = require('../models/auth');
 
 const uuidv4 = require('uuid/v4');
 
-
+/*             **** NOTE TO MYSELF ****   
+ req.value is new added property created with module helpers/routeHelpers
+ allways extract properies from req.value, and not req, because, everything
+ in req.value is validated
+*/
 
 module.exports = {
 
-    index: async (req, res, next) => {
-
-        //   const blogs = await Blog.find({});
-        //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
-        //a da, ovo ce preko input-a search na klijentu da izabere i izlista odredjene profile korisnika po upitu
-        res.status(200).json({ soon: "soon" });
-    },
-
     getSingleProfile: async (req, res, next) => {
-
-
-        const { publicID } = req.value.params; //value is new added property created with module helpers/routeHelpers
-        const profile = await User.findOne({ publicID }, "trustVote coins name publicID")
+        const { publicID } = req.value.params;
+        const profile = await User.findOne({ publicID }, "trustVote name publicID")
             .populate({ path: 'trustVote', select: "number" })
-        const { trustVote, coins, name } = profile;
-        // ne secam se sta sam ovde hteo da uradim :)
-        //po kliknutom linku imena klijenta da nas odvede na ovaj end point gde je profil korisnika, tipa ime statistika, blogovi
-        const admin = (profile.id === req.user.id) ? true : false;
+        const { trustVote, name } = profile;
 
-        const result = {
-            trustVote,
-            name,
-            admin,
-            coins: {
-                ...req.user.coins,
-                pageQueryID: publicID
-            }
-        }
+        /* admin is a user that visit's his own profile */
+        const admin = (profile.id === req.user.id) ? true : false;
 
         if (req.user.coins.total < 3 && !admin) {
             return res.status(403).json({ error: "You don\'t have enough coins" })
         }
 
-        //remove coins from user profile
+        const result = {
+            trustVote: {
+                number: {
+                    ...trustVote.number
+                }
+            },
+            name,
+            admin,
+            coins: {
+                total: req.user.coins.total,
+                pageQueryID: publicID
+            }
+        }
+
+        /* remove coins from user profile, 
+        admin is an exception */
         if (!admin) {
             const user = await User.findOne({ publicID: req.user.publicID })
             user.coins.total -= 3;
             user.coins.pageQueryID = publicID;
             await user.save();
         }
-
+        //   console.log("getSingleProfile", result) // response is tested
         res.status(200).json(result);
     },
+
     searchProfiles: async (req, res, next) => {
-     //   console.log("reqSearch", req.value.query.searchText)
+        //   console.log("reqSearch", req.value.query.searchText)
         let { searchText } = req.value.query;
         const regexSearch = new RegExp(searchText, "i");
         const profiles = await User
@@ -70,32 +70,34 @@ module.exports = {
 
             result.push({ trustVote: trustVote.number, name, publicID })
         });
+
+        //  console.log("searchProfiles", result) // tested response
         res.status(200).json({ result });
     },
 
     getProfileMessages: async (req, res, next) => {
 
-    //    console.log("total stiglo")
+        //    console.log("total stiglo")
 
-        let { skip, authorsPublicID} = req.value.query;
+        let { skip, authorsPublicID } = req.value.query;
         const admin = req.user.publicID === authorsPublicID
 
-        
-  
+
+
         /*variable chargedForPage is a boolean that 
         determines is this the page you paid to view
         */
         const chargedForPage = authorsPublicID === req.user.coins.pageQueryID;
         /* no coins, and not an admin can not fetch comments */
 
-        console.log(
-            "authorsPublicID", authorsPublicID,
-            "req.user.coins.pageQueryID", req.user.coins.pageQueryID,
-            "!admin", !admin,
-            "!chargedForPage", !chargedForPage
-        )
+        /*    console.log(
+                "authorsPublicID", authorsPublicID,
+                "req.user.coins.pageQueryID", req.user.coins.pageQueryID,
+                "!admin", !admin,
+                "!chargedForPage", !chargedForPage
+            )*/
 
-        if ( !admin && !chargedForPage)
+        if (!admin && !chargedForPage)
             return res.status(403).json({ error: "You don\'t have enough coins" })
 
         skip = parseInt(skip)
@@ -118,8 +120,30 @@ module.exports = {
             if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
             else bodySliced = body;
             const imageId = (image && image.galleryMongoID) ? image.galleryMongoID : null;
-            result.push({ seen, numberOfComments, trustVote, likeVote, title, author, body: bodySliced, publicID, authorsPublicID, date, image: imageId })
+            result.push({
+                seen,
+                numberOfComments,
+                trustVote: {
+                    number: {
+                        ...trustVote.number
+                    }
+                },
+                likeVote: {
+                    number: {
+                        ...likeVote.number
+                    }
+                },
+                title,
+                author,
+                body: bodySliced,
+                publicID,
+                authorsPublicID,
+                date,
+                image: imageId
+            })
         });
+
+       // console.log("getProfileMessages", result)  response tested
         res.status(200).json(result);
 
     },
@@ -189,7 +213,7 @@ module.exports = {
         const result = { trustVote: newTrustVote, UserVotedUp, UserVotedDown }
         //console.log("t", trustVote.difference)  //radi
 
-
+        // console.log("trustVote", result) response tested
         res.status(200).json(result);
 
     }

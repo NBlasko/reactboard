@@ -81,8 +81,8 @@ export const addMessageAction = ({ text, title, imageId }) => dispatch => {
         payload: res.data
       })
     })
-    .catch(err => {
-      console.log(err)
+    .catch(error => {
+      console.log(error)
     });
 }
 
@@ -102,7 +102,7 @@ export const getMessagesAction = (skip, criteria) => dispatch => {
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 
@@ -121,7 +121,7 @@ export const searchBlogsAction = (searchText) => dispatch => {
       payload: res.data.result
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 
@@ -140,7 +140,7 @@ export const getNewMessagesAction = (skip, criteria) => dispatch => {
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 export const deleteAllMessagesAction = () => ({
@@ -163,7 +163,7 @@ export const getSingleMessageAction = (blogID) => dispatch => {
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 
@@ -182,7 +182,7 @@ export const getCommentsAction = (blogID, skip) => dispatch => {
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 export const getNewCommentsAction = (blogID, skip) => dispatch => {
@@ -200,7 +200,7 @@ export const getNewCommentsAction = (blogID, skip) => dispatch => {
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 
@@ -232,8 +232,8 @@ export const addCommentAction = ({ author, text, blogsID, authorsPublicID }) => 
         payload: res.data
       })
     })
-    .catch(err => {
-      console.log(err)
+    .catch(error => {
+      console.log(error)
     });
 }
 
@@ -259,8 +259,8 @@ export const addBlogsLikeAction = ({ like, blogsID }) => dispatch => {
         payload: res.data
       })
     })
-    .catch(err => {
-      console.log(err)
+    .catch(error => {
+      console.log(error)
     });
 }
 
@@ -283,7 +283,7 @@ export const getSingleUserAction = (publicID) => dispatch => {
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 
@@ -310,7 +310,7 @@ export const searchProfilesAction = (searchText) => dispatch => {
       payload: res.data.result
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 
@@ -335,7 +335,7 @@ export const getProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 export const getNewProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
@@ -354,7 +354,7 @@ export const getNewProfileMessagesAction = (skip, authorsPublicID) => dispatch =
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
@@ -376,14 +376,14 @@ export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
         payload: res.data
       })
     })
-    .catch(err => {
-      console.log(err)
+    .catch(error => {
+      console.log(error)
     });
 }
 
 
 
-export const getGalleryListAction = (skip, authorsPublicID) => dispatch => {
+export const getGalleryListAction = (skip) => dispatch => {
 
   axios({
     method: 'GET',
@@ -391,18 +391,17 @@ export const getGalleryListAction = (skip, authorsPublicID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/images/gallerylist?skip='
-      + skip + '&authorsPublicID=' + authorsPublicID,
+    url: SERVERURL + 'api/images/gallerylist?skip=' + skip,
   }).then(res => {
     dispatch({
       type: GET_GALLERY_LIST,
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
-export const getNewGalleryListAction = (skip, authorsPublicID) => dispatch => {
+export const getNewGalleryListAction = (skip) => dispatch => {
 
   axios({
     method: 'GET',
@@ -410,15 +409,14 @@ export const getNewGalleryListAction = (skip, authorsPublicID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/images/gallerylist?skip='
-      + skip + '&authorsPublicID=' + authorsPublicID,
+    url: SERVERURL + 'api/images/gallerylist?skip='  + skip ,
   }).then(res => {
     dispatch({
       type: GET_NEW_GALLERY_LIST,  //this one overwrites the state, not just adds new elements in the list
       payload: res.data
     })
   })
-    .catch(err => console.log(err));
+    .catch(error => console.log(error));
 };
 
 
@@ -459,8 +457,8 @@ export const setProfileImageAction = ({ id }) => dispatch => {
         payload: res.data
       })
     })
-    .catch(err => {
-      console.log(err)
+    .catch(error => {
+      console.log(error)
     });
 }
 

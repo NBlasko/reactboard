@@ -49,9 +49,9 @@ class ImageUploadClass extends Component {
                     console.log("res uploada", res)
                   this.props.addGalleryImageAction(res.data.id);
                 })
-                .catch(err => {
+                .catch(error => {
                     this.setState({ file: null, progressMessage: '' })
-                    console.log("error", err)
+                    console.log("error", error)
                     //handle errorMessage
                 })
         }

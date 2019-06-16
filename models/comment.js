@@ -1,13 +1,20 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+
 const commentSchema = new Schema({
         author: String,
-        authorsPublicID: String,  //ovo ce mi kasnije trebati. Ovo je id onog sto pise komentar
-        blogsPublicID: String, //ovo je id bloga, da znam za koji blog da zalepim komentar
+        /* authorsPublicID is the id of a person
+        who is actually  writting this comment */
+        authorsPublicID: String,
+        /*   blogsPublicID is here so we know on which blog to append this comment   */
+        blogsPublicID: String,
         body: String,
-        date: { type: Date, default: Date.now }
-        //za sad komentari nece biti na glasanju
+        date: {
+                type: Date,
+                default: Date.now
+        }
+
 });
 
 const Comment = mongoose.model('comment', commentSchema);

@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const likeVoteSchema = new Schema({
-    authorId: String,  //prvo njega trazim, pa ako ne postoji stvorim ga. ako postoji update ga
+    authorId: String,
     number: {
-            Up: {
-                type: Number,
-                default: 0
-            },
-            Down: {
-                type: Number,
-                default: 0
-            }
+        Up: {
+            type: Number,
+            default: 0
+        },
+        Down: {
+            type: Number,
+            default: 0
+        }
     },
     voterId: {
         Up: [{

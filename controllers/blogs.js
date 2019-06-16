@@ -151,9 +151,9 @@ module.exports = {
         const admin = req.user.publicID === blog.authorsPublicID;
 
 
-        if (req.user.coins.total < 3 && !admin) { ///dorada je potrebna 
+        if (req.user.coins.total < 3 && !admin) 
             return res.status(403).json({ error: "You don\'t have enough coins" })
-        }
+        
 
         blog.seen += 1;
         await blog.save();
@@ -361,9 +361,7 @@ module.exports = {
         const blog = await Blog.findOne({ publicID: blogId })
         // potrebno je proveriti da li je admin za svaki od podataka
 
-        // if (req.user.publicId === comment.authorsPublicID )
         //delete comments in blog       blogsPublicID
-        console.log("authorsPublicID", req.user.publicID)
         await Comment.deleteMany({ blogsPublicID: blogId, authorsPublicID: req.user.publicID });
 
 
@@ -373,11 +371,6 @@ module.exports = {
 
         // delete blog itslef blogsPublicID
         await Blog.deleteOne({ publicID: blogId, authorsPublicID: req.user.publicID })
-
-
-        //Character.deleteOne({ name: 'Eddard Stark' }, function (err) {});
-        //Character.deleteMany({ name: /Stark/, age: { $gte: 18 } }, function (err) {});
-
 
         res.status(200).json({ result: "successful deletion" });
     }

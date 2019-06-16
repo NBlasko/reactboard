@@ -28,10 +28,10 @@
 [x] user should be able to delete it's blog
 
 [] fix bugs
-        [] delete button is visible in non-admin image galleries (next time I checked everithing was fine)
+        [x] delete button is visible in non-admin image galleries (next time I checked everithing was fine)
         [] button for "load more images" in image gallery apear when the gallery is empty and
         the button is not desapearing when it is clicked
-        [] searchedProfile delete data on unmount
+        [x] searchedProfile delete data on unmount
 
 [] structure code, 
         [] max 200 lines per file
@@ -39,5 +39,6 @@
         [] add all explanation comments for code
         [] chenge bootstrap into reactstrap as much as you can
 
+[] blogs and profiles look almost the same. Add h1 names or different color to distinguish them
 
 [] deploy

@@ -70,7 +70,7 @@ class ProfileData extends Component {
                                         alt="nema"
                                         onError={(e) => {
                                             if (this.state.imageLoadError) {
-                                              //  console.log("error", e)
+                                              
                                                 this.setState({
                                                     imageLoadError: false
                                                 });

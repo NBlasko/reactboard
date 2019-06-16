@@ -51,7 +51,7 @@ class Signup extends Component {
             .catch((error) => {
                 if (error.response.data.error.includes("accessCode"))
                     return this.setState({ errorMessage: "verification code length must be 5 characters long" });
-                this.setState({ errorMessage: error.response.data.error/*, modal: false*/, blockUnmounting: false });
+                this.setState({ errorMessage: error.response.data.error, blockUnmounting: false });
             });
 
 
@@ -68,7 +68,7 @@ class Signup extends Component {
             })
             .catch((error) => {
 
-                this.setState({ errorMessage: error.response.data.error/*, modal: false*/, blockUnmounting: false });
+                this.setState({ errorMessage: error.response.data.error, blockUnmounting: false });
             });
         }
 

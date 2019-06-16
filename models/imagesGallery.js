@@ -6,7 +6,7 @@ const imagesGallerySchema = new Schema({
     images: [{
         URL: String,
         imageID: String
-      }],
+    }],
 });
 
 

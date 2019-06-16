@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const uuidv4 = require('uuid/v4');
-// Create a schema
+
+/* Create a schema */
 const userSchema = new Schema({
   method: {
     type: String,
@@ -18,7 +19,7 @@ const userSchema = new Schema({
   coins: {
     date: {
       type: Date,
-      default: Date.now            // vreme.toISOString()
+      default: Date.now
     },
     total: {
       type: Number,
@@ -28,16 +29,18 @@ const userSchema = new Schema({
     /* when client want's to acces profile or blog, he is being charged.
     In turn, he gets pageQueryID
     which determines for which page has clint paid for access */
-   
+
     pageQueryID: String,
   },
-  
+
   local: {
     email: {
       type: String,
       lowercase: true
     },
     password: String,
+
+    /* properties for verifying via email */
     verified: {
       type: Boolean,
       default: false
@@ -80,14 +83,14 @@ const userSchema = new Schema({
       default: ""
     },
   },
+  //imageQueryID is send via URL query instead jwt to authorize images
   imageQueryID: {
     type: String,
     default: uuidv4
-  }  // send via URL query instead jwt to authorize images
+  }
 });
 
 // Create a model
 const User = mongoose.model('user', userSchema);
 
-// Export the model
 module.exports = User;
