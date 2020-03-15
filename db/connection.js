@@ -4,7 +4,10 @@ const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const db = mongoose.connect(
     process.env.MONGODB_URL,
-    { useNewUrlParser: true },
+    {
+        useNewUrlParser: true,
+        useUnifiedTopology: true
+    },
     error => {
         if (error) throw error;
         console.log(`Successfully connected to database.`);
