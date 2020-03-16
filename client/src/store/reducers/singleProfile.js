@@ -2,7 +2,7 @@ import {
     GET_SINGLE_USER,
     REMOVE_USER_PROFILE,
     REMOVE_SINGLE_USER
-} from '../constants'
+} from '../types/types';
 
 const initialstate = null;
 

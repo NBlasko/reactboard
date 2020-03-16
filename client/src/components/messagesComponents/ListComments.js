@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getCommentsAction,getNewCommentsAction,  deleteAllCommentsAction } from '../../actions'
+import { 
+    getCommentsAction,
+    getNewCommentsAction,
+      deleteAllCommentsAction
+     } from '../../store/actions';
 import SingleComment from './SingleComment';
 class ListComments extends Component {
 

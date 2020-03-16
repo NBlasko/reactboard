@@ -3,7 +3,12 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 import '../index.css';
-import { addUserProfile, removeUserProfile, searchBlogsAction, searchProfilesAction } from '../actions';
+import {
+    addUserProfile,
+    removeUserProfile,
+    searchBlogsAction,
+    searchProfilesAction
+} from '../store/actions';
 import {
     Collapse,
     Navbar,
@@ -147,7 +152,7 @@ class NavbarComponent extends Component {
             <div className="navbarCustom small shadow">
                 <Navbar color="light" light expand="sm">
                     <NavbarToggler onClick={this.toggle} />
-                    <span className="text-dark h4" style = {logoFont}>RB</span>
+                    <span className="text-dark h4" style={logoFont}>RB</span>
                     <Collapse isOpen={this.state.isOpen} navbar>
                         <Nav className="ml-auto" navbar>
 

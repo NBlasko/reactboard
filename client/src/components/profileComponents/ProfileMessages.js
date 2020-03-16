@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getProfileMessagesAction, getNewProfileMessagesAction, deleteAllMessagesAction } from '../../actions'
+import { 
+    getProfileMessagesAction,
+    getNewProfileMessagesAction, 
+    deleteAllMessagesAction
+ } from '../../store/actions'
 import ListedSingleBlog from '../messagesComponents/ListedSingleBlog'
 class ProfileMessages extends Component {
 

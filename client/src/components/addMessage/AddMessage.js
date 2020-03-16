@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { addMessageAction, getSingleUserAction, removePreviewBlogImageAction } from '../../actions';
+import {
+    addMessageAction,
+    getSingleUserAction,
+    removePreviewBlogImageAction
+} from '../../store/actions';
 import { SERVERURL } from '../../constants'
 import ImageGallery from '../profileComponents/ImageGallery'
 class AddMessage extends Component {
@@ -26,12 +30,7 @@ class AddMessage extends Component {
         this.setState({ [e.target.name]: e.target.value })
     }
 
-    handleKeyPress(e) {
-        /*   if (e.key === 'Enter' && this.state.text !== '') {
-               this.props.addMessageAction(this.state.text);
-               this.setState({ text: '' });
-           }*/
-    }
+
     addMessage() {
         if (this.state.text === '' || this.state.title === '') return;  //izbaci neku poruku da je potrebno popuniti polja
         this.setState({ submited: true })
@@ -62,7 +61,7 @@ class AddMessage extends Component {
                         </div>
                     </div>
                     <div>
-                        <ImageGallery routeProps={this.props.routeProps}/>
+                        <ImageGallery {...this.props} />
                     </div>
                     <div className="text-right">
                         <button className="btn btn-secondary" onClick={this.addMessage}> Enter </button>
@@ -133,4 +132,9 @@ const mapStateToProps = (state) => {
 }
 
 
-export default connect(mapStateToProps, { addMessageAction, getSingleUserAction, removePreviewBlogImageAction })(AddMessage);
+export default connect(
+    mapStateToProps, {
+    addMessageAction,
+    getSingleUserAction,
+    removePreviewBlogImageAction
+})(AddMessage);

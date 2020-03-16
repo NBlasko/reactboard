@@ -3,7 +3,7 @@ import axios from 'axios'
 import { Button, Alert } from 'reactstrap';
 import {SERVERURL} from '../../constants'
 import { connect } from 'react-redux';
-import { addGalleryImageAction } from '../../actions'
+import { addGalleryImageAction } from '../../store/actions'
 
 class ImageUploadClass extends Component {
     constructor(props) {

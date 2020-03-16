@@ -1,8 +1,10 @@
 import {
-  GET_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES, GET_NEW_MESSAGES,
+  GET_MESSAGES,
+  DELETE_MESSAGE,
+  DELETE_ALL_MESSAGES,
+  GET_NEW_MESSAGES,
   REMOVE_USER_PROFILE
-
-} from '../constants'
+} from '../types/types';
 
 const initialstate = [];
 

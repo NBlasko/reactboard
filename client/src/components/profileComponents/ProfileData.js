@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getSingleUserAction } from '../../actions';
+import { getSingleUserAction } from '../../store/actions'
 
 import { Container, Row, Col } from 'reactstrap';
 import coinsSVG from '../../assets/coins.svg';
@@ -31,13 +31,13 @@ class ProfileData extends Component {
 
 
     componentDidMount() {
-        this.props.getSingleUserAction(this.props.routeProps.match.params.id);
+        this.props.getSingleUserAction(this.props.match.params.id);
     }
     componentDidUpdate(prevProps) {
 
-        if (prevProps.routeProps.match.params.id !== this.props.routeProps.match.params.id) {
+        if (prevProps.match.params.id !== this.props.match.params.id) {
             this.setState({ imageLoadError: true });
-            this.props.getSingleUserAction(this.props.routeProps.match.params.id);
+            this.props.getSingleUserAction(this.props.match.params.id);
         }
     }
 
@@ -66,7 +66,7 @@ class ProfileData extends Component {
                         <Col lg="4" md="6" sm="8" xs="12">
                             <div style={{ maxWidth: "550px" }} className="justify-content-around" >
                                 {(this.state.imageQueryID) ?
-                                    <img style={{ border: "none" }} src={`${SERVERURL}api/images?imageQueryID=${this.state.imageQueryID}&publicID=${this.props.routeProps.match.params.id}&refreshID=${this.state.refresh}`}
+                                    <img style={{ border: "none" }} src={`${SERVERURL}api/images?imageQueryID=${this.state.imageQueryID}&publicID=${this.props.match.params.id}&refreshID=${this.state.refresh}`}
                                         alt="nema"
                                         onError={(e) => {
                                             if (this.state.imageLoadError) {

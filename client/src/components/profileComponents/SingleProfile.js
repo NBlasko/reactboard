@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { removeSingleUserAction } from '../../actions';
+import { removeSingleUserAction } from '../../store/actions';
 import ImageGallery from './ImageGallery';
 import ProfileData from './ProfileData';
 import ProfileMessages from './ProfileMessages'
@@ -13,17 +13,17 @@ class SingleProfile extends Component {
 
 
     render() {
-        const authorsPublicID = this.props.routeProps.match.params.id;
+        const authorsPublicID = this.props.match.params.id;
         console.log(
             "pageQueryID", this.props.pageQueryID,
             "authorsPublicID", authorsPublicID
         )
         return (
             <div className="shadow p-3 m-2 bg-white rounded">
-                <ProfileData routeProps={this.props.routeProps} />
+                <ProfileData {...this.props} />
                 {(this.props.pageQueryID === authorsPublicID) ?
                     <div>
-                        <ImageGallery routeProps={this.props.routeProps} />
+                        <ImageGallery />
                         <hr />
                         <ProfileMessages authorsPublicID={authorsPublicID} />
                     </div>

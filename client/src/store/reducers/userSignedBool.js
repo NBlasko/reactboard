@@ -1,7 +1,7 @@
 import {
     USER_SIGNED,
     REMOVE_USER_PROFILE
-} from '../constants';
+} from '../types/types';
 
 let initialUser = {
     signed: false

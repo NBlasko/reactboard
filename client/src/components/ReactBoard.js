@@ -6,7 +6,8 @@ import { connect } from 'react-redux';
 import ListMessages from './messagesComponents/ListMessages';
 import Signin from './authComponents/Signin';
 import Signup from './authComponents/Signup';
-import AddMessage from './addMessage/AddMessage';
+//import AddMessage from './addMessage/AddMessage';
+import AddMessageHooks from './addMessage/AddMessageHooks';
 import SingleBlog from './messagesComponents/SingleBlog';
 import SingleProfile from './profileComponents/SingleProfile';
 import ListSearchedProfiles from './profileComponents/ListSearchedProfiles';
@@ -14,12 +15,7 @@ import ListSearchedProfiles from './profileComponents/ListSearchedProfiles';
 import NavbarComponent from './Navbar';
 import ListSearchedMessages from './messagesComponents/ListSearchedMessages';
 
-
-
 class ReactBoard extends Component {
-
-
-
 
     render() {
         return (
@@ -41,29 +37,29 @@ class ReactBoard extends Component {
                                     !localStorage.reactBoardToken ?
                                         (<Redirect to="/signin" replace />) : (<ListMessages  {...props} />))} />
 
-                                <Route exact path="/addmessage" render={(routeProps) => (
+                                <Route exact path="/addmessage" render={(props) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<AddMessage routeProps={routeProps} />))} />
+                                        (<Redirect to="/signin" replace />) : (<AddMessageHooks {...props}  />))} />
 
 
 
 
 
-                                <Route exact path="/searchedmessages" render={(routeProps) => (
+                                <Route exact path="/searchedmessages" render={(props) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<ListSearchedMessages location={routeProps.location} />))} />
+                                        (<Redirect to="/signin" replace />) : (<ListSearchedMessages location={props.location} />))} />
 
-                                <Route exact path="/listsearchedprofiles" render={(routeProps) => (
+                                <Route exact path="/listsearchedprofiles" render={(props) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<ListSearchedProfiles location={routeProps.location} />))} />
+                                        (<Redirect to="/signin" replace />) : (<ListSearchedProfiles location={props.location} />))} />
 
-                                <Route exact path="/singleprofile/:id" render={(routeProps) => (
+                                <Route exact path="/singleprofile/:id" render={(props) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<SingleProfile routeProps={routeProps} />))}
+                                        (<Redirect to="/signin" replace />) : (<SingleProfile {...props} />))}
                                 />
-                                <Route exact path="/blog/:id" render={(routeProps) => (
+                                <Route exact path="/blog/:id" render={(props) => (
                                     !localStorage.reactBoardToken ?
-                                        (<Redirect to="/signin" replace />) : (<SingleBlog routeProps={routeProps} />))}
+                                        (<Redirect to="/signin" replace />) : (<SingleBlog {...props} />))}
                                 />
 
                                 <Route exact path="/signin" render={({ history }) => (

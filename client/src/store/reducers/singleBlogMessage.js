@@ -4,7 +4,7 @@ import {
     ADD_PROFILE_TRUST,
     ADD_BLOGS_LIKE,
     REMOVE_USER_PROFILE
-} from '../constants'
+} from '../types/types';
 
 const initialstate = null;
 

@@ -9,7 +9,7 @@ import {
   ADD_GALLERY_IMAGE, SET_PROFILE_IMAGE, SET_BLOG_IMAGE, REMOVE_PREVIEW_BLOG_IMAGE,
   ADD_BLOGS_LIKE,
   //REFRESH
-} from '../constants';//import axios from 'axios';
+} from '../../constants';//import axios from 'axios';
 
 import axios from "axios";
 

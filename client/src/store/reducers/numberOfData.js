@@ -1,7 +1,8 @@
 import {
-    GET_GALLERY_LIST, REMOVE_GALLERY_LIST,
+    GET_GALLERY_LIST,
+    REMOVE_GALLERY_LIST,
     REMOVE_USER_PROFILE
-} from '../constants'
+} from '../types/types';
 
 const initialstate = {
     number: -1

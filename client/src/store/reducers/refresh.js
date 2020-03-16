@@ -1,7 +1,7 @@
 import {
   SET_PROFILE_IMAGE,
   REMOVE_USER_PROFILE
-} from '../constants'
+} from '../types/types';
 
 const initialstate = 0;
 

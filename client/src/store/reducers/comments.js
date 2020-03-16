@@ -1,4 +1,10 @@
-import { GET_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT, GET_NEW_COMMENTS, REMOVE_USER_PROFILE } from '../constants'
+import {
+  GET_COMMENTS,
+  DELETE_ALL_COMMENTS,
+  ADD_COMMENT,
+  GET_NEW_COMMENTS,
+  REMOVE_USER_PROFILE
+} from '../types/types';
 
 const initialstate = [];
 

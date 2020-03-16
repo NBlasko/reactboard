@@ -6,7 +6,7 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { userSigned } from '../../actions';
+import { userSigned } from '../../store/actions';
 import iconGoogle from '../../assets/google.svg';
 import iconFacebook from '../../assets/facebook.svg';
 import GoogleLogin from 'react-google-login';

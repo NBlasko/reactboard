@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getMessagesAction, deleteAllMessagesAction, getNewMessagesAction } from '../../actions'
+import { 
+    getMessagesAction,
+     deleteAllMessagesAction,
+      getNewMessagesAction 
+    } from '../../store/actions'
 import ListedSingleBlog from './ListedSingleBlog'
 class ListMessages extends Component {
 

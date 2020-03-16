@@ -1,4 +1,7 @@
-import { ADD_USER_PROFILE, REMOVE_USER_PROFILE } from '../constants';
+import {
+    ADD_USER_PROFILE,
+    REMOVE_USER_PROFILE
+} from '../types/types';
 
 let initialUser = {
     name: null,
@@ -15,7 +18,7 @@ export default (state = initialUser, action) => {
 
         case REMOVE_USER_PROFILE:
             return initialUser;
-            
+
         default:
             return state;
     }

@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { SERVERURL } from '../../constants'
-import { removeGalleryImageAction, setProfileImageAction, setBlogImageAction } from '../../actions'
+import {
+    removeGalleryImageAction,
+    setProfileImageAction,
+    setBlogImageAction
+} from '../../store/actions'
 import axios from "axios";
 
 class SingleImageInGallery extends Component {
@@ -26,7 +30,7 @@ class SingleImageInGallery extends Component {
     }
     componentDidMount() {
         this.setState({
-            matchId: this.props.routeProps.match.params.id
+            matchId: this.props.match.params.id
             // Important, If I use props directly instead of state in img url, the <img /> tag will try to fetch images from previous profile
         })
     }
@@ -35,10 +39,17 @@ class SingleImageInGallery extends Component {
         switch (namePath) {
 
             case "/singleprofile/:id":
-                return <Button color="secondary" onClick={this.setProfileImage}>Select as profile image</Button>
+                return <Button
+                    color="secondary"
+                    onClick={this.setProfileImage}>
+                    Select as profile image
+                      </Button>
 
             case "/addmessage":
-                return <Button color="secondary" onClick={this.setBlogImage}>Select as blog image</Button>
+                return <Button color="secondary"
+                    onClick={this.setBlogImage}>
+                    Select as blog image
+                     </Button>
 
             default:
                 return null
@@ -54,15 +65,11 @@ class SingleImageInGallery extends Component {
             },
             url: SERVERURL + 'api/images/galleryImage/' + this.props.singleImage._id
         }).then(res => {
-            this.toggleAll()
-            return res;
-        }).then(res => {
             this.props.removeGalleryImageAction(res.data.id)
-        })
-            .catch(error => {
-                console.log(error)
-                this.toggleAll();
-            });
+        }).catch(error => {
+            console.log(error)
+            this.toggleAll();
+        });
     }
 
     setProfileImage() {
@@ -115,7 +122,7 @@ class SingleImageInGallery extends Component {
     render() {
         const closeBtn = <Button color="danger" onClick={this.toggle}>&times;</Button>;
 
-        const publicIdToGetImage = (this.props.routeProps.match.path === "/addmessage") ? this.props.publicID : this.state.matchId;
+        const publicIdToGetImage = (this.props.match.path === "/addmessage") ? this.props.publicID : this.state.matchId;
         return (
             <div className="col-sm-6 col-md-4 col-lg-3" style={{ border: "1px solid #ddd", padding: "5px" }}>
                 <img onClick={this.toggle} className="imageFit"
@@ -123,7 +130,7 @@ class SingleImageInGallery extends Component {
                     alt="loading..." />
                 <Modal isOpen={this.state.modal} className={this.props.className} toggle={this.toggle}>
                     <ModalHeader toggle={this.toggle} close={closeBtn}>
-                        {this.galleryPath(this.props.routeProps.match.path)}
+                        {this.galleryPath(this.props.match.path)}
                         {this.nestedModal()}
                     </ModalHeader>
                     <img className="modal-content"
@@ -140,11 +147,11 @@ class SingleImageInGallery extends Component {
 const mapStateToProps = (state) => {
     // while we fetch all data, it's better like this 
 
-    
+
     return {
         imageQueryID: state.user.imageQueryID,
         publicID: state.user.publicID
-     
+
     }
 }
 export default connect(mapStateToProps, { removeGalleryImageAction, setProfileImageAction, setBlogImageAction })(SingleImageInGallery);

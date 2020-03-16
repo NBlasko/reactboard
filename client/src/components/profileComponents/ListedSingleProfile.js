@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { deleteMessageAction } from '../../actions'
+import { deleteMessageAction } from '../../store/actions'
 import { Link } from 'react-router-dom';
 import { SERVERURL } from '../../constants';
 import profileImg from '../../assets/profile.svg';

@@ -1,8 +1,9 @@
 //SEARCH_PROFILES
 import {
-  SEARCH_PROFILES, REMOVE_PROFILES,
+  SEARCH_PROFILES,
+  REMOVE_PROFILES,
   REMOVE_USER_PROFILE
-} from '../constants'
+} from '../types/types';
 
 const initialstate = [];
 

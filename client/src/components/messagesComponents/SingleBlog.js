@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getSingleMessageAction, deleteSingleMessageAction, addProfileTrustAction, addBlogsLikeAction } from '../../actions';
+import {
+    getSingleMessageAction,
+    deleteSingleMessageAction,
+    addProfileTrustAction,
+    addBlogsLikeAction
+} from '../../store/actions';
 import ListComments from './ListComments';
 import AddComment from './AddComment';
 import { SERVERURL } from '../../constants';
@@ -26,7 +31,7 @@ class SingleBlog extends Component {
     }
 
     componentDidMount() {
-        this.props.getSingleMessageAction(this.props.routeProps.match.params.id);
+        this.props.getSingleMessageAction(this.props.match.params.id);
     }
 
     componentWillUnmount() {
@@ -35,21 +40,21 @@ class SingleBlog extends Component {
 
     addProfileTrustActionUp() {
 
-        this.props.addProfileTrustAction({ trust: 1, blogsID: this.props.routeProps.match.params.id })
+        this.props.addProfileTrustAction({ trust: 1, blogsID: this.props.match.params.id })
     }
     addProfileTrustActionDown() {
 
-        this.props.addProfileTrustAction({ trust: 0, blogsID: this.props.routeProps.match.params.id })
+        this.props.addProfileTrustAction({ trust: 0, blogsID: this.props.match.params.id })
     }
 
     addBlogsLikeActionUp() {
 
-        this.props.addBlogsLikeAction({ like: 1, blogsID: this.props.routeProps.match.params.id })
+        this.props.addBlogsLikeAction({ like: 1, blogsID: this.props.match.params.id })
     }
 
     addBlogsLikeActionDown() {
 
-        this.props.addBlogsLikeAction({ like: 0, blogsID: this.props.routeProps.match.params.id })
+        this.props.addBlogsLikeAction({ like: 0, blogsID: this.props.match.params.id })
     }
     toggle() {
         this.setState({
@@ -65,7 +70,7 @@ class SingleBlog extends Component {
                 Authorization: `Bearer ${localStorage.reactBoardToken}`,
                 'Cache-Control': 'no-cache'
             },
-            url: SERVERURL + 'api/blogs/' + this.props.routeProps.match.params.id,
+            url: SERVERURL + 'api/blogs/' + this.props.match.params.id,
         }).then(res => {
             console.log("res", res)
             //setSome state to redirect
@@ -156,10 +161,10 @@ class SingleBlog extends Component {
 
                             </div>
                         </div>
-                        <AddComment blogsID={this.props.routeProps.match.params.id} />
+                        <AddComment blogsID={this.props.match.params.id} />
 
                         <h5 className="text-secondary"> Comments... </h5>
-                        <ListComments blogID={this.props.routeProps.match.params.id} />
+                        <ListComments blogID={this.props.match.params.id} />
 
                     </div>
                 </div>
