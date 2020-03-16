@@ -4,9 +4,9 @@ import {
     addMessageAction,
     getSingleUserAction,
     removePreviewBlogImageAction
-} from '../../store/actions';
-import { SERVERURL } from '../../constants'
-import ImageGallery from '../profileComponents/ImageGallery'
+} from '../../../store/actions';
+import { SERVERURL } from '../../../constants'
+import ImageGallery from '../../utils/imagesComponents/ImageGallery';
 
 
 function AddMessageForm(props) {
@@ -83,7 +83,7 @@ function AddMessageForm(props) {
                         />
                     </div>
                 </div>
-                <ImageGallery {...props} />
+                <ImageGallery />
                 <div className="text-right">
                     <button
                         className="btn btn-secondary"

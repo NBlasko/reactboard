@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css?family=Indie+Flower');
-
 html, body {
   margin: 0;
   padding: 0;
@@ -7,78 +6,78 @@ html, body {
   min-height: 100%;
 }
 
-.signContainer{background:url('assets/bg2.jpg') no-repeat;
+.signContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: url('assets/bg2.jpg') no-repeat;
   background-size: cover;
-	background-position: center center;
-	height: 100vh;
-	width: 100%
-	}
+  background-position: center center;
+  height: 100vh;
+  width: 100%
+}
 
+.form-boxshadow {
+  -webkit-box-shadow: -5px 2px 62px 8px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: -5px 2px 62px 8px rgba(0, 0, 0, 0.75);
+  box-shadow: -5px 2px 62px 8px rgba(0, 0, 0, 0.75);
+}
 
-  .form-boxshadow{
-  
-    -webkit-box-shadow: -5px 2px 62px 8px rgba(0,0,0,0.75);
-   -moz-box-shadow: -5px 2px 62px 8px rgba(0,0,0,0.75);
-   box-shadow: -5px 2px 62px 8px rgba(0,0,0,0.75);
-   }
+.font-flower {
+  font-weight: bold;
+  font-family: 'Indie Flower', cursive;
+}
 
-   .font-flower{
-    font-weight: bold;
-    font-family: 'Indie Flower', cursive;
-   }
-  
-   .opacity-5{
-     opacity: 0.5;
-   }
+.opacity-5 {
+  opacity: 0.5;
+}
 
 .buttonBorder {
   border: none;
 }
 
 .btn-prim-act-custom {
-background-color: #2FA4E7;
-color: white;
+  background-color: #2FA4E7;
+  color: white;
 }
+
 .btn-dang-act-custom {
   background-color: #C71C22;
   color: white;
-  }
+}
 
 .btn-social {
   width: 49%;
-
 }
 
-.hoverSocial :hover{
+.hoverSocial :hover {
   opacity: 0.9
 }
 
 .btn-social img {
   width: 30px;
   margin-right: 15px;
-  
 }
-.facebook-btn{
+
+.facebook-btn {
   color: #fff;
   background-color: #3b5998;
 }
 
-
-.minHeight{
+.minHeight {
   min-height: 200px;
 }
 
-.signoutReactBoard:hover{
+.signoutReactBoard:hover {
   cursor: pointer;
 }
 
-.imageFit{
+.imageFit {
   padding-bottom: 10px;
-    width: 100%;
-    max-height: 400px;
-    object-fit: cover;
-
- /*   object-position: -50px 20px;
+  width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+  /*   object-position: -50px 20px;
     border: 5px solid red;
     border-radius: 50%;*/
 }
@@ -88,24 +87,30 @@ color: white;
 }
 
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
- /* z-index: 1; /* Sit on top */
-  padding: 0px; /* Location of the box */
+  display: none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  /* z-index: 1; /* Sit on top */
+  padding: 0px;
+  /* Location of the box */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+  /* Enable scroll if needed */
+  background-color: rgb(0, 0, 0);
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.9);
+  /* Black w/ opacity */
 }
 
 .modal-content {
-
   max-width: 1000px;
 }
-
 
 hr {
   border: 0;
@@ -113,6 +118,3 @@ hr {
   background: #333;
   background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
-
-
-

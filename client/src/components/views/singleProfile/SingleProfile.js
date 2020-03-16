@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { removeSingleUserAction } from '../../store/actions';
-import ImageGallery from './ImageGallery';
+import { removeSingleUserAction } from '../../../store/actions';
+import ImageGallery from '../../utils/imagesComponents/ImageGallery';
 import ProfileData from './ProfileData';
 import ProfileMessages from './ProfileMessages'
 

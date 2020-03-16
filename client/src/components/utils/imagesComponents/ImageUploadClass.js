@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios'
 import { Button, Alert } from 'reactstrap';
-import {SERVERURL} from '../../constants'
+import {SERVERURL} from '../../../store/types/types';
 import { connect } from 'react-redux';
-import { addGalleryImageAction } from '../../store/actions'
+import { addGalleryImageAction } from '../../../store/actions'
 
 class ImageUploadClass extends Component {
     constructor(props) {

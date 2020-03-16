@@ -6,12 +6,12 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { userSigned } from '../../store/actions';
-import iconGoogle from '../../assets/google.svg';
-import iconFacebook from '../../assets/facebook.svg';
+import { userSigned } from '../../../store/actions';
+import iconGoogle from '../../../assets/google.svg';
+import iconFacebook from '../../../assets/facebook.svg';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
-import { SERVERURL } from '../../constants'
+import { SERVERURL } from '../../../constants'
 
 class Signin extends Component {
     constructor(props) {
@@ -141,13 +141,13 @@ class Signin extends Component {
                 this.setState({ blockUnmounting: false });
                 console.log("error in Google Auth", error)
             });
-
     }
 
     render() {
         let errorMessage = (this.state.errorMessage !== '') ? <Alert color="warning opacity-5">{this.state.errorMessage}</Alert> : null;
         return (
             <div>
+                <div className="signContainer"> </div>
                 <Container>
                     <Row>
                         <Col lg="3" md="2" sm="1" xs="12"></Col>
@@ -187,7 +187,7 @@ class Signin extends Component {
                                 <FormGroup>
                                     {
                                         (!this.state.blockUnmounting) ?
-                                            <Link className="text-light font-flower" style={{ textDecoration: 'none' }} to={'./signup'}>
+                                            <Link className="text-light font-flower" style={{ textDecoration: 'none' }} to={'/signup'}>
                                                 Sign up instead
                                         </Link> : null
                                     }

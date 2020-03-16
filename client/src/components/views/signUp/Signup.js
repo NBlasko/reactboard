@@ -6,8 +6,8 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { userSigned } from '../../store/actions';
-import { SERVERURL } from '../../constants';
+import { userSigned } from '../../../store/actions';
+import { SERVERURL } from '../../../constants';
 
 
 class Signup extends Component {
@@ -64,13 +64,13 @@ class Signup extends Component {
         axios.post(SERVERURL + 'auth/resend-verification-mail', { email })
             .then((response) => {
                 this.setState({ blockUnmounting: false });
-                
+
             })
             .catch((error) => {
 
                 this.setState({ errorMessage: error.response.data.error, blockUnmounting: false });
             });
-        }
+    }
 
     signUp() {
         this.setState({ blockUnmounting: true });
@@ -101,12 +101,15 @@ class Signup extends Component {
     handleChange(e) {
         this.setState({ errorMessage: '', [e.target.name]: e.target.value });
     }
-  
+
 
     render() {
-        let errorMessage = (this.state.errorMessage !== '') ? <Alert color="warning opacity-5">{this.state.errorMessage}</Alert> : null;
+        let errorMessage = (this.state.errorMessage !== '')
+            ? <Alert color="warning opacity-5">{this.state.errorMessage}</Alert>
+            : null;
         return (
             <div>
+                <div className="signContainer"> </div>
                 <Container>
                     <Row>
                         <Col lg="3" md="2" sm="1" xs="12"></Col>
@@ -118,8 +121,8 @@ class Signup extends Component {
                                 <FormGroup> <Input type="password" placeholder="password" name="password" onChange={this.handleChange} onKeyPress={this.handleKeyPress} /> </FormGroup>
                                 <FormGroup> <Button color="primary" type="button" onClick={this.signUp}> Sign Up </Button> </FormGroup>
                                 <FormGroup>
-                                   { (!this.state.blockUnmounting) ?
-                                        <Link className="text-light font-flower" style={{ textDecoration: 'none' }} to={'./signin'}>
+                                    {(!this.state.blockUnmounting) ?
+                                        <Link className="text-light font-flower" style={{ textDecoration: 'none' }} to={'/signin'}>
                                             Already a user? Sign in instead
                                         </Link> : null
                                     }
@@ -130,8 +133,11 @@ class Signup extends Component {
                     </Row>
                 </Container>
                 <div>
-
-                    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                    <Modal
+                        isOpen={this.state.modal}
+                        toggle={this.toggle}
+                        className={this.props.className}
+                    >
                         <ModalHeader toggle={this.toggle}>Verify Email</ModalHeader>
                         <ModalBody>
                             For your security, we want to make sure it's really you. We will send an email
@@ -142,9 +148,17 @@ class Signup extends Component {
                             <div className="mt-1"> {errorMessage} </div>
                         </ModalBody>
                         <ModalFooter>
-                            <Button color="primary" onClick={this.varifyEmail}>Verify</Button>{' '}
-                            <Button color="secondary" onClick={this.resendVerifyEmail}>Resend email</Button>
-
+                            <Button
+                                color="primary"
+                                onClick={this.varifyEmail}>
+                                Verify
+                            </Button>
+                            {' '}
+                            <Button
+                                color="secondary"
+                                onClick={this.resendVerifyEmail}>
+                                Resend email
+                            </Button>
                         </ModalFooter>
                     </Modal>
                 </div>

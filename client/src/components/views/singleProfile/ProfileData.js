@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { getSingleUserAction } from '../../store/actions'
+import { getSingleUserAction } from '../../../store/actions';
 
 import { Container, Row, Col } from 'reactstrap';
-import coinsSVG from '../../assets/coins.svg';
-import profileImg from '../../assets/profile.svg';
-import { SERVERURL } from '../../constants';
+import coinsSVG from '../../../assets/coins.svg';
+import profileImg from '../../../assets/profile.svg';
+import { SERVERURL } from '../../../store/types/types';
 class ProfileData extends Component {
     constructor(props) {
         super(props);

@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import './Navbar.css';
-import '../index.css';
+import '../Navbar.css';
+import '../../index.css';
 import {
     addUserProfile,
     removeUserProfile,
     searchBlogsAction,
     searchProfilesAction
-} from '../store/actions';
+} from '../../store/actions';
 import {
     Collapse,
     Navbar,
@@ -22,7 +22,7 @@ import {
     Input
 }
     from 'reactstrap';
-import search from '../assets/search.svg'
+import search from '../../assets/search.svg'
 
 
 
@@ -30,7 +30,7 @@ import search from '../assets/search.svg'
 const logoFont = { fontFamily: "Italianno, cursive" }
 
 
-class NavbarComponent extends Component {
+class TopNavbar extends Component {
     constructor(props) {
         super(props);
         this.SignOut = this.SignOut.bind(this);
@@ -193,10 +193,6 @@ class NavbarComponent extends Component {
                         </Nav>
                     </Collapse>
                 </Navbar>
-
-
-
-
             </div> : null;
         return (
             <div>
@@ -215,4 +211,9 @@ const mapStateToProps = (state) => {
 }
 
 
-export default connect(mapStateToProps, { addUserProfile, removeUserProfile, searchBlogsAction, searchProfilesAction })(NavbarComponent);
+export default connect(mapStateToProps, {
+     addUserProfile,
+      removeUserProfile, 
+      searchBlogsAction,
+       searchProfilesAction 
+    })(TopNavbar);

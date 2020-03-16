@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { SERVERURL } from '../../constants'
+import { SERVERURL } from '../../../store/types/types';
 import {
     removeGalleryImageAction,
     setProfileImageAction,
     setBlogImageAction
-} from '../../store/actions'
+} from '../../../store/actions'
 import axios from "axios";
 
 class SingleImageInGallery extends Component {
@@ -154,4 +154,8 @@ const mapStateToProps = (state) => {
 
     }
 }
-export default connect(mapStateToProps, { removeGalleryImageAction, setProfileImageAction, setBlogImageAction })(SingleImageInGallery);
+export default connect(mapStateToProps, {
+    removeGalleryImageAction,
+    setProfileImageAction,
+    setBlogImageAction
+})(SingleImageInGallery);

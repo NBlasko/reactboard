@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import SingleImageInGallery from './SingleImageInGallery'
+import SingleImageInGallery from './SingleImageInGallery';
+import ImageUploadClass from './ImageUploadClass';
 import {
     getGalleryListAction,
     getNewGalleryListAction,
     removeGalleryListAction
-} from '../../store/actions';
+} from '../../../store/actions';
 
 import { withRouter } from "react-router";
 
-import ImageUploadClass from './ImageUploadClass';
+
 
 class ImageGallery extends Component {
     constructor(props) {
