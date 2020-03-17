@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import profileImg from '../../assets/profile.svg';
-import { SERVERURL } from '../../constants';
+import profileImg from '../../../assets/profile.svg';
+import { SERVERURL } from '../../../store/types/types';
 import { Link } from 'react-router-dom';
 
 

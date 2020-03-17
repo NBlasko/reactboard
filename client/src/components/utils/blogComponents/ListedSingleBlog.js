@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { deleteMessageAction } from '../../store/actions'
+import { deleteMessageAction } from '../../../store/actions'
 import { Link } from 'react-router-dom';
-import { SERVERURL } from '../../constants';
-import noPhotosImg from '../../assets/no-photos.svg';
+import { SERVERURL } from '../../../store/types/types';
+import noPhotosImg from '../../../assets/no-photos.svg';
 
 class ListedSingleBlog extends Component {
     constructor(props) {

@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { 
+import {
     getMessagesAction,
-     deleteAllMessagesAction,
-      getNewMessagesAction 
-    } from '../../store/actions'
-import ListedSingleBlog from './ListedSingleBlog'
+    deleteAllMessagesAction,
+    getNewMessagesAction
+} from '../../../store/actions'
+import ListedSingleBlog from '../../utils/blogComponents/ListedSingleBlog'
 class ListMessages extends Component {
 
     constructor(props) {
@@ -37,7 +37,7 @@ class ListMessages extends Component {
         }
     }
     componentWillReceiveProps(newProps) {
-         if (newProps.location.pathname === this.props.location.pathname) {
+        if (newProps.location.pathname === this.props.location.pathname) {
 
             if (newProps.messages !== this.props.messages)
                 this.setState((previousState) => {
@@ -65,8 +65,10 @@ class ListMessages extends Component {
     }
 
     render() {
+
+        console.log("this.props",this.props)
         const MessageList = this.props.messages.map((message) =>
-            <ListedSingleBlog key={message.publicID} message={message} imageQueryID = {this.props.imageQueryID} />);
+            <ListedSingleBlog key={message.publicID} message={message} imageQueryID={this.props.imageQueryID} />);
         return (
             <div className="shadow p-3 m-2 bg-white rounded">
                 {MessageList}

@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css?family=Italianno');
-
 .navbarCustom {
     position: fixed;
     top: 0;
@@ -7,23 +6,28 @@
     width: 100%;
 }
 
-
 /* Change background color of buttons on hover */
+
 .tab:hover {
     background-color: lightgray;
     border-radius: 10px;
 }
 
 /* Create an active/current "tab button" class */
+
 .tab:active {
     background-color: darkgray;
 }
 
 .customCircle {
+    margin-left: 5px;
     background-color: rgb(50, 50, 50);
     border-radius: 50%;
+    min-width: 40px;
+    text-align: center;
 }
 
-/*.logoCustom {
-    font-family: 'Italianno', cursive;  
-}*/
+.customBrand {
+    position: relative;
+    top: 5px;
+}

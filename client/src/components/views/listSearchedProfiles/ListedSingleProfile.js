@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { deleteMessageAction } from '../../store/actions'
+import { deleteMessageAction } from '../../../store/actions'
 import { Link } from 'react-router-dom';
-import { SERVERURL } from '../../constants';
-import profileImg from '../../assets/profile.svg';
+import { SERVERURL } from '../../../store/types/types';
+import profileImg from '../../../assets/profile.svg';
 
 class ListedSingleProfile extends Component {
     constructor(props) {

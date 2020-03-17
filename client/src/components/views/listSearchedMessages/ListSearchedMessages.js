@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import ListedSingleBlog from './ListedSingleBlog'
+import ListedSingleBlog from '../../utils/blogComponents/ListedSingleBlog';
 class ListSearchedMessages extends Component {
 
     constructor(props) {
@@ -11,8 +11,6 @@ class ListSearchedMessages extends Component {
             numberOfmessages: -1,
             emptyAJAX: false
         };
-
-
     }
 
 
@@ -41,6 +39,8 @@ class ListSearchedMessages extends Component {
 
 
     render() {
+
+        console.log("this.props",this.props)
         const MessageList = this.props.messages.map((message) =>
             <ListedSingleBlog key={message.publicID} message={message} imageQueryID = {this.props.imageQueryID} />);
         return (

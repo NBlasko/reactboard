@@ -5,7 +5,7 @@ import {
     getNewProfileMessagesAction, 
     deleteAllMessagesAction
  } from '../../../store/actions'
-import ListedSingleBlog from '../../messagesComponents/ListedSingleBlog';
+import ListedSingleBlog from '../../utils/blogComponents/ListedSingleBlog';
 class ProfileMessages extends Component {
 
     constructor(props) {

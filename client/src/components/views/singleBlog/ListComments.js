@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { 
+import {
     getCommentsAction,
     getNewCommentsAction,
-      deleteAllCommentsAction
-     } from '../../store/actions';
+    deleteAllCommentsAction
+} from '../../../store/actions';
 import SingleComment from './SingleComment';
 class ListComments extends Component {
 
@@ -33,7 +33,7 @@ class ListComments extends Component {
         if (newProps.comments !== this.props.comments) {
             this.setState((previousState) => {
                 return { skip: previousState.skip + 5 };
-            });  
+            });
         }
 
         this.setState({
@@ -52,7 +52,7 @@ class ListComments extends Component {
             if (pageOffset > lastDivOffset - bottomOffset) {
                 this.setState({ loading: true })   //I wanted two call here on setState
                 this.props.getCommentsAction(this.props.blogID, this.state.skip);
-               
+
             }
         }
     }
@@ -73,13 +73,13 @@ class ListComments extends Component {
 }
 
 const mapStateToProps = (state) => {
-    const {coins }= state.singleBlogMessage;
+    const { coins } = state.singleBlogMessage;
     const result = {
         comments: state.comments,
     }
     if (coins) {
         result.pageQueryID = coins.pageQueryID;
-     }
+    }
     return result
 }
 

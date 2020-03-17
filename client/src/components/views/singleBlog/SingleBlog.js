@@ -5,10 +5,10 @@ import {
     deleteSingleMessageAction,
     addProfileTrustAction,
     addBlogsLikeAction
-} from '../../store/actions';
+} from '../../../store/actions';
 import ListComments from './ListComments';
 import AddComment from './AddComment';
-import { SERVERURL } from '../../constants';
+import { SERVERURL } from '../../../store/types/types';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';

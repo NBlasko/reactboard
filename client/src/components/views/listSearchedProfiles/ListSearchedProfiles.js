@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ListedSingleProfile from './ListedSingleProfile';
-import {removeProfilesAction} from '../../store/actions'
+import {removeProfilesAction} from '../../../store/actions'
 
 class ListSearchedProfiles extends Component {
 

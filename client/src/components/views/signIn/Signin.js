@@ -11,7 +11,7 @@ import iconGoogle from '../../../assets/google.svg';
 import iconFacebook from '../../../assets/facebook.svg';
 import GoogleLogin from 'react-google-login';
 import FacebookLogin from 'react-facebook-login';
-import { SERVERURL } from '../../../constants'
+import { SERVERURL } from '../../../store/types/types';
 
 class Signin extends Component {
     constructor(props) {

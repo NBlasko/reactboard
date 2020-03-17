@@ -5,7 +5,7 @@ import {
     getSingleUserAction,
     removePreviewBlogImageAction
 } from '../../../store/actions';
-import { SERVERURL } from '../../../constants'
+import { SERVERURL } from '../../../store/types/types';
 import ImageGallery from '../../utils/imagesComponents/ImageGallery';
 
 

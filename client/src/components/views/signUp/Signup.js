@@ -7,7 +7,7 @@ import {
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { userSigned } from '../../../store/actions';
-import { SERVERURL } from '../../../constants';
+import { SERVERURL } from '../../../store/types/types';
 
 
 class Signup extends Component {
