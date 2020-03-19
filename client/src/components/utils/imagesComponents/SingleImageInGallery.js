@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { SERVERURL } from '../../../store/types/types';
 import {
-    removeGalleryImageAction,
+    updatePreviewBlogImageAction,
     setProfileImageAction,
     setBlogImageAction
 } from '../../../store/actions'
@@ -57,6 +57,8 @@ class SingleImageInGallery extends Component {
     }
 
     deleteAsAdmin() {
+        console.log("this.props", this.props.singleImage._id)
+        //  return;
         axios({
             method: 'DELETE',
             headers: {
@@ -65,16 +67,21 @@ class SingleImageInGallery extends Component {
             },
             url: SERVERURL + 'api/images/galleryImage/' + this.props.singleImage._id
         }).then(res => {
-            this.props.removeGalleryImageAction(res.data.id)
+            this.props.setGallery(gallery => {
+                return gallery.filter(singleImage => singleImage._id !== res.data.id)
+            })
+            this.props.updatePreviewBlogImageAction(res.data.id);
+            this.toggleAll();
+
         }).catch(error => {
             console.log(error)
             this.toggleAll();
         });
     }
 
+
     setProfileImage() {
         this.props.setProfileImageAction({ id: this.props.singleImage._id })
-        console.log('id od slike', this.props.singleImage._id)
         this.toggle();
     }
 
@@ -145,17 +152,13 @@ class SingleImageInGallery extends Component {
 }
 
 const mapStateToProps = (state) => {
-    // while we fetch all data, it's better like this 
-
-
     return {
         imageQueryID: state.user.imageQueryID,
         publicID: state.user.publicID
-
     }
 }
 export default connect(mapStateToProps, {
-    removeGalleryImageAction,
     setProfileImageAction,
-    setBlogImageAction
+    setBlogImageAction,
+    updatePreviewBlogImageAction
 })(SingleImageInGallery);

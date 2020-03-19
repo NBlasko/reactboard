@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios'
 import { Button, Alert } from 'reactstrap';
-import {SERVERURL} from '../../../store/types/types';
+import { SERVERURL } from '../../../store/types/types';
 import { connect } from 'react-redux';
-import { addGalleryImageAction } from '../../../store/actions'
+
 
 class ImageUploadClass extends Component {
     constructor(props) {
@@ -14,7 +14,7 @@ class ImageUploadClass extends Component {
             progressMessage: ''
         }
         this.fileSelected = this.fileSelected.bind(this);
-     //   this.fileUploadButton = this.fileUploadButton.bind(this);
+        //   this.fileUploadButton = this.fileUploadButton.bind(this);
         this.fileUpload = this.fileUpload.bind(this);
     }
 
@@ -23,10 +23,10 @@ class ImageUploadClass extends Component {
         this.setState({ file: e.target.files[0] })
     }
 
- //   fileUploadButton() { this.fileInput.click() }
+    //   fileUploadButton() { this.fileInput.click() }
     fileUpload() {
 
-       
+
         if (this.state.file) {
             let fd = new FormData();
             fd.append('image', this.state.file, this.state.file.name)
@@ -37,7 +37,7 @@ class ImageUploadClass extends Component {
                     'Cache-Control': 'no-cache'
                 },
 
-           //     url: SERVERURL + 'api/images',
+                //     url: SERVERURL + 'api/images',
                 url: SERVERURL + 'api/images/galleryImage',
                 data: fd,
                 onUploadProgress: (e) => {
@@ -45,9 +45,9 @@ class ImageUploadClass extends Component {
                 }
             })
                 .then(res => {
-                    this.setState({ file: null, progressMessage: ''/*, refresh: new Date().getTime() */})
-                    console.log("res uploada", res)
-                  this.props.addGalleryImageAction(res.data.id);
+                    this.setState({ file: null, progressMessage: ''/*, refresh: new Date().getTime() */ })
+                    console.log("res uploada", res);
+                    this.props.setGallery(images => [{ _id: res.data.id }, ...images])
                 })
                 .catch(error => {
                     this.setState({ file: null, progressMessage: '' })
@@ -90,4 +90,4 @@ class ImageUploadClass extends Component {
 
 
 
-export default connect(null, { addGalleryImageAction })(ImageUploadClass);
+export default connect(null, null)(ImageUploadClass);

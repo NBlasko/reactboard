@@ -4,12 +4,11 @@ import {
   ADD_MESSAGE, GET_MESSAGES, GET_NEW_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES,
   GET_SINGLE_MESSAGE, DELETE_SINGLE_MESSAGE,
   GET_COMMENTS, GET_NEW_COMMENTS, DELETE_ALL_COMMENTS, ADD_COMMENT,
-  GET_SINGLE_USER,REMOVE_SINGLE_USER,  SEARCH_PROFILES, REMOVE_PROFILES, ADD_PROFILE_TRUST,
-  GET_GALLERY_LIST, GET_NEW_GALLERY_LIST, REMOVE_GALLERY_IMAGE, REMOVE_GALLERY_LIST,
-  ADD_GALLERY_IMAGE, SET_PROFILE_IMAGE, SET_BLOG_IMAGE, REMOVE_PREVIEW_BLOG_IMAGE,
+  GET_SINGLE_USER, REMOVE_SINGLE_USER, SEARCH_PROFILES, REMOVE_PROFILES, ADD_PROFILE_TRUST,
+  SET_PROFILE_IMAGE, SET_BLOG_IMAGE, REMOVE_PREVIEW_BLOG_IMAGE, UPDATE_PREVIEW_BLOG_IMAGE,
   ADD_BLOGS_LIKE,
-  //REFRESH
-} from '../types/types';//import axios from 'axios';
+
+} from '../types/types';
 
 import axios from "axios";
 
@@ -175,7 +174,7 @@ export const getCommentsAction = (blogID, skip) => dispatch => {
       'Cache-Control': 'no-cache'
     },
     url: SERVERURL + 'api/blogs/' + blogID
-     + '/comments?skip=' + skip,
+      + '/comments?skip=' + skip,
   }).then(res => {
     dispatch({
       type: GET_COMMENTS,
@@ -193,7 +192,7 @@ export const getNewCommentsAction = (blogID, skip) => dispatch => {
       'Cache-Control': 'no-cache'
     },
     url: SERVERURL + 'api/blogs/' + blogID
-     + '/comments?skip=' + skip,
+      + '/comments?skip=' + skip,
   }).then(res => {
     dispatch({
       type: GET_NEW_COMMENTS,
@@ -382,62 +381,6 @@ export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
 }
 
 
-
-export const getGalleryListAction = (skip) => dispatch => {
-
-  axios({
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${localStorage.reactBoardToken}`,
-      'Cache-Control': 'no-cache'
-    },
-    url: SERVERURL + 'api/images/gallerylist?skip=' + skip,
-  }).then(res => {
-    dispatch({
-      type: GET_GALLERY_LIST,
-      payload: res.data
-    })
-  })
-    .catch(error => console.log(error));
-};
-
-export const getNewGalleryListAction = (skip) => dispatch => {
-
-  axios({
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${localStorage.reactBoardToken}`,
-      'Cache-Control': 'no-cache'
-    },
-    url: SERVERURL + 'api/images/gallerylist?skip='  + skip ,
-  }).then(res => {
-    dispatch({
-      type: GET_NEW_GALLERY_LIST,  //this one overwrites the state, not just adds new elements in the list
-      payload: res.data
-    })
-  })
-    .catch(error => console.log(error));
-};
-
-
-export const removeGalleryImageAction = (id) => ({
-  type: REMOVE_GALLERY_IMAGE,
-  id
-});
-
-
-export const removeGalleryListAction = () => ({
-  type: REMOVE_GALLERY_LIST,
-});
-
-
-export const addGalleryImageAction = (id) => ({
-  type: ADD_GALLERY_IMAGE,
-  payload: { _id: id }
-});
-
-
-
 export const setProfileImageAction = ({ id }) => dispatch => {
   axios({
     method: 'POST',
@@ -467,20 +410,18 @@ export const setBlogImageAction = (id) => ({
   type: SET_BLOG_IMAGE,
   id
 });
+
+
 export const removePreviewBlogImageAction = () => ({
   type: REMOVE_PREVIEW_BLOG_IMAGE,
 });
 
-
-
-
-// refresh components
-// mozda mi i ne zatreba
-/*export const refreshAction = (date) => ({
-  type: REFRESH,
-  date
+export const updatePreviewBlogImageAction = (id) => ({
+  type: UPDATE_PREVIEW_BLOG_IMAGE,
+  id
 });
-*/
+
+
 
 export const deleteMessageAction = (id) => ({
   type: DELETE_MESSAGE,

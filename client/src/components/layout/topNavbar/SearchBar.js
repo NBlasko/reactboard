@@ -1,24 +1,17 @@
 import React, { useState } from 'react';
-
 import {
     UncontrolledDropdown,
     DropdownToggle,
     DropdownMenu,
     DropdownItem,
     Input
-}
-    from 'reactstrap';
-
+} from 'reactstrap';
 import { useDispatch } from 'react-redux';
-
 import {
     searchBlogsAction,
     searchProfilesAction
 } from '../../../store/actions';
-
-
 import { withRouter } from "react-router";
-
 import search from '../../../assets/search.svg'
 
 function SearchBar(props) {
