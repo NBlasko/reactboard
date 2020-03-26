@@ -1,35 +1,30 @@
-import React, { Component } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios'
 import { Button, Alert } from 'reactstrap';
 import { SERVERURL } from '../../../store/types/types';
-import { connect } from 'react-redux';
 
 
-class ImageUploadClass extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            file: null,
-            errorMessage: '',
-            progressMessage: ''
-        }
-        this.fileSelected = this.fileSelected.bind(this);
-        //   this.fileUploadButton = this.fileUploadButton.bind(this);
-        this.fileUpload = this.fileUpload.bind(this);
-    }
+function ImageUploadClass(props) {
 
+    const [fileState, setFileState] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [progressMessage, setProgressMessage] = useState('');
+    const textInput = useRef();
 
-    fileSelected(e) {
-        this.setState({ file: e.target.files[0] })
+    const clickTextInput = () => textInput.current.click();
+
+    const fileSelected = (e) => {
+        setFileState(e.target.files[0])
     }
 
     //   fileUploadButton() { this.fileInput.click() }
-    fileUpload() {
+    const fileUpload = () => {
 
 
-        if (this.state.file) {
+        if (fileState) {
             let fd = new FormData();
-            fd.append('image', this.state.file, this.state.file.name)
+            setErrorMessage("");
+            fd.append('image', fileState, fileState.name)
             axios({
                 method: 'POST',
                 headers: {
@@ -41,53 +36,88 @@ class ImageUploadClass extends Component {
                 url: SERVERURL + 'api/images/galleryImage',
                 data: fd,
                 onUploadProgress: (e) => {
-                    this.setState({ progressMessage: Math.round(e.loaded / e.total * 100) })
+                    setProgressMessage(Math.round(e.loaded / e.total * 100))
                 }
             })
                 .then(res => {
-                    this.setState({ file: null, progressMessage: ''/*, refresh: new Date().getTime() */ })
+                    setProgressMessage('');
+                    setFileState(null);
                     console.log("res uploada", res);
-                    this.props.setGallery(images => [{ _id: res.data.id }, ...images])
+                    props.setGallery(images => [{ _id: res.data.id }, ...images])
                 })
                 .catch(error => {
-                    this.setState({ file: null, progressMessage: '' })
-                    console.log("error", error)
-                    //handle errorMessage
+                    setProgressMessage('');
+                    setFileState(null);
+                    if (
+                        error.response
+                        && error.response.data
+                        && error.response.data.error
+                        && error.response.data.error.message
+                    );
+                    setErrorMessage(error.response.data.error.message);
                 })
         }
 
-
-
     }
 
-    render() {
-        const pm = this.state.progressMessage;
-        let progressMessage = (pm !== '') ?
-            <div>
-                <h6> Image is loading... </h6>
-                <div className="progress">
-                    <div className="progress-bar  bg-primary" role="progressbar" style={{ width: `${pm - 1}%` }} aria-valuenow="15" aria-valuemin="0" aria-valuemax="100"></div>
-                    <div className="progress-bar bg-light" role="progressbar" style={{ width: `${101 - pm}%` }} aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+    let pm = (progressMessage !== '') ?
+        <div>
+            <h6> Image is loading... </h6>
+            <div className="progress">
+                <div
+                    className="progress-bar  bg-primary"
+                    role="progressbar"
+                    style={{ width: `${progressMessage - 1}%` }}
+                    aria-valuenow="15"
+                    aria-valuemin="0"
+                    aria-valuemax="100">
+                </div>
+                <div
+                    className="progress-bar bg-light"
+                    role="progressbar"
+                    style={{ width: `${101 - progressMessage}%` }}
+                    aria-valuenow="30"
+                    aria-valuemin="0"
+                    aria-valuemax="100">
                 </div>
             </div>
-            : null;
-
-        let errorMessage = (this.state.errorMessage !== '') ? <Alert color="warning opacity-5">{this.state.errorMessage}</Alert> : null;
-        return (
-            <div>
-                <br />
-                <input type="file" ref={fileInput => this.fileInput = fileInput} style={{ display: "none" }} onChange={this.fileSelected} />
-                <Button color="dark" className="m-3" onClick={() => this.fileInput.click()} > Select an image to upload </Button>
-                {(this.state.file && !pm) ? <Button color="dark" onClick={this.fileUpload} > Upload </Button> : null}
-                {(pm) ? progressMessage : null}
+        </div>
+        : null;
 
 
-                {errorMessage}
-            </div>
-        );
-    }
+    return (
+        <div>
+            <br />
+            <input
+                type="file"
+                ref={textInput}
+                style={{ display: "none" }}
+                onChange={fileSelected}
+            />
+            <Button
+                color="dark"
+                className="m-3"
+                onClick={clickTextInput} >
+                Select an image to upload
+            </Button>
+            {
+                (fileState && !pm)
+                    ? <Button color="dark" onClick={fileUpload} >
+                        Upload
+                        </Button>
+                    : null
+            }
+            {(progressMessage) ? pm : null}
+
+
+            {(errorMessage !== '')
+                ? <Alert color="warning opacity-5">{errorMessage}</Alert>
+                : null}
+        </div>
+    );
 }
 
 
 
-export default connect(null, null)(ImageUploadClass);
+
+export default ImageUploadClass;

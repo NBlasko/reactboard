@@ -2,11 +2,6 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import SingleImageInGallery from './SingleImageInGallery';
 import ImageUploadClass from './ImageUploadClass';
-// import {
-//     getGalleryListAction,
-//     getNewGalleryListAction,
-//     removeGalleryListAction
-// } from '../../../store/actions';
 import axios from "axios";
 import { SERVERURL } from '../../../store/types/types';
 import { withRouter } from "react-router";
@@ -15,8 +10,6 @@ function ImageGallery(props) {
     const [gallery, setGallery] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [emptyAJAX, setEmptyAJAX] = useState(false);
-
-
 
     const publicID = useSelector((state) => {
         return (state.user.publicID);
@@ -91,10 +84,7 @@ function ImageGallery(props) {
                     null
             }
         </div>
-
     )
-
-
 }
 
 
