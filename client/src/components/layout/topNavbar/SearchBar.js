@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import {
     UncontrolledDropdown,
     DropdownToggle,
@@ -12,18 +12,17 @@ import {
     searchProfilesAction
 } from '../../../store/actions';
 import { withRouter } from "react-router";
-import search from '../../../assets/search.svg'
+import { useDebounce } from 'use-debounce';
 
 function SearchBar(props) {
 
-
-    const [isOpeninput, setIsOpeninput] = useState(false);
-    const [dropInputClassBlog, setDropInputClassBlog] = useState("active");
-    const [dropInputClassProfile, setDropInputClassProfile] = useState("");
-    const [dropInputSelected, setDropInputSelected] = useState("blogs");
-    const [searchText, setSearchText] = useState("blogs");
-
+    // first props
+    const { replace } = props.history;
     const dispatch = useDispatch();
+    const [isOpeninput, setIsOpeninput] = useState(false);
+    const [dropInputSelected, setDropInputSelected] = useState("blogs");
+    const [searchText, setSearchText] = useState("");
+    const [debouncedSearchText] = useDebounce(searchText, 600);
 
     const toggleInput = () => {
         setIsOpeninput(prevState => !prevState);
@@ -33,12 +32,25 @@ function SearchBar(props) {
         setIsOpeninput(false);
     }
 
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
-            sendSearch();
-            closeToggleInput()
+    function reducer(state, action) {
+        closeToggleInput();
+        switch (action.type) {
+
+            case 'SEARCHED_MESSAGES':
+                dispatch(searchBlogsAction(debouncedSearchText));
+                return state;
+
+            case 'SEARCHED_PROFILES':
+                dispatch(searchProfilesAction(debouncedSearchText))
+                return state;
+
+            default:
+                return state
         }
+
     }
+
+    const localDispatch = useReducer(reducer, 0)[1];
 
     const handleChange = (e) => {
         setSearchText(e.target.value)
@@ -46,29 +58,29 @@ function SearchBar(props) {
 
     const handleDropDown = (e) => {
         if (e.target.name === "profiles") {
-            setDropInputClassBlog("");
-            setDropInputClassProfile("active")
             setDropInputSelected("profiles")
         } else {
-            setDropInputClassBlog("active");
-            setDropInputClassProfile("")
             setDropInputSelected("blogs")
         }
     }
 
-    const sendSearch = () => {
-        if (searchText !== "") {
-            if (dropInputSelected === "profiles") {
-                dispatch(searchProfilesAction(searchText)) //za sad radimo za blogove, kasnije za profile
-                props.history.replace('/listsearchedprofiles');
+    useEffect(() => {
+        if (debouncedSearchText.length > 2 || debouncedSearchText === "")
+            //   sendSearch;
+            if (debouncedSearchText !== "") {
+                if (dropInputSelected === "profiles") {
+                    localDispatch({ type: 'SEARCHED_PROFILES' })
+                    replace('/listsearchedprofiles');
+                }
+                else {
+                    localDispatch({ type: 'SEARCHED_MESSAGES' })
+                    replace('/searchedmessages');
+                }
             }
-            else {
-                dispatch(searchBlogsAction(searchText)) //za sad radimo za blogove, kasnije za profile
-                props.history.replace('/searchedmessages');
-            }
-            props.closeToggle();
-        }
-    }
+            else replace('/');
+
+    }, [debouncedSearchText, dropInputSelected, localDispatch, replace])
+
 
 
     return (
@@ -86,7 +98,6 @@ function SearchBar(props) {
                     className="float-right"
                     placeholder={"search for " + dropInputSelected}
                     style={{ margin: "0px" }}
-                    onKeyPress={handleKeyPress}
                     onChange={handleChange}
                 />
             </DropdownToggle>
@@ -95,32 +106,21 @@ function SearchBar(props) {
                 <DropdownItem
                     onClick={handleDropDown}
                     name="blogs">
-                    Blogs {(dropInputClassBlog)
-                        ? <i className="fa fa-check"></i>
-                        : null
+                    Blogs {
+                        (dropInputSelected === "blogs")
+                            ? <i className="fa fa-check"></i>
+                            : null
                     }
                 </DropdownItem>
                 <DropdownItem
                     name="profiles"
                     onClick={handleDropDown}
-                > Profiles {(dropInputClassProfile)
-                    ? <i className="fa fa-check"></i>
-                    : null
+                > Profiles {
+                        (dropInputSelected === "profiles")
+                            ? <i className="fa fa-check"></i>
+                            : null
                     }
                 </DropdownItem>
-                <DropdownItem
-                    name="searchGo"
-                    onClick={sendSearch}
-                    className="btn-dark"
-                >
-                    Start search
-                    <img
-                        style={{ height: "20px" }}
-                        src={search}
-                        alt="search"
-                    />
-                </DropdownItem>
-
             </DropdownMenu>
         </UncontrolledDropdown>
     )

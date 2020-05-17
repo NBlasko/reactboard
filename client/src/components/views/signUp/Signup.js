@@ -68,7 +68,10 @@ class Signup extends Component {
             })
             .catch((error) => {
 
-                this.setState({ errorMessage: error.response.data.error, blockUnmounting: false });
+                this.setState({
+                    errorMessage: error.response.data.error,
+                    blockUnmounting: false
+                });
             });
     }
 
@@ -87,7 +90,10 @@ class Signup extends Component {
                 }
             })
             .catch((error) => {
-                this.setState({ errorMessage: error.response.data.error, blockUnmounting: false });
+                this.setState({
+                    errorMessage: error.response.data.error,
+                    blockUnmounting: false
+                });
             });
 
 

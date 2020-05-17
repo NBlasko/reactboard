@@ -24,13 +24,13 @@ function SingleImageInGallery(props) {
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [isOpenNestedModal, setIsOpenNestedModal] = useState(false);
     const [closeAll, setCloseAll] = useState(false);
-    const [refreshImg, setRefreshImg] = useState(0);
+    const [refreshImg/*, setRefreshImg*/] = useState(0);
     const [matchId, setMatchId] = useState("");
 
 
     useEffect(() => {
         setMatchId(props.match.params.id)
-    }, [])
+    }, [props.match.params.id])
 
 
     const galleryPath = (namePath) => {

@@ -22,7 +22,7 @@ export default function useSearch({query, skip, criteria, setMessages}) {
       params: { /*q: query,*/ skip: skip, criteria: newCriteria },
       cancelToken: new axios.CancelToken(c => cancel = c)
     }).then(res => {
-      console.log("res", res.data)
+     // console.log("res", res.data)
       setMessages(prevState => {
         return [...new Set([...prevState, ...res.data])]
       })

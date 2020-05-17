@@ -75,9 +75,7 @@ function TopNavbar(props) {
                 <Collapse isOpen={isOpen} navbar>
                     <Nav className="ml-auto" navbar>
 
-                        <SearchBar
-                            closeToggle={closeToggle}
-                        />
+                        <SearchBar />
 
                         <NavItem className="d-none d-sm-block">
                             <Link
