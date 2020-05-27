@@ -9,7 +9,8 @@ import refresh from './refresh';
 import numberOfData from './numberOfData';
 import previewBlogImage from './previewBlogImage'
 import profiles from './profiles';
-
+import toggle from './toggle';
+import searchText from './searchText'
 export default combineReducers({
     messages,
     user,
@@ -21,4 +22,6 @@ export default combineReducers({
     refresh,
     numberOfData,
     previewBlogImage,
+    toggle,
+    searchText
 });

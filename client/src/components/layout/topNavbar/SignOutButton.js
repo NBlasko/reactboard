@@ -1,33 +1,28 @@
 import React from 'react';
-import { NavItem } from 'reactstrap';
-import { useDispatch } from 'react-redux';
-import { removeUserProfile, } from '../../../store/actions';
-import { withRouter } from "react-router";
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
 
-function SignOutButton(props) {
+function SignOutButton() {
 
-    const dispatch = useDispatch();
-
-    const SignOut = (e) => {
+    const SignOut = () => {
         localStorage.removeItem('reactBoardToken');
-        dispatch(removeUserProfile()); //all reducers should be here
-        props.history.replace('/signin');
+        window.location.reload();
     }
 
     return (
-        <NavItem>
-            <span
-                onClick={SignOut}
-                className="signoutReactBoard nav-link text-dark tab"
+        <MenuItem onClick={SignOut}>
+            <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                color="inherit"
             >
-                SignOut
-        </span>
-        </NavItem>
+            <ExitToAppIcon />
+            </IconButton>
+                Sign Out
+        </MenuItem>
     )
-
 }
 
-const SignOutButtonWithRouter = withRouter(SignOutButton);
-
-
-export default SignOutButtonWithRouter;
+export default SignOutButton;

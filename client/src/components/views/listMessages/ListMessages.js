@@ -1,28 +1,34 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import useSearch from '../../utils/search/useSearch';
-import ListedSingleBlog from '../../utils/blogComponents/ListedSingleBlog'
-function ListMessages(props) {
+import ListedSingleBlog from '../../utils/blogComponents/ListedSingleBlog';
 
+function ListMessages(props) {
     const [skip, setSkip] = useState(0);
     const [messages, setMessages] = useState([]);
-    const criteria = props.location.pathname.slice(1)
-    const {
-        loading,
-        error,
-        hasMore
-    } = useSearch({
-        query: "",
-        skip,
-        criteria: criteria,
-        setMessages
-    });
+    const criteria = props.location.pathname.slice(1);
+    let searchText = useSelector(state => state.searchText);
 
     useEffect(() => {
         window.scrollTo(0, 0);
         setMessages([]);
         setSkip(0)
-    }, [/*query,*/ /*criteria: */criteria])
+        return ()=> {
+            setSkip(0); 
+        }
+    }, [searchText, criteria])
+
+
+    const {
+        loading,
+        error,
+        hasMore
+    } = useSearch({
+        searchText,
+        skip,
+        criteria,
+        setMessages
+    });
 
     const imageQueryID = useSelector(state => state.user.imageQueryID);
 

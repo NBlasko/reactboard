@@ -9,14 +9,17 @@ module.exports = {
 
     index: async (req, res, next) => {
 
-        let { skip, criteria } = req.value.query;
+        let { skip, criteria, searchText = "" } = req.value.query;
+        const regexSearch = new RegExp(searchText, "i");
+        const findObject = {};
+        if (searchText.length > 2) findObject.title = regexSearch;
         let newCriteria = { "date": -1 }
         if (criteria === "mostseenblogs") newCriteria = { "seen": -1 };
         if (criteria === "mostlikedblogs") newCriteria = { "difference": -1 };
         if (criteria === "new") newCriteria = { "date": -1 };
         skip = parseInt(skip)
         const blogs = await Blog
-            .find({},
+            .find(findObject,
                 `trustVote likeVote seen numberOfComments title author body publicID authorsPublicID 
                 date difference image.galleryMongoID`)
             .populate({
@@ -151,9 +154,9 @@ module.exports = {
         const admin = req.user.publicID === blog.authorsPublicID;
 
 
-        if (req.user.coins.total < 3 && !admin) 
+        if (req.user.coins.total < 3 && !admin)
             return res.status(403).json({ error: "You don\'t have enough coins" })
-        
+
 
         blog.seen += 1;
         await blog.save();
@@ -257,12 +260,12 @@ module.exports = {
 
     getBlogsComments: async (req, res, next) => {   //ovo da aktiviram na neko dugme ili skrolovanjem na dno bloga, da dobacim komentare
 
-      //  console.log("req.value", req.value)
+        //  console.log("req.value", req.value)
         const { blogId } = req.value.params;
         const blog = await Blog.findOne({ publicID: blogId }, "authorsPublicID")
 
 
-        let { skip } = req.value.query  
+        let { skip } = req.value.query
         skip = parseInt(skip)
         const admin = req.user.publicID === blog.authorsPublicID;
 
@@ -272,10 +275,10 @@ module.exports = {
         const chargedForPage = blogId === req.user.coins.pageQueryID;
 
         /* no coins, and not an admin can not fetch comments */
-     /*   console.log(
-            "!chargedForPage", !chargedForPage,
-            "!admin", !admin
-        )*/
+        /*   console.log(
+               "!chargedForPage", !chargedForPage,
+               "!admin", !admin
+           )*/
 
         if (!chargedForPage && !admin)
             return res.status(403).json({ error: "You don\'t have enough coins" })

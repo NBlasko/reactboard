@@ -24,7 +24,7 @@ function customRender({ RedirectComponent, props }) {
 function MainContent() {
     return (
 
-        <div style={{ paddingTop: "55px" }}>
+        <div style={{ paddingTop: "55px", margin: "auto", maxWidth: "650px" }}>
             <Switch>
 
                 <Route exact path="/" render={(props) =>

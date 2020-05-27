@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer } from 'react';
+import React, { useState, useEffect/*, useReducer*/ } from 'react';
 import {
     UncontrolledDropdown,
     DropdownToggle,
@@ -6,19 +6,22 @@ import {
     DropdownItem,
     Input
 } from 'reactstrap';
-import { useDispatch } from 'react-redux';
-import {
-    searchBlogsAction,
-    searchProfilesAction
-} from '../../../store/actions';
+//import { useDispatch } from 'react-redux';
+// import {
+//     searchBlogsAction,
+//     searchProfilesAction
+// } from '../../../store/actions';
+import { setSearchTextAction }
+    from '../../../store/actions/searchText'
 import { withRouter } from "react-router";
 import { useDebounce } from 'use-debounce';
+import store from '../../../store/store'
 
 function SearchBar(props) {
 
     // first props
     const { replace } = props.history;
-    const dispatch = useDispatch();
+    //const dispatch = useDispatch();
     const [isOpeninput, setIsOpeninput] = useState(false);
     const [dropInputSelected, setDropInputSelected] = useState("blogs");
     const [searchText, setSearchText] = useState("");
@@ -28,29 +31,25 @@ function SearchBar(props) {
         setIsOpeninput(prevState => !prevState);
     }
 
-    const closeToggleInput = () => {
-        setIsOpeninput(false);
-    }
+    // function reducer(state, action) {
+    //     closeToggleInput();
+    //     switch (action.type) {
 
-    function reducer(state, action) {
-        closeToggleInput();
-        switch (action.type) {
+    //         case 'SEARCHED_MESSAGES':
+    //             //     store.dispatch(searchBlogsAction(debouncedSearchText));
+    //             return state;
 
-            case 'SEARCHED_MESSAGES':
-                dispatch(searchBlogsAction(debouncedSearchText));
-                return state;
+    //         case 'SEARCHED_PROFILES':
+    //             // store.dispatch(searchProfilesAction(debouncedSearchText))
+    //             return state;
 
-            case 'SEARCHED_PROFILES':
-                dispatch(searchProfilesAction(debouncedSearchText))
-                return state;
+    //         default:
+    //             return state
+    //     }
 
-            default:
-                return state
-        }
+    // }
 
-    }
-
-    const localDispatch = useReducer(reducer, 0)[1];
+    // const localDispatch = useReducer(reducer, 0)[1];
 
     const handleChange = (e) => {
         setSearchText(e.target.value)
@@ -67,19 +66,22 @@ function SearchBar(props) {
     useEffect(() => {
         if (debouncedSearchText.length > 2 || debouncedSearchText === "")
             //   sendSearch;
-            if (debouncedSearchText !== "") {
-                if (dropInputSelected === "profiles") {
-                    localDispatch({ type: 'SEARCHED_PROFILES' })
-                    replace('/listsearchedprofiles');
-                }
-                else {
-                    localDispatch({ type: 'SEARCHED_MESSAGES' })
-                    replace('/searchedmessages');
-                }
-            }
-            else replace('/');
+            store.dispatch(setSearchTextAction(debouncedSearchText))
+        // if (debouncedSearchText !== "") {
+        //     if (dropInputSelected === "profiles") {
+        //         //     localDispatch({ type: 'SEARCHED_PROFILES' })
+        //         store.dispatch(searchProfilesAction(debouncedSearchText))
+        //         replace('/listsearchedprofiles');
+        //     }
+        //     else {
+        //         //   localDispatch({ type: 'SEARCHED_MESSAGES' })
+        //         store.dispatch(searchBlogsAction(debouncedSearchText));
+        //         replace('/searchedmessages');
+        //     }
+        // }
+       // else replace('/');
 
-    }, [debouncedSearchText, dropInputSelected, localDispatch, replace])
+    }, [debouncedSearchText, dropInputSelected/*, localDispatch*/, replace])
 
 
 

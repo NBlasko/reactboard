@@ -1,62 +1,61 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, } from 'react-redux';
 
 import ListedSingleBlog from '../../utils/blogComponents/ListedSingleBlog';
-class ListSearchedMessages extends Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            loading: false,
-            numberOfmessages: -1,
-            emptyAJAX: false
-        };
-    }
-
-
-    componentDidUpdate(prevProps, prevState) {
-        // only update  if the data has changed
-    //    console.log("this.props",this.props)
-        if (prevProps.location.pathname !== this.props.location.pathname) {
-            window.scrollTo(0, 0);
-            //  console.log("didupdate", this.props.location.pathname)
-         //   this.props.getNewMessagesAction(0, this.props.location.pathname.slice(1));
-         //oVDE TREBA DA SE STAVI ACTION CREATER..... MOZDA I NE TREB< MOZDA CE TO NAVBAR DA SREDI
-            this.setState({ emptyAJAX: false, numberOfmessages: -1, });
-        }
-    }
-    componentWillReceiveProps(newProps) {
-         if (newProps.location.pathname === this.props.location.pathname) {
-
-
-            this.setState({ loading: false, numberOfmessages: newProps.messages.length });
-            if (this.state.numberOfmessages === newProps.messages.length && newProps.messages.length !== -1)
-                this.setState({ emptyAJAX: true })
-        }
-    }
+// class ListSearchedMessages extends Component {
+//     componentDidUpdate(prevProps, prevState) {
+//         if (prevProps.location.pathname !== this.props.location.pathname) {
+//             window.scrollTo(0, 0);
+//             this.setState({ isEmptyAJAX: false, numberOfmessages: -1, });
+//         }
+//     }
+//     componentWillReceiveProps(newProps) {
+//         if (newProps.location.pathname === this.props.location.pathname) {
+//             this.setState({ isLoading: false, numberOfmessages: newProps.messages.length });
+//             if (this.state.numberOfmessages === newProps.messages.length && newProps.messages.length !== -1)
+//                 this.setState({ isEmptyAJAX: true })
+//         }
+//     }
+// }
 
 
 
+function ListSearchedMessages(props) {
 
-    render() {
 
-        console.log("this.props",this.props)
-        const MessageList = this.props.messages.map((message) =>
-            <ListedSingleBlog key={message.publicID} message={message} imageQueryID = {this.props.imageQueryID} />);
-        return (
-            <div className="shadow p-3 m-2 bg-white rounded">
-                {MessageList}
-                {(this.state.emptyAJAX) ? <div> There are no more messages... </div> : null}
-            </div>
-        );
-    }
+    const messages = useSelector(state => state.messages)
+    const imageQueryID = useSelector(state => state.user.imageQueryID)
+
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [isEmptyAJAX, setIsEmptyAJAX] = useState(false);
+    const [numberOfmessages, setNumberOfmessages] = useState(-1);
+
+    const { pathname } = props.location;
+
+
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname])
+
+
+    const MessageList = messages.map((message) =>
+        <ListedSingleBlog
+            key={message.publicID}
+            message={message}
+            imageQueryID={imageQueryID}
+        />)
+        ;
+
+
+    return (
+        <div className="shadow p-3 m-2 bg-white rounded">
+            O Ovome pricamo
+            {MessageList}
+            {(isEmptyAJAX) ? <div> There are no more messages... </div> : null}
+        </div>)
+
 }
 
-const mapStateToProps = (state) => {
-    return {
-        messages: state.messages,
-        imageQueryID: state.user.imageQueryID
-    }
-}
-
-export default connect(mapStateToProps, null)(ListSearchedMessages);
+export default ListSearchedMessages;

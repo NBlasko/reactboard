@@ -25,7 +25,7 @@ function ListedSingleBlog(props) {
         <div id={message.publicID} className="container-fluid" >
             <div className="row">
                 <div className="col-sm-4 col-lg-3 col-xl-2">
-                    <Link to={'blog/' + message.publicID}>
+                    <Link to={'../blog/' + message.publicID}>
                         {
                             (message.image)
                                 ? <img className="img-thumbnail rounded mx-auto d-block"
@@ -55,7 +55,7 @@ function ListedSingleBlog(props) {
 
                 <div className="col-sm-8 col-lg-9 col-xl-10">
                     <h4>
-                        <Link to={'blog/' + message.publicID}> {message.title}</Link>
+                        <Link to={'../blog/' + message.publicID}> {message.title}</Link>
                         <small className="text-muted"> by {message.author} </small>
                     </h4>
                     <p>{message.body}</p>

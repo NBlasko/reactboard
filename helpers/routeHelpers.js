@@ -91,6 +91,7 @@ module.exports = {
         }),
         skipCriteriaSchema: Joi.object().keys({
             skip: Joi.number().integer().min(0).required(),
+            searchText: Joi.string(),
             criteria: Joi.string().regex(
                 /^(new|mostlikedblogs|mostseenblogs|profile)$/
                 ).required()
