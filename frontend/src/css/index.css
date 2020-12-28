@@ -23,54 +23,10 @@ html, body {
   box-shadow: -5px 2px 62px 8px rgba(0, 0, 0, 0.75);
 }
 
-.font-flower {
-  font-weight: bold;
-  font-family: 'Indie Flower', cursive;
+button.social-btn {
+  width: 400px;
 }
 
-.opacity-5 {
-  opacity: 0.5;
-}
-
-.buttonBorder {
-  border: none;
-}
-
-.btn-prim-act-custom {
-  background-color: #2FA4E7;
-  color: white;
-}
-
-.btn-dang-act-custom {
-  background-color: #C71C22;
-  color: white;
-}
-
-.btn-social {
-  width: 49%;
-}
-
-.hoverSocial :hover {
-  opacity: 0.9
-}
-
-.btn-social img {
-  width: 30px;
-  margin-right: 15px;
-}
-
-.facebook-btn {
-  color: #fff;
-  background-color: #3b5998;
-}
-
-.minHeight {
-  min-height: 200px;
-}
-
-.signoutReactBoard:hover {
-  cursor: pointer;
-}
 
 .imageFit {
   padding-bottom: 10px;
@@ -112,9 +68,3 @@ html, body {
   max-width: 1000px;
 }
 
-hr {
-  border: 0;
-  height: 1px;
-  background: #333;
-  background-image: linear-gradient(to right, #ccc, #333, #ccc);
-}

@@ -2,8 +2,8 @@ import React from 'react';
 
 import { Route, Redirect, Switch } from 'react-router-dom';
 import ListMessages from '../views/listMessages/ListMessages';
-import Signin from '../views/signIn/Signin';
-import Signup from '../views/signUp/Signup';
+import SignIn from '../views/signIn/SignIn';
+import SignUp from '../views/signUp/Signup';
 import AddMessage from '../views/addMessage/AddMessage';
 import SingleBlog from '../views/singleBlog/SingleBlog';
 import SingleProfile from '../views/singleProfile/SingleProfile';
@@ -64,7 +64,7 @@ function MainContent() {
                     render={({ history }) => (
                         localStorage.reactBoardToken
                             ? (<Redirect to="/" replace />)
-                            : (<Signin history={history} />))
+                            : (<SignIn history={history} />))
                     }
                 />
 
@@ -72,7 +72,7 @@ function MainContent() {
                     render={({ history }) => (
                         localStorage.reactBoardToken
                             ? (<Redirect to="/" replace />)
-                            : (<Signup history={history} />))
+                            : (<SignUp history={history} />))
                     }
                 />
 

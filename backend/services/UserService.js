@@ -37,24 +37,24 @@ module.exports = {
     const foundUser = await User.findOne({ email }).populate({ path: "userProfile" });
 
     if (!foundUser) {
-      return res.status(403).json({ error: "User not found" });
+      return res.status(403).json({ message: "User not found" });
     }
 
     const existsLocalStrategy = foundUser && foundUser.local && foundUser.local.passwordHash;
     if (!existsLocalStrategy) {
-      return res.status(400).json({ error: "Bad request" });
+      return res.status(400).json({ message: "Bad request" });
     }
 
     if (foundUser.local && foundUser.local.isVerified) {
-      return res.status(400).json({ error: "You are already verified" });
+      return res.status(400).json({ message: "You are already verified" });
     }
 
     if (dateNow - foundUser.local.accessCodeTime.getTime() > ACCESS_CODE_TTL) {
-      return res.status(403).json({ error: "Verification code has expired" });
+      return res.status(403).json({ message: "Verification code has expired" });
     }
 
     if (foundUser.local.accessNumberTry < 0) {
-      return res.status(403).json({ error: "You tried verifying email too many times. Resend email" });
+      return res.status(403).json({ message: "You tried verifying email too many times. Resend email" });
     }
 
     if (foundUser.local.accessCode !== accessCode) {
@@ -62,10 +62,10 @@ module.exports = {
       await foundUser.save();
 
       if (foundUser.local.accessNumberTry < 0) {
-        return res.status(403).json({ error: "Wrong verification code. You tried too many times. Resend email" });
+        return res.status(403).json({ message: "Wrong verification code. You tried too many times. Resend email" });
       }
 
-      return res.status(403).json({ error: "Wrong verification code" });
+      return res.status(403).json({ message: "Wrong verification code" });
     }
 
     /* if everything has been done correctly */
@@ -81,11 +81,11 @@ module.exports = {
   resendVerificationMail: async (req, res) => {
     const { email } = req.value.body;
     const user = await User.findOne({ email }).populate({ path: "userProfile" });
-    if (!user) return res.status(400).json({ error: "User not found" });
+    if (!user) return res.status(400).json({ message: "User not found" });
     const accessCode = generateAccessCode();
 
     if (user.local && user.local.isVerified) {
-      return res.status(400).json({ error: "You are already verified" });
+      return res.status(400).json({ message: "You are already verified" });
     }
 
     user.local.accessCode = accessCode;
@@ -109,7 +109,7 @@ module.exports = {
 
     if (foundUser) {
       const existsLocalStrategy = foundUser && foundUser.local && foundUser.local.passwordHash;
-      if (existsLocalStrategy) return res.status(403).json({ error: "Email is already in use" });
+      if (existsLocalStrategy) return res.status(403).json({ message: "Email is already in use" });
 
       // update user with local strategy
       const salt = await bcrypt.genSalt(10);
@@ -119,7 +119,7 @@ module.exports = {
 
       await foundUser.save();
 
-      sendEmail(email, newUser.name, accessCode);
+      sendEmail(email, foundUser.name, accessCode);
 
       return res.status(204).end();
     }

@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const authedAxios = () => {
+const http = () => {
 
 }
 
-export default authedAxios;
+export default http;

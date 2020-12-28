@@ -3,7 +3,6 @@ const Schema = mongoose.Schema;
 
 /* Create a schema */
 const userSchema = new Schema({
-
   coins: {
     date: { type: Date, default: Date.now },
     total: { type: Number, default: 30 },
@@ -29,8 +28,8 @@ const userSchema = new Schema({
     accessNumberTry: { type: Number, default: 3 }
   },
 
-  googleId: { type: String },
-  facebookId: { type: String },
+  googleId: String,
+  facebookId: String,
 
   userProfile: {
     type: Schema.Types.ObjectId,

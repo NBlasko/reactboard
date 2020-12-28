@@ -12,7 +12,6 @@ const UserService = require('../services/UserService');
 /* helpers */
 const { validateBody, schemas } = require('../helpers/routeHelpers');
 
-
 /* routes*/
 
 router.route('/signup')

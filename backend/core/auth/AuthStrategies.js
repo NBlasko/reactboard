@@ -134,64 +134,84 @@ const initAuthStrategies = () => {
       async (accessToken, refreshToken, profile, done) => {
         try {
           console.log("profile", profile);
-          // console.log('accessToken', accessToken);
-          // console.log('refreshToken', refreshToken);
 
-          const existingUser = await User.findOne({ "facebook.id": profile.id });
-          if (existingUser) {
-            return done(null, existingUser);
+          const foundUserByFacebookId = await User.findOne({ facebookId: profile.id });
+
+          if (foundUserByFacebookId) {
+            return done(null, foundUserByFacebookId);
           }
 
+          if (!(profile.emails[0] && profile.emails[0].value)) {
+            return done({ message: "Email is not available", status: 403 }, null);
+          }
+
+          const foundUserByEmail = await User.findOne({ email: profile.emails[0].value }).populate({ path: "userProfile" });
+          if (foundUserByEmail) {
+            foundUserByEmail.facebookId = profile.id;
+            await Promise.all([foundUserByEmail.userProfile.save(), foundUserByEmail.save()]);
+            return done(null, foundUserByEmail);
+          }
+
+          const trustVote = new TrustVote();
+          const imagesGallery = new ImagesGallery();
+          const userProfile = new UserProfile({ trustVote, displayName: profile.displayName, imagesGallery });
+
+          const newUser = new User({
+            userProfile,
+            email: profile.emails[0].value,
+            googleId: profile.id
+          });
           // code bellow executes for initial login - create TrustVote, ImageGallery
 
           // Create TrustVote
-          const trustVote = new TrustVote({
-            Up: 0,
-            Down: 0
-          });
-          await trustVote.save();
+          // const trustVote = new TrustVote({
+          //   Up: 0,
+          //   Down: 0
+          // });
+          // await trustVote.save();
 
-          // Create a new user
-          const newUser = new User({
-            method: "facebook",
-            publicID: trustVote.authorId,
-            name: profile.displayName,
-            facebook: {
-              id: profile.id,
-              email: profile.emails[0].value
-            },
-            trustVote: trustVote.id
-          });
+          // // Create a new user
+          // const newUser = new User({
+          //   method: "facebook",
+          //   publicID: trustVote.authorId,
+          //   name: profile.displayName,
+          //   facebook: {
+          //     id: profile.id,
+          //     email: profile.emails[0].value
+          //   },
+          //   trustVote: trustVote.id
+          // });
 
           // upload image on cloudinary if exists
-          let image;
-          if (profile.photos[0].value)
-            await cloudinary.v2.uploader.upload(profile.photos[0].value, uploadCloudinaryOptions, function(error, result) {
-              if (error) throw error;
-              image = {
-                URL: result.secure_url,
-                imageID: result.public_id
-              };
-            });
+          // let image;
+          // if (profile.photos[0].value)
+          //   await cloudinary.v2.uploader.upload(profile.photos[0].value, uploadCloudinaryOptions, function(error, result) {
+          //     if (error) throw error;
+          //     image = {
+          //       URL: result.secure_url,
+          //       imageID: result.public_id
+          //     };
+          //   });
 
           // Create ImagesGallery
-          let imagesGallery;
-          if (image) {
-            imagesGallery = new ImagesGallery({
-              authorId: trustVote.authorId,
-              images: [image]
-            });
-          } else {
-            imagesGallery = new ImagesGallery({
-              authorId: trustVote.authorId
-            });
-          }
+          // let imagesGallery;
+          // if (image) {
+          //   imagesGallery = new ImagesGallery({
+          //     authorId: trustVote.authorId,
+          //     images: [image]
+          //   });
+          // } else {
+          //   imagesGallery = new ImagesGallery({
+          //     authorId: trustVote.authorId
+          //   });
+          // }
 
-          await imagesGallery.save();
+          // await imagesGallery.save();
 
-          if (image.URL) newUser.image = { URL: image.URL };
+          // if (image.URL) newUser.image = { URL: image.URL };
 
-          await newUser.save();
+          await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
+
           done(null, newUser);
         } catch (error) {
           done(error, false, error.message);
