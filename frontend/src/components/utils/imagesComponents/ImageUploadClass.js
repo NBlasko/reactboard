@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios'
 import { Button, Alert } from 'reactstrap';
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 
 
 function ImageUploadClass(props) {
@@ -32,8 +32,8 @@ function ImageUploadClass(props) {
                     'Cache-Control': 'no-cache'
                 },
 
-                //     url: SERVERURL + 'api/images',
-                url: SERVERURL + 'api/images/galleryImage',
+                //     url: SERVER_BASE_URL + 'api/images',
+                url: SERVER_BASE_URL + 'api/images/galleryImage',
                 data: fd,
                 onUploadProgress: (e) => {
                     setProgressMessage(Math.round(e.loaded / e.total * 100))

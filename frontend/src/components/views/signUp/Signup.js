@@ -4,7 +4,7 @@ import { Button, Form, FormGroup, Container, Alert, Row, Col, Modal, ModalHeader
 import axios from "axios";
 import { connect } from "react-redux";
 import { userSigned } from "../../../store/actions";
-import { SERVERURL } from "../../../store/types/types";
+import { SERVER_BASE_URL } from "../../../store/types/types";
 import useInput from "../../utils/ui/input/useInput";
 
 function SignupView(props) {
@@ -15,7 +15,7 @@ function SignupView(props) {
   const verifyEmail = () => {
     setBlockUnmounting(true);
     axios
-      .post(SERVERURL + "api/auth/verify-mail", { email, accessCode })
+      .post(SERVER_BASE_URL + "api/auth/verify-mail", { email, accessCode })
       .then(response => {
         if (response.status === 200) {
           localStorage.reactBoardToken = response.data.token;
@@ -37,7 +37,7 @@ function SignupView(props) {
     setBlockUnmounting(true);
     const { email } = this.state;
     axios
-      .post(SERVERURL + "api/auth/resend-verification-mail", { email })
+      .post(SERVER_BASE_URL + "api/auth/resend-verification-mail", { email })
       .then(response => {
         console.log("Email is sent");
       })
@@ -49,7 +49,7 @@ function SignupView(props) {
     setBlockUnmounting(true);
 
     axios
-      .post(SERVERURL + "api/auth/signup", { email, password, displayName })
+      .post(SERVER_BASE_URL + "api/auth/signup", { email, password, displayName })
       .then(response => setIsModalOpen(true))
       .catch(error => setErrorMessage(error.message)) //potrebno je hendlati na backu ovo
       .finally(() => setBlockUnmounting(false));

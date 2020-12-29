@@ -8,7 +8,7 @@ import {
 } from '../../../store/actions';
 import ListComments from './ListComments';
 import AddComment from './AddComment';
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 import { Link, Redirect } from 'react-router-dom';
 import axios from 'axios';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -70,7 +70,7 @@ class SingleBlog extends Component {
                 Authorization: `Bearer ${localStorage.reactBoardToken}`,
                 'Cache-Control': 'no-cache'
             },
-            url: SERVERURL + 'api/blogs/' + this.props.match.params.id,
+            url: SERVER_BASE_URL + 'api/blogs/' + this.props.match.params.id,
         }).then(res => {
             console.log("res", res)
             //setSome state to redirect
@@ -109,7 +109,7 @@ class SingleBlog extends Component {
                         {
                             (this.props.singleBlogMessage && this.props.singleBlogMessage.image && this.state.imageLoadError)
                                 ? <img className="imageFit"
-                                    src={`${SERVERURL}api/images/galleryImage?imageQueryID=${this.props.imageQueryID}&singleImageID=${this.props.singleBlogMessage.image}&publicID=${this.props.singleBlogMessage.authorsPublicID}`}
+                                    src={`${SERVER_BASE_URL}api/images/galleryImage?imageQueryID=${this.props.imageQueryID}&singleImageID=${this.props.singleBlogMessage.image}&publicID=${this.props.singleBlogMessage.authorsPublicID}`}
                                     onError={(e) => {
                                         this.setState({
                                             imageLoadError: false

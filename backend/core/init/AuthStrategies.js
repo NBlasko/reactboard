@@ -5,7 +5,7 @@ const { ExtractJwt } = require("passport-jwt");
 const LocalStrategy = require("passport-local").Strategy;
 const FacebookTokenStrategy = require("passport-facebook-token");
 const GooglePlusTokenStrategy = require("passport-google-token").Strategy;
-const enviromentSetup = require("../../configuration/enviromentSetup");
+const enviromentSetup = require("./enviromentSetup");
 const User = require("../../models/User");
 const UserProfile = require("../../models/UserProfile");
 const TrustVote = require("../../models/trustVote");
@@ -242,7 +242,7 @@ const initAuthStrategies = () => {
 
         const isMatch = await bcrypt.compare(password, passwordHash);
         if (!isMatch) {
-          return done(null, false);
+          return done({ message: "Credentials do not match", status: 403 }, false);
         }
 
         done(null, user);

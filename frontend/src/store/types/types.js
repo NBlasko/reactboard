@@ -40,8 +40,8 @@ export const SET_PROFILE_IMAGE = 'SET_PROFILE_IMAGE';
 export const SET_BLOG_IMAGE = 'SET_BLOG_IMAGE';
 export const REMOVE_PREVIEW_BLOG_IMAGE = 'REMOVE_PREVIEW_BLOG_IMAGE';
 
-//SERVERURL
-export const SERVERURL = "/"
+//SERVER_BASE_URL
+export const SERVER_BASE_URL = ""
 
 
 //rerender

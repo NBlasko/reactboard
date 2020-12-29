@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Route, Redirect, Switch } from 'react-router-dom';
 import ListMessages from '../views/listMessages/ListMessages';
-import SignIn from '../views/signIn/SignIn';
+import SignIn from '../views/signIn/SignIn.view';
 import SignUp from '../views/signUp/Signup';
 import AddMessage from '../views/addMessage/AddMessage';
 import SingleBlog from '../views/singleBlog/SingleBlog';

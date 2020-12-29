@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { deleteMessageAction } from '../../../store/actions'
 import { Link } from 'react-router-dom';
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 import profileImg from '../../../assets/profile.svg';
 
 class ListedSingleProfile extends Component {
@@ -31,7 +31,7 @@ class ListedSingleProfile extends Component {
                     <div className="col-sm-4 col-lg-3 col-xl-2">
                         <Link to={'../singleprofile/' + profile.publicID}>
                         {(this.props.imageQueryID) ?
-                                <img style={{ border: "none" }} src={`${SERVERURL}api/images?imageQueryID=${this.props.imageQueryID}&publicID=${this.props.profile.publicID}`}
+                                <img style={{ border: "none" }} src={`${SERVER_BASE_URL}api/images?imageQueryID=${this.props.imageQueryID}&publicID=${this.props.profile.publicID}`}
                                     alt="nema"
                                     onError={(e) => {
                                         if (this.state.imageLoadError) {

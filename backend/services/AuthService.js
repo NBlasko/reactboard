@@ -1,15 +1,16 @@
-const User = require("../models/auth");
+const User = require("../models/User");
+const UserProfile = require("../models/UserProfile");
 const TrustVote = require("../models/trustVote");
 const ImagesGallery = require("../models/imagesGallery");
 const JWT = require("jsonwebtoken");
-const { JWT_SECRET } = require("../configuration/enviromentSetup");
+const { JWT_SECRET } = require("../core/init/enviromentSetup");
 const bcrypt = require("bcryptjs");
 const sendEmail = require("../helpers/mailHelpers");
 
-signToken = user => {
+const signToken = user => {
   return JWT.sign(
     {
-      iss: "Blasko", //later www.blasko.com or something similiar
+      iss: "Blasko",
       sub: user.id,
       iat: new Date().getTime(), // current time
       exp: new Date().setDate(new Date().getDate() + 1) // current time + 1 day ahead
@@ -18,148 +19,156 @@ signToken = user => {
   );
 };
 
-/* All responses are checked, none of them retrives more than it should */
+const generateAccessCode = () =>
+  Math.random()
+    .toString()
+    .slice(2, 7);
+
+const ACCESS_CODE_TTL = (() => {
+  const tenMinutes = 10 * 60 * 1000;
+  return tenMinutes;
+})();
 
 module.exports = {
-  verifyMail: async (req, res, next) => {
+  verifyMail: async (req, res) => {
     const { email, accessCode } = req.value.body;
     const dateNow = new Date().getTime();
-    const difference10Min = 600000; // 10 min in ms
 
-    /* handle possible errors  */
-    const foundUser = await User.findOne({ "local.email": email });
-    if (!foundUser) return res.status(403).json({ error: "Email is not in database" });
+    const foundUser = await User.findOne({ email }).populate({ path: "userProfile" });
 
-    /*  if User is already verified, this should not happen, BUT, never trust a client side :) */
-    if (foundUser.local && foundUser.local.verified) {
-      return res.status(400).json({ error: "You are already verified" });
+    if (!foundUser) {
+      return res.handleError(403, "User not found");
     }
 
-    if (dateNow - foundUser.local.accessCodeTime.getTime() > difference10Min)
-      return res.status(403).json({ error: "Verification code has expired" });
+    const existsLocalStrategy = foundUser && foundUser.local && foundUser.local.passwordHash;
+    if (!existsLocalStrategy) {
+      return res.handleError(403, "Bad request");
+    }
 
-    if (foundUser.local.accessNumberTry < 0)
-      return res.status(403).json({
-        error: "You tried verifying email too many times. Resend email"
-      });
+    if (foundUser.local && foundUser.local.isVerified) {
+      return res.handleError(400, "You are already verified");
+    }
 
-    /* if wrong access code is entered   */
+    if (dateNow - foundUser.local.accessCodeTime.getTime() > ACCESS_CODE_TTL) {
+      return res.handleError(403, "Verification code has expired");
+    }
+
+    if (foundUser.local.accessNumberTry < 0) {
+      return res.handleError(403, "You tried verifying email too many times. Resend email");
+    }
+
     if (foundUser.local.accessCode !== accessCode) {
       foundUser.local.accessNumberTry--;
       await foundUser.save();
 
-      if (foundUser.local.accessNumberTry < 0)
-        return res.status(403).json({
-          error: "Wrong verification code. You tried too many times. Resend email"
-        });
+      if (foundUser.local.accessNumberTry < 0) {
+        return res.handleError(403, "Wrong verification code. You tried too many times. Resend email");
+      }
 
-      return res.status(403).json({ error: "Wrong verification code" });
+      return res.handleError(403, "Wrong verification code");
     }
 
     /* if everything has been done correctly */
-    foundUser.local.verified = true;
+    foundUser.local.isVerified = true;
     foundUser.local.accessCode = null;
     foundUser.local.accessCodeTime = null;
     foundUser.local.accessNumberTry = null;
     await foundUser.save();
 
-    /* Generate the token  */
     const token = signToken(foundUser);
-
-    /*  Respond with token  */
     return res.status(200).json({ token });
   },
-  resendVerificationMail: async (req, res, next) => {
+  resendVerificationMail: async (req, res) => {
     const { email } = req.value.body;
-    const user = await User.findOne({ "local.email": email });
-    if (!user) return res.status(403).json({ error: "Email is not in database" });
-    const accessCode = Math.random()
-      .toString()
-      .slice(2, 7);
+    const user = await User.findOne({ email }).populate({ path: "userProfile" });
+
+    if (!user) {
+      return res.handleError(400, "User not found");
+    }
+
+    const accessCode = generateAccessCode();
+
+    if (user.local && user.local.isVerified) {
+      return res.handleError(400, "You are already verified");
+    }
+
     user.local.accessCode = accessCode;
     user.local.accessCodeTime = new Date();
     user.local.accessNumberTry = 3;
-    await user.save();
-    console.log("accessCode", accessCode);
 
-    /*sendEmail(to, name, code)  */
+    await user.save();
+
     sendEmail(email, user.name, accessCode);
 
     res.status(204).end();
   },
 
-  signUp: async (req, res, next) => {
-    const { email, password, name } = req.value.body;
+  signUp: async (req, res) => {
+    const { email, password, displayName } = req.value.body;
 
-    /* Check if there is a user with the same email  */
-    const foundUser = await User.findOne({ "local.email": email });
-    if (foundUser) return res.status(403).json({ error: "Email is already in use" });
+    const foundUser = await User.findOne({ email }).populate({ path: "userProfile" });
 
-    // TODO prebaci gomilu njih u promise.All
+    const accessCode = generateAccessCode();
 
-    /* Create TrustVote  */
-    trustVote = new TrustVote();
-    await trustVote.save();
+    if (foundUser) {
+      const existsLocalStrategy = foundUser && foundUser.local && foundUser.local.passwordHash;
+      if (existsLocalStrategy) {
+        return res.handleError(403, "Email is already in use");
+      }
 
-    /* Create ImagesGallery  */
-    const imagesGallery = new ImagesGallery({
-      authorId: trustVote.authorId
-    });
-    await imagesGallery.save();
+      // update user with local strategy
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(password, salt);
+      foundUser.local.passwordHash = passwordHash;
+      foundUser.local.accessCode = accessCode;
 
-    /*  accessCode is for email verification */
-    const accessCode = Math.random()
-      .toString()
-      .slice(2, 7);
+      await foundUser.save();
 
+      sendEmail(email, foundUser.name, accessCode);
+
+      return res.status(204).end();
+    }
+
+    // create new user
     const salt = await bcrypt.genSalt(10);
     const passwordHash = await bcrypt.hash(password, salt);
 
-    /* Create a new user  */
+    const trustVote = new TrustVote();
+    const imagesGallery = new ImagesGallery();
+    const userProfile = new UserProfile({ trustVote, displayName, imagesGallery });
     const newUser = new User({
-      method: "local",
-      publicID: trustVote.authorId,
-      name: name,
+      userProfile,
+      email,
       local: {
-        email,
-        password: passwordHash, // TODO promeni ime u passwordHash
+        passwordHash,
         accessCode
-      },
-      trustVote: trustVote.id
+      }
     });
 
-    await newUser.save();
+    await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
 
-    console.log("accessCode", accessCode);
-
-    /*sendEmail(to, name, code)  */
-    //sendEmail(email, newUser.name, accessCode);
+    sendEmail(email, newUser.name, accessCode);
 
     res.status(204).end();
   },
 
-  signIn: async (req, res, next) => {
-    if (!req.user.local.verified) return res.status(403).json({ error: "email is not verified" });
-
-    /* Generate token */
+  signIn: async (req, res) => {
     res.status(200).json({ token: signToken(req.user) });
   },
 
-  googleOAuth: async (req, res, next) => {
+  googleOAuth: async (req, res) => {
     res.status(200).json({ token: signToken(req.user) });
   },
 
-  facebookOAuth: async (req, res, next) => {
+  facebookOAuth: async (req, res) => {
     res.status(200).json({ token: signToken(req.user) });
   },
 
-  secret: async (req, res, next) => {
-    //   console.log("secret",req.user)
+  secret: async (req, res) => {
+    console.log("secret", req.user);
 
-    res.json({
-      name: req.user.name,
-      publicID: req.user.publicID,
-      imageQueryID: req.user.imageQueryID
-    });
+    res.json({ coins: req.user.coins.total });
   }
+
+  // changePassword service: TODO
 };

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import axios from 'axios'
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 export default function useSearch({
   searchText,
   skip,
@@ -26,7 +26,7 @@ export default function useSearch({
         Authorization: `Bearer ${localStorage.reactBoardToken}`,
         'Cache-Control': 'no-cache'
       },
-      url: SERVERURL + 'api/blogs',
+      url: SERVER_BASE_URL + 'api/blogs',
       params,
       cancelToken: new axios.CancelToken(c => cancel = c)
     })

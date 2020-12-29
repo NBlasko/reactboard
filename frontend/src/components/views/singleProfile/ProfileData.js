@@ -5,7 +5,7 @@ import { getSingleUserAction } from '../../../store/actions';
 import { Container, Row, Col } from 'reactstrap';
 import coinsSVG from '../../../assets/coins.svg';
 import profileImg from '../../../assets/profile.svg';
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 class ProfileData extends Component {
     constructor(props) {
         super(props);
@@ -66,7 +66,7 @@ class ProfileData extends Component {
                         <Col lg="4" md="6" sm="8" xs="12">
                             <div style={{ maxWidth: "550px" }} className="justify-content-around" >
                                 {(this.state.imageQueryID) ?
-                                    <img style={{ border: "none" }} src={`${SERVERURL}api/images?imageQueryID=${this.state.imageQueryID}&publicID=${this.props.match.params.id}&refreshID=${this.state.refresh}`}
+                                    <img style={{ border: "none" }} src={`${SERVER_BASE_URL}api/images?imageQueryID=${this.state.imageQueryID}&publicID=${this.props.match.params.id}&refreshID=${this.state.refresh}`}
                                         alt="nema"
                                         onError={(e) => {
                                             if (this.state.imageLoadError) {

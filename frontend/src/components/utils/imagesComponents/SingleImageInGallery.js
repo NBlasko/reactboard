@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 import {
     updatePreviewBlogImageAction,
     setProfileImageAction,
@@ -61,7 +61,7 @@ function SingleImageInGallery(props) {
                 Authorization: `Bearer ${localStorage.reactBoardToken}`,
                 'Cache-Control': 'no-cache'
             },
-            url: SERVERURL + 'api/images/galleryImage/' + props.singleImage._id
+            url: SERVER_BASE_URL + 'api/images/galleryImage/' + props.singleImage._id
         }).then(res => {
             props.setGallery(gallery => {
                 return gallery.filter(singleImage => singleImage._id !== res.data.id)
@@ -142,7 +142,7 @@ function SingleImageInGallery(props) {
             <img
                 onClick={toggle}
                 className="imageFit"
-                src={`${SERVERURL}api/images/galleryImage?imageQueryID=${imageQueryID}&singleImageID=${props.singleImage._id}&publicID=${publicIdToGetImage}&refreshID=${refreshImg}`}
+                src={`${SERVER_BASE_URL}api/images/galleryImage?imageQueryID=${imageQueryID}&singleImageID=${props.singleImage._id}&publicID=${publicIdToGetImage}&refreshID=${refreshImg}`}
                 alt="loading..."
             />
 
@@ -160,7 +160,7 @@ function SingleImageInGallery(props) {
                 </ModalHeader>
                 <img
                     className="modal-content"
-                    src={`${SERVERURL}api/images/galleryImage?imageQueryID=${imageQueryID}&singleImageID=${props.singleImage._id}&publicID=${publicIdToGetImage}&refreshID=${refreshImg}`}
+                    src={`${SERVER_BASE_URL}api/images/galleryImage?imageQueryID=${imageQueryID}&singleImageID=${props.singleImage._id}&publicID=${publicIdToGetImage}&refreshID=${refreshImg}`}
                     alt="loading..."
                 />
             </Modal>

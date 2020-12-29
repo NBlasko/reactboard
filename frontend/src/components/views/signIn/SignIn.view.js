@@ -7,55 +7,12 @@ import { userSigned } from "../../../store/actions";
 import iconFacebook from "../../../assets/facebook.svg";
 import GoogleLogin from "react-google-login";
 import FacebookLogin from "react-facebook-login";
-import { SERVERURL } from "../../../store/types/types";
+import { SERVER_BASE_URL } from "../../../store/types/types";
 import useInput from "../../utils/ui/input/useInput";
 import Grid from "@material-ui/core/Grid";
 import { PrimaryButton } from "../../utils/ui/button";
-import { makeStyles } from "@material-ui/core/styles";
-
-const useStyles = makeStyles({
-  socialBtnWrapper: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    "& span": {
-      width: "100%"
-    }
-  },
-
-  socialBtn: {
-    marginBottom: "1rem",
-    height: "3rem",
-    cursor: "pointer",
-    width: "100%",
- 
-  },
-  facebook: {
-    background: "rgb(59, 89, 152)",
-    textAlign: "left",
-    color: "#e5e5e5",
-    boxShadow: "rgba(0, 0, 0, 0.24) 0px 2px 2px 0px, rgba(0, 0, 0, 0.24) 0px 0px 1px 0px",
-    borderRadius: "2px",
-    border: "1px solid transparent",
-    fontSize: "14px",
-    fontWeight: 500,
-    fontFamily: "Roboto, sans-serif",
-    "& img": {
-      width: "18px",
-      height: "18px",
-      margin: "auto 22px auto 3px"
-    },
-    "&:hover": {
-      background: "#4267b2"
-    }
-  },
-
-  google: {
-    "& span": {
-      textAlign: "left"
-    }
-  }
-});
+import { useStyles } from "./SignIn.style";
+import { AuthService } from "../../../api";
 
 function SignIn(props) {
   const classes = useStyles();
@@ -77,7 +34,7 @@ function SignIn(props) {
   const verifyEmail = () => {
     setBlockUnmounting(true);
     axios
-      .post(SERVERURL + "api/auth/verify-mail", { email, accessCode })
+      .post(SERVER_BASE_URL + "api/auth/verify-mail", { email, accessCode })
       .then(response => {
         if (response.status === 200) {
           localStorage.reactBoardToken = response.data.token;
@@ -99,7 +56,7 @@ function SignIn(props) {
     setBlockUnmounting(true);
     const { email } = this.state;
     axios
-      .post(SERVERURL + "api/auth/resend-verification-mail", { email })
+      .post(SERVER_BASE_URL + "api/auth/resend-verification-mail", { email })
       .then(response => {
         console.log("Email is sent");
       })
@@ -109,83 +66,65 @@ function SignIn(props) {
 
   const handleFacebookOuth = res => {
     setBlockUnmounting(true);
-    axios
-      .post(SERVERURL + "api/auth/facebook", { access_token: res.accessToken })
-      .then(response => {
-        if (response.status === 200) {
-          localStorage.reactBoardToken = response.data.token;
-          props.userSigned(true);
-          props.history.replace("./");
-        }
-      })
-      .catch(error => {
+    AuthService.facebookOAuth({
+      data: { access_token: res.accessToken },
+      onSuccess: response => {
+        localStorage.reactBoardToken = response.token;
+        props.userSigned(true);
+        props.history.replace("./");
+      },
+      onError: error => {
         setBlockUnmounting(false);
-        console.log("error in Facebook Auth", error);
-      });
+        return error;
+      }
+    });
   };
 
   const handleGoogleOuth = res => {
-    console.log("res", res);
     setBlockUnmounting(true);
-
-    axios
-      .post(SERVERURL + "api/auth/google", { access_token: res.accessToken })
-      .then(response => {
-        if (response.status === 200) {
-          localStorage.reactBoardToken = response.data.token;
-          props.userSigned(true);
-          props.history.replace("./");
-        }
-      })
-      .catch(error => {
+    AuthService.googleOAuth({
+      data: { access_token: res.accessToken },
+      onSuccess: response => {
+        localStorage.reactBoardToken = response.token;
+        props.userSigned(true);
+        props.history.replace("./");
+      },
+      onError: error => {
         setBlockUnmounting(false);
-        console.log("error in Google Auth", error);
-      });
+        return error;
+      }
+    });
   };
 
   const signIn = () => {
     setBlockUnmounting(true);
-    axios
-      .post(SERVERURL + "api/auth/signin", { email, password })
-      .then(response => {
-        console.log("response", response);
-        if (response.status === 200) {
-          localStorage.reactBoardToken = response.data.token;
-          props.userSigned(true);
-          props.history.replace("./");
-        }
-      })
-      .catch(error => {
+    AuthService.signIn({
+      data: { email, password },
+      onSuccess: response => {
+        localStorage.reactBoardToken = response.token;
+        props.userSigned(true);
+        props.history.replace("./");
+      },
+      onError: error => {
         setBlockUnmounting(false);
-        console.log("error.respone", error);
-        if (error.response.data === "Unauthorized") {
-          setErrorMessage("password and username do not match");
-          return;
-        }
-        if (error.response.data.error === "email is not verified") {
-          setErrorMessage(error.response.data.error);
-
-          // odavde saljemo novi kod i otvaramo modal za verifikaciju maila
+        console.log("error", error);
+        if (error === "email is not verified") {
           resendVerifyEmail();
           toggleModal();
-          return;
+          return error;
         }
-        if (typeof error.response.data.error === "string") {
-          setErrorMessage(error.response.data.error);
-          return;
-        }
-        console.log("AAAAAAAA hendlaj gresku, tj. napravi da greske dolaze u istom formatu");
-      });
+        return error;
+      }
+    });
   };
 
   return (
     <div>
-      <div className="signContainer"> </div>
       <Grid container direction="row" justify="space-between">
         <Grid item xs={12} sm={2} md={2} lg={2}></Grid>
         <Grid item xs={12} sm={8} md={8} lg={8}>
-          <div className="form-boxshadow p-3 rounded">
-            <h3 className="text-light text-center font-flower"> SIGN IN WITH </h3>
+          <div>
+            <h3> SIGN IN WITH </h3>
 
             <div className={classes.socialBtnWrapper}>
               <FacebookLogin
@@ -201,10 +140,9 @@ function SignIn(props) {
               <GoogleLogin
                 clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID}
                 onSuccess={handleGoogleOuth}
-                onFailure={handleGoogleOuth}
+                // onFailure={() => {}}
                 className={classes.socialBtn + " " + classes.google}
               >
-                {/* <img src={iconGoogle} alt="GOOGLE" /> */}
                 Google
               </GoogleLogin>
             </div>
@@ -215,7 +153,7 @@ function SignIn(props) {
               <PrimaryButton color="primary" onClick={signIn}>
                 {" "}
                 Sign In{" "}
-              </PrimaryButton>{" "}
+              </PrimaryButton>
             </div>
 
             <div>

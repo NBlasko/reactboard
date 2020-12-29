@@ -1,27 +1,28 @@
-import { combineReducers } from 'redux';
-import messages from './messages';
-import user from './user';
-import userSignedBool from './userSignedBool';
-import singleBlogMessage from './singleBlogMessage';
-import singleProfile from './singleProfile';
-import comments from './comments';
-import refresh from './refresh';
-import numberOfData from './numberOfData';
-import previewBlogImage from './previewBlogImage'
-import profiles from './profiles';
-import toggle from './toggle';
-import searchText from './searchText'
+import { combineReducers } from "redux";
+import messages from "./messages";
+import user from "./user";
+import userSignedBool from "./userSignedBool";
+import singleBlogMessage from "./singleBlogMessage";
+import singleProfile from "./singleProfile";
+import comments from "./comments";
+import refresh from "./refresh";
+import numberOfData from "./numberOfData";
+import previewBlogImage from "./previewBlogImage";
+import profiles from "./profiles";
+import toggle from "./toggle";
+import searchText from "./searchText";
+
 export default combineReducers({
-    messages,
-    user,
-    userSignedBool,
-    singleBlogMessage,
-    comments,
-    searchedProfile: singleProfile,
-    profiles,
-    refresh,
-    numberOfData,
-    previewBlogImage,
-    toggle,
-    searchText
+  messages,
+  user,
+  userSignedBool,
+  singleBlogMessage,
+  comments,
+  searchedProfile: singleProfile,
+  profiles,
+  refresh,
+  numberOfData,
+  previewBlogImage,
+  toggle,
+  searchText
 });

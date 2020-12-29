@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 import noPhotosImg from '../../../assets/no-photos.svg';
 
 function ListedSingleBlog(props) {
@@ -31,7 +31,7 @@ function ListedSingleBlog(props) {
                                 ? <img className="img-thumbnail rounded mx-auto d-block"
                                     style={{ maxHeight: "150px", minHeight: "100px" }}
                                     src={
-                                        `${SERVERURL}api/images/galleryImage`
+                                        `${SERVER_BASE_URL}api/images/galleryImage`
                                         + `?imageQueryID=${imageQueryID}`
                                         + `&singleImageID=${message.image}` +
                                         `&publicID=${message.authorsPublicID}`

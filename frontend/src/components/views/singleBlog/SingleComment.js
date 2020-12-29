@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import profileImg from '../../../assets/profile.svg';
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 import { Link } from 'react-router-dom';
 
 
@@ -27,7 +27,7 @@ class SingleComment extends Component {
                         <Link to={`/singleprofile/${this.props.message.authorsPublicID}`}>
                             <img className="img-thumbnail img-fluid d-block "
                                 style={{ maxHeight: "150px", minHeight: "100px" }}
-                                src={`${SERVERURL}api/images`
+                                src={`${SERVER_BASE_URL}api/images`
                                     + `?imageQueryID=${this.props.imageQueryID}`
                                     + `&publicID=${this.props.message.authorsPublicID}`}
                                 alt="nema"

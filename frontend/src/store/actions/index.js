@@ -1,5 +1,5 @@
 import {
-  SERVERURL,
+  SERVER_BASE_URL,
   ADD_USER_PROFILE, REMOVE_USER_PROFILE, USER_SIGNED,
   ADD_MESSAGE, GET_MESSAGES, GET_NEW_MESSAGES, DELETE_MESSAGE, DELETE_ALL_MESSAGES,
   GET_SINGLE_MESSAGE, DELETE_SINGLE_MESSAGE,
@@ -21,7 +21,7 @@ export const userSigned = (bool) => ({
 //user Name
 
 export const addUserProfile = () => dispatch => {
-  const API_URL = SERVERURL + 'api/auth/secret';
+  const API_URL = SERVER_BASE_URL + 'api/auth/secret';
   axios(API_URL, {
     headers: {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
@@ -71,7 +71,7 @@ export const addMessageAction = ({ text, title, imageId }) => dispatch => {
       "body": text,
       "imageId": imageId
     },
-    url: SERVERURL + 'api/blogs',
+    url: SERVER_BASE_URL + 'api/blogs',
   })
     .then(res => {
       console.log(res);
@@ -94,7 +94,7 @@ export const getMessagesAction = (skip, criteria) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs?skip=' + skip + '&criteria=' + newCriteria,
+    url: SERVER_BASE_URL + 'api/blogs?skip=' + skip + '&criteria=' + newCriteria,
   }).then(res => {
     dispatch({
       type: GET_MESSAGES,
@@ -112,7 +112,7 @@ export const searchBlogsAction = (searchText) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs/search?searchText=' + searchText,
+    url: SERVER_BASE_URL + 'api/blogs/search?searchText=' + searchText,
   }).then(res => {
     console.log("resSearch", res)
     dispatch({
@@ -132,7 +132,7 @@ export const getNewMessagesAction = (skip, criteria) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs?skip=' + skip + '&criteria=' + newCriteria,
+    url: SERVER_BASE_URL + 'api/blogs?skip=' + skip + '&criteria=' + newCriteria,
   }).then(res => {
     dispatch({
       type: GET_NEW_MESSAGES,
@@ -155,7 +155,7 @@ export const getSingleMessageAction = (blogID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs/' + blogID,
+    url: SERVER_BASE_URL + 'api/blogs/' + blogID,
   }).then(res => {
     dispatch({
       type: GET_SINGLE_MESSAGE,
@@ -173,7 +173,7 @@ export const getCommentsAction = (blogID, skip) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs/' + blogID
+    url: SERVER_BASE_URL + 'api/blogs/' + blogID
       + '/comments?skip=' + skip,
   }).then(res => {
     dispatch({
@@ -191,7 +191,7 @@ export const getNewCommentsAction = (blogID, skip) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/blogs/' + blogID
+    url: SERVER_BASE_URL + 'api/blogs/' + blogID
       + '/comments?skip=' + skip,
   }).then(res => {
     dispatch({
@@ -222,7 +222,7 @@ export const addCommentAction = ({ author, text, blogsID, authorsPublicID }) => 
       "authorsPublicID": authorsPublicID,
       //
     },
-    url: SERVERURL + 'api/blogs/' + blogsID + '/comments',
+    url: SERVER_BASE_URL + 'api/blogs/' + blogsID + '/comments',
   })
     .then(res => {
       console.log(res);
@@ -249,7 +249,7 @@ export const addBlogsLikeAction = ({ like, blogsID }) => dispatch => {
     data: {
       "like": like
     },
-    url: SERVERURL + 'api/blogs/' + blogsID + '/like',
+    url: SERVER_BASE_URL + 'api/blogs/' + blogsID + '/like',
   })
     .then(res => {
       console.log(res);
@@ -275,7 +275,7 @@ export const getSingleUserAction = (publicID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/profiles/' + publicID,
+    url: SERVER_BASE_URL + 'api/profiles/' + publicID,
   }).then(res => {
     dispatch({
       type: GET_SINGLE_USER,
@@ -301,7 +301,7 @@ export const searchProfilesAction = (searchText) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/profiles/search?searchText=' + searchText,
+    url: SERVER_BASE_URL + 'api/profiles/search?searchText=' + searchText,
   }).then(res => {
     console.log("res profiles Search", res)
     dispatch({
@@ -326,7 +326,7 @@ export const getProfileMessagesAction = (skip, authorsPublicID) => dispatch => {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/profiles?skip=' + skip + '&authorsPublicID='
+    url: SERVER_BASE_URL + 'api/profiles?skip=' + skip + '&authorsPublicID='
       + authorsPublicID,
   }).then(res => {
     dispatch({
@@ -345,7 +345,7 @@ export const getNewProfileMessagesAction = (skip, authorsPublicID) => dispatch =
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
       'Cache-Control': 'no-cache'
     },
-    url: SERVERURL + 'api/profiles?skip='
+    url: SERVER_BASE_URL + 'api/profiles?skip='
       + skip + '&authorsPublicID=' + authorsPublicID,
   }).then(res => {
     dispatch({
@@ -366,7 +366,7 @@ export const addProfileTrustAction = ({ trust, blogsID }) => dispatch => {
     data: {
       "trust": trust
     },
-    url: SERVERURL + 'api/profiles/' + blogsID + '/trust',
+    url: SERVER_BASE_URL + 'api/profiles/' + blogsID + '/trust',
   })
     .then(res => {
       console.log(res);
@@ -391,7 +391,7 @@ export const setProfileImageAction = ({ id }) => dispatch => {
     data: {
       param: id  //this is image id generated by mongoDB
     },
-    url: SERVERURL + 'api/images/profileimage',
+    url: SERVER_BASE_URL + 'api/images/profileimage',
   })
     .then(res => {
       console.log(res);

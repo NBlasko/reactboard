@@ -5,7 +5,7 @@ import {
     getSingleUserAction,
     removePreviewBlogImageAction
 } from '../../../store/actions';
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 import ImageGallery from '../../utils/imagesComponents/ImageGallery';
 
 
@@ -106,7 +106,7 @@ function AddMessageForm(props) {
                             <img
                                 // onClick={this.toggle}
                                 className="imageFit"
-                                src={`${SERVERURL}api/images/galleryImage?imageQueryID=${storeData.imageQueryID}&singleImageID=${storeData.previewBlogImageId}&publicID=${storeData.publicID}`}
+                                src={`${SERVER_BASE_URL}api/images/galleryImage?imageQueryID=${storeData.imageQueryID}&singleImageID=${storeData.previewBlogImageId}&publicID=${storeData.publicID}`}
                                 alt="loading..."
                             />
                         </div>

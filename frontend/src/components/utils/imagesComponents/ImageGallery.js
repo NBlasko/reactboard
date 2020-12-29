@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import SingleImageInGallery from './SingleImageInGallery';
 import ImageUploadClass from './ImageUploadClass';
 import axios from "axios";
-import { SERVERURL } from '../../../store/types/types';
+import { SERVER_BASE_URL } from '../../../store/types/types';
 import { withRouter } from "react-router";
 
 function ImageGallery(props) {
@@ -25,7 +25,7 @@ function ImageGallery(props) {
                 Authorization: `Bearer ${localStorage.reactBoardToken}`,
                 'Cache-Control': 'no-cache'
             },
-            url: SERVERURL + 'api/images/gallerylist?skip=' + gallery.length,
+            url: SERVER_BASE_URL + 'api/images/gallerylist?skip=' + gallery.length,
         }).then(res => {
             setGallery(images => [...images, ...res.data.galleryList])
             setIsLoading(false);
