@@ -9,7 +9,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 import LeftSlidingSidebar from "./leftSidebar/LeftSlidingSidebar";
 import LeftFixedSidebar from "./leftSidebar/LeftFixedSidebar";
 import { ToastContainer } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
 const useStyles = makeStyles({
   root: {

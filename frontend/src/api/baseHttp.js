@@ -38,11 +38,14 @@ export const baseHttp = ({
   }
 
   axios(config)
-    .then(response => onSuccess(response.data))
+    .then(response => {
+      const successValue = onSuccess(response.data);
+      if (successValue && typeof successValue === "string") toast.success(successValue);
+    })
     .catch(error => {
       const errorMessage = error && error.response && error.response.data && error.response.data.message;
       const errorValue = onError((typeof errorMessage === "string" && errorMessage) || "Ooops! Something went wrong");
-      if (errorValue) toast(errorValue);
+      if (errorValue) toast.error(errorValue);
       console.log(error);
     })
     .finally(onFinally);

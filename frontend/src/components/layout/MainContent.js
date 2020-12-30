@@ -1,9 +1,8 @@
 import React from 'react';
-
 import { Route, Redirect, Switch } from 'react-router-dom';
 import ListMessages from '../views/listMessages/ListMessages';
 import SignIn from '../views/signIn/SignIn.view';
-import SignUp from '../views/signUp/Signup';
+import SignUp from '../views/signUp/Signup.view';
 import AddMessage from '../views/addMessage/AddMessage';
 import SingleBlog from '../views/singleBlog/SingleBlog';
 import SingleProfile from '../views/singleProfile/SingleProfile';
@@ -24,7 +23,7 @@ function customRender({ RedirectComponent, props }) {
 function MainContent() {
     return (
 
-        <div style={{ paddingTop: "55px", margin: "auto", maxWidth: "650px" }}>
+        <div style={{ padding: "55px 5px 0 5px", margin: "auto", maxWidth: "650px" }}>
             <Switch>
 
                 <Route exact path="/" render={(props) =>

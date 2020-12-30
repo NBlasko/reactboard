@@ -31,7 +31,7 @@ router.route('/')
     .get(
         passportJWT,
         validateQueryString(schemas.skipAuthorsPublicIDSchema),
-        UserProfileService.getProfileMessages
+        UserProfileService.getManyBlogs
     )
 
 router.route('/search')
@@ -39,22 +39,22 @@ router.route('/search')
     .get(
         passportJWT,
         validateQueryString(schemas.searchCriteriaSchema),
-        UserProfileService.searchProfiles
+        UserProfileService.searchMany
     );
 
-router.route('/:publicID')
+router.route('/:userProfileId')
     /* fetch profile data with the given id */
     .get(
         passportJWT,
-        validateParam(schemas.idSchema, 'publicID'),
-        UserProfileService.getSingleProfile);
+        validateParam(schemas.idSchema, 'userProfileId'),
+        UserProfileService.getOne);
 
-router.route('/:publicID/trust')
+router.route('/:userProfileId/trust')
     /* add a trust vote to a profile with the given id */
     .post(passportJWT,
-        validateParam(schemas.idSchema, 'publicID'),
+        validateParam(schemas.idSchema, 'userProfileId'),
         validateBody(schemas.trustSchema),
-        UserProfileService.newProfileTrust);
+        UserProfileService.upsertTrust);
 
 
 module.exports = router;

@@ -1,5 +1,22 @@
 const Joi = require("joi");
 
+const uuidRequired = () =>
+  Joi.string()
+    .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+    .required();
+
+const nonNegativeInteger = () =>
+  Joi.number()
+    .integer()
+    .min(0);
+
+const vote = () =>
+  Joi.number()
+    .integer()
+    .min(0)
+    .max(1)
+    .required();
+
 module.exports = {
   validateParam: (schema, name) => {
     return (req, res, next) => {
@@ -7,11 +24,6 @@ module.exports = {
       const result = Joi.validate({ param: req.params[name] }, schema);
 
       if (result.error) return res.status(400).json({ message: result.error.details[0].message });
-
-      // if .value property exists we need to append new value
-      // and not to overwrite the old one. Reason is,
-      // maybe req.params has more then one property create an empty object
-
       if (!req.value) req.value = {};
       if (!req.value.params) req.value.params = {};
       req.value.params[name] = result.value.param;
@@ -40,41 +52,6 @@ module.exports = {
   },
 
   schemas: {
-    authSchema: Joi.object().keys({
-      email: Joi.string()
-        .email()
-        .required(),
-      password: Joi.string()
-        .trim()
-        .min(10)
-        .required(),
-      displayName: Joi.string()
-        .required()
-        .min(4)
-        .max(30)
-    }),
-    verifyEmailSchema: Joi.object().keys({
-      email: Joi.string()
-        .email()
-        .required(),
-      accessCode: Joi.string()
-        .length(5)
-        .required()
-    }),
-    emailSchema: Joi.object().keys({
-      email: Joi.string()
-        .email()
-        .required()
-    }),
-    authSchemaSignIn: Joi.object().keys({
-      email: Joi.string()
-        .email()
-        .required(),
-      password: Joi.string()
-        .trim()
-        .min(10)
-        .required()
-    }),
     blogSchema: Joi.object().keys({
       title: Joi.string().required(),
       body: Joi.string().required(),
@@ -84,9 +61,7 @@ module.exports = {
         .required()
     }),
     idSchema: Joi.object().keys({
-      param: Joi.string()
-        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
-        .required() // param, becuse I named it like that above, in validateParam method
+      param: uuidRequired() // param, becuse I named it like that above, in validateParam method
     }),
     mongoIdSchema: Joi.object().keys({
       param: Joi.string()
@@ -95,24 +70,14 @@ module.exports = {
     }),
     commentSchema: Joi.object().keys({
       author: Joi.string().required(),
-      authorsPublicID: Joi.string()
-        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
-        .required(),
+      authorsPublicID: uuidRequired(),
       body: Joi.string().required()
     }),
     trustSchema: Joi.object().keys({
-      trust: Joi.number()
-        .integer()
-        .min(0)
-        .max(1)
-        .required()
+      trust: vote()
     }),
     likeSchema: Joi.object().keys({
-      like: Joi.number()
-        .integer()
-        .min(0)
-        .max(1)
-        .required()
+      like: vote()
     }),
     skipCriteriaSchema: Joi.object().keys({
       skip: Joi.number()
@@ -129,9 +94,7 @@ module.exports = {
         .integer()
         .min(0)
         .required(),
-      authorsPublicID: Joi.string()
-        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
-        .required()
+      authorsPublicID: uuidRequired()
     }),
     skipSchema: Joi.object().keys({
       skip: Joi.number()
@@ -143,29 +106,17 @@ module.exports = {
       searchText: Joi.string().required()
     }),
     imageQueryIDpublicIDSchema: Joi.object().keys({
-      imageQueryID: Joi.string()
-        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
-        .required(),
-      publicID: Joi.string()
-        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
-        .required(),
-      refreshID: Joi.number()
-        .integer()
-        .min(0)
+      imageQueryID: uuidRequired(),
+      publicID: uuidRequired(),
+      refreshID: nonNegativeInteger()
     }),
     singleGalleryImageSchema: Joi.object().keys({
-      imageQueryID: Joi.string()
-        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
-        .required(),
-      publicID: Joi.string()
-        .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
-        .required(),
+      imageQueryID: uuidRequired(),
+      publicID: uuidRequired(),
       singleImageID: Joi.string()
         .regex(/^[0-9a-fA-F]{24}$/)
         .required(),
-      refreshID: Joi.number()
-        .integer()
-        .min(0)
+      refreshID: nonNegativeInteger()
     })
   }
 };

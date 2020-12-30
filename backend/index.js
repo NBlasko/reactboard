@@ -3,7 +3,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const express = require("express");
-const { errorHandler } = require("./core/error");
+const { errorHandler } = require("./helpers/ErrorHandler");
 //const cors = require('cors');
 const morgan = require("morgan");
 require("./core/init/DbConnection").initDbConnection();
@@ -26,7 +26,7 @@ app.use("/api/profiles", require("./controllers/UserProfileController")); //todo
 app.use("/api/images", require("./controllers/ImageController")); // todo api/image
 
 // Catch 404 errors
-// In production replace this one with serving the front end
+// In production replace this one with serving the frontend
 app.use((req, res, next) => {
   const error = new Error();
   error.status = 404;

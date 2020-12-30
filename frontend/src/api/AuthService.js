@@ -1,11 +1,42 @@
 import { baseHttp } from "./baseHttp";
 import { useSelector, useDispatch } from "react-redux";
 
-
 export const AuthService = {
-  //   verifyMail: (req, res) => {},
-  //   resendVerificationMail: (req, res) => {},
-  //   signUp: (req, res) => {},
+  verifyMail: ({ data, onSuccess, onError, onFinally }) => {
+    baseHttp({
+      method: "POST",
+      url: "auth/verify-mail",
+      data,
+      isAuthorized: false,
+      onSuccess,
+      onError,
+      onFinally
+    });
+  },
+
+  resendVerificationMail: ({ data, onSuccess, onError, onFinally }) => {
+    baseHttp({
+      method: "POST",
+      url: "auth/resend-verification-mail",
+      data,
+      isAuthorized: false,
+      onSuccess,
+      onError,
+      onFinally
+    });
+  },
+
+  signUp: ({ data, onSuccess, onError, onFinally }) => {
+    baseHttp({
+      method: "POST",
+      url: "auth/signup",
+      data,
+      isAuthorized: false,
+      onSuccess,
+      onError,
+      onFinally
+    });
+  },
 
   signIn: ({ data, onSuccess, onError, onFinally }) => {
     baseHttp({
