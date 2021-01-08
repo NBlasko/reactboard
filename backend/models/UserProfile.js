@@ -15,11 +15,9 @@ const userProfileSchema = new Schema({
     ref: "trustVote"
   },
 
-  image: {
-    URL: {
-      type: String,
-      default: ""
-    }
+  imageUrl: {
+    type: String,
+    default: ""
   },
   //imageQueryID is send via URL query instead jwt to authorize images
   imageQueryID: {

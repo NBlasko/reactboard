@@ -165,9 +165,17 @@ module.exports = {
   },
 
   secret: async (req, res) => {
-    console.log("secret", req.user);
-
-    res.json({ coins: req.user.coins.total });
+    const user = await User.findById(req.user.id).populate({ path: "userProfile" });
+    
+    res.json({
+      coins: user.coins.total,
+      imageUrl: user.userProfile.imageUrl,
+      id: user.userProfile._id,
+      trustVote: user.userProfile.trustVote, // todo return this populated
+      displayName: user.userProfile.displayName,
+      imagesGallery: user.userProfile.imagesGallery, // todo return this populated
+      imageQueryID: user.userProfile.imageQueryID,
+    });
   }
 
   // changePassword service: TODO

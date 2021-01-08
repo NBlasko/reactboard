@@ -1,5 +1,5 @@
 const Blog = require("../models/blog");
-const User = require("../models/auth");
+const User = require("../models/User");
 
 const uuidv4 = require("uuid/v4");
 
@@ -200,5 +200,19 @@ module.exports = {
 
     // console.log("trustVote", result) response tested
     res.status(200).json(result);
+  },
+
+  getLoggedIn: async (req, res) => {
+    const user = await User.findById(req.user._id).populate({ path: "userProfile" });
+
+    res.json({
+      coins: user.coins.total,
+      imageUrl: user.userProfile.imageUrl,
+      id: user.userProfile._id,
+      trustVote: user.userProfile.trustVote, // todo return this populated
+      displayName: user.userProfile.displayName,
+      imagesGallery: user.userProfile.imagesGallery, // todo return this populated
+      imageQueryID: user.userProfile.imageQueryID,
+    });
   }
 };

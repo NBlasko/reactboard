@@ -21,7 +21,7 @@ export const userSigned = (bool) => ({
 //user Name
 
 export const addUserProfile = () => dispatch => {
-  const API_URL = SERVER_BASE_URL + 'api/auth/secret';
+  const API_URL = SERVER_BASE_URL + 'api/profile/loggedIn';
   axios(API_URL, {
     headers: {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,

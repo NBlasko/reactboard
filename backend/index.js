@@ -7,6 +7,7 @@ const { errorHandler } = require("./helpers/ErrorHandler");
 //const cors = require('cors');
 const morgan = require("morgan");
 require("./core/init/DbConnection").initDbConnection();
+require("./core/init/StorageSetup").initStorageSetup()
 
 const app = express();
 
@@ -21,9 +22,9 @@ app.use(errorHandler);
 require("./core/init/AuthStrategies").initAuthStrategies();
 
 app.use("/api/auth", require("./controllers/AuthController"));
-app.use("/api/blogs", require("./controllers/BlogController")); //todo /api/blog
-app.use("/api/profiles", require("./controllers/UserProfileController")); //todo /api/profile
-app.use("/api/images", require("./controllers/ImageController")); // todo api/image
+app.use("/api/blog", require("./controllers/BlogController")); //todo /api/blog
+app.use("/api/profile", require("./controllers/UserProfileController")); //todo /api/profile
+app.use("/api/image", require("./controllers/ImageController")); // todo api/image
 
 // Catch 404 errors
 // In production replace this one with serving the frontend

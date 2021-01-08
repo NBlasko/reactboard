@@ -1,5 +1,4 @@
 import { baseHttp } from "./baseHttp";
-import { useSelector, useDispatch } from "react-redux";
 
 export const AuthService = {
   verifyMail: ({ data, onSuccess, onError, onFinally }) => {
@@ -73,6 +72,4 @@ export const AuthService = {
       onFinally
     });
   }
-
-  //   secret: (req, res) => {}
 };

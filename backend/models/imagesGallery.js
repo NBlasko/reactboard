@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const imagesGallerySchema = new Schema({
-  //  authorId: String,
-    images: [{
-        URL: String,
-        imageID: String
-    }],
+  images: [
+    {
+      url: String,
+      imageId: String
+    }
+  ]
 });
 
-
-const ImagesGallery = mongoose.model('imagesGallery', imagesGallerySchema);
+const ImagesGallery = mongoose.model("imagesGallery", imagesGallerySchema);
 module.exports = ImagesGallery;

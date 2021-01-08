@@ -11,21 +11,9 @@ const UserProfile = require("../../models/UserProfile");
 const TrustVote = require("../../models/trustVote");
 const ImagesGallery = require("../../models/imagesGallery");
 const bcrypt = require("bcryptjs");
+const { uploadImage } = require("../../helpers/uploadHelpers");
 
 const initAuthStrategies = () => {
-  // configure cloud for images
-  const cloudinary = require("cloudinary");
-  cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY,
-    api_secret: process.env.API_SECRET
-  });
-  const uploadCloudinaryOptions = {
-    folder: "reactboard",
-    allowedFormats: ["jpg", "png"],
-    transformation: [{ width: 500, height: 500, crop: "limit" }]
-  };
-
   // Json web token strategy
   passport.use(
     new JwtStrategy(
@@ -76,43 +64,30 @@ const initAuthStrategies = () => {
             return done(null, foundUserByEmail);
           }
 
+          let imagesGalleryDoc = {};
+          let imageUrl = "";
+          if (profile && profile._json && profile._json.picture) {
+            image = await uploadImage(profile._json.picture);
+            if (image && image.url) {
+              imagesGalleryDoc = { images: [image] };
+              imageUrl = image.url;
+            }
+          }
+
+          const imagesGallery = new ImagesGallery(imagesGalleryDoc);
           const trustVote = new TrustVote();
-          const imagesGallery = new ImagesGallery();
-          const userProfile = new UserProfile({ trustVote, displayName: profile.displayName, imagesGallery });
+          const userProfile = new UserProfile({
+            trustVote,
+            displayName: profile.displayName,
+            imageUrl,
+            imagesGallery
+          });
 
           const newUser = new User({
             userProfile,
             email: profile.emails[0].value,
             googleId: profile.id
           });
-
-          // upload image on cloudinary if exists
-          // let image;
-          // if (profile && profile.photos && profile.photos[0].value)
-          //   await cloudinary.v2.uploader.upload(profile.photos[0].value, uploadCloudinaryOptions, function(error, result) {
-          //     if (error) throw error;
-          //     image = {
-          //       URL: result.secure_url,
-          //       imageID: result.public_id
-          //     };
-          //   });
-
-          // // Create ImagesGallery
-          // let imagesGallery;
-          // if (image) {
-          //   imagesGallery = new ImagesGallery({
-          //     authorId: trustVote.authorId,
-          //     images: [image]
-          //   });
-          // } else {
-          //   imagesGallery = new ImagesGallery({
-          //     authorId: trustVote.authorId
-          //   });
-          // }
-
-          // await imagesGallery.save();
-
-          // if (image && image.URL) newUser.image = { URL: image.URL };
 
           await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
           done(null, newUser);
@@ -129,12 +104,12 @@ const initAuthStrategies = () => {
     new FacebookTokenStrategy(
       {
         clientID: enviromentSetup.oauth.facebook.clientID,
-        clientSecret: enviromentSetup.oauth.facebook.clientSecret
+        clientSecret: enviromentSetup.oauth.facebook.clientSecret,
+        profileFields: ["id", "displayName", "emails", "picture.type(normal)"]
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
           console.log("profile", profile);
-
           const foundUserByFacebookId = await User.findOne({ facebookId: profile.id });
 
           if (foundUserByFacebookId) {
@@ -152,63 +127,30 @@ const initAuthStrategies = () => {
             return done(null, foundUserByEmail);
           }
 
+          let imagesGalleryDoc = {};
+          let imageUrl = "";
+          const image = await uploadImage(
+            `https://graph.facebook.com/${profile.id}/picture?width=200&height=200&access_token=${accessToken}`
+          );
+          if (image && image.url) {
+            imagesGalleryDoc = { images: [image] };
+            imageUrl = image.url;
+          }
+
+          const imagesGallery = new ImagesGallery(imagesGalleryDoc);
           const trustVote = new TrustVote();
-          const imagesGallery = new ImagesGallery();
-          const userProfile = new UserProfile({ trustVote, displayName: profile.displayName, imagesGallery });
+          const userProfile = new UserProfile({
+            trustVote,
+            displayName: profile.displayName,
+            imageUrl,
+            imagesGallery
+          });
 
           const newUser = new User({
             userProfile,
             email: profile.emails[0].value,
-            googleId: profile.id
+            facebookId: profile.id
           });
-          // code bellow executes for initial login - create TrustVote, ImageGallery
-
-          // Create TrustVote
-          // const trustVote = new TrustVote({
-          //   Up: 0,
-          //   Down: 0
-          // });
-          // await trustVote.save();
-
-          // // Create a new user
-          // const newUser = new User({
-          //   method: "facebook",
-          //   publicID: trustVote.authorId,
-          //   name: profile.displayName,
-          //   facebook: {
-          //     id: profile.id,
-          //     email: profile.emails[0].value
-          //   },
-          //   trustVote: trustVote.id
-          // });
-
-          // upload image on cloudinary if exists
-          // let image;
-          // if (profile.photos[0].value)
-          //   await cloudinary.v2.uploader.upload(profile.photos[0].value, uploadCloudinaryOptions, function(error, result) {
-          //     if (error) throw error;
-          //     image = {
-          //       URL: result.secure_url,
-          //       imageID: result.public_id
-          //     };
-          //   });
-
-          // Create ImagesGallery
-          // let imagesGallery;
-          // if (image) {
-          //   imagesGallery = new ImagesGallery({
-          //     authorId: trustVote.authorId,
-          //     images: [image]
-          //   });
-          // } else {
-          //   imagesGallery = new ImagesGallery({
-          //     authorId: trustVote.authorId
-          //   });
-          // }
-
-          // await imagesGallery.save();
-
-          // if (image.URL) newUser.image = { URL: image.URL };
 
           await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
 
