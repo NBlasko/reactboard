@@ -1,55 +1,23 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-const uuidv1 = require('uuid/v1');
+const objectIdType = Schema.Types.ObjectId;
+const uuidv1 = require("uuid/v1");
 
-/* Create a schema */
 const blogSchema = new Schema({
-    title: String,
-    author: String,
-    publicID: {
-        type: String,
-        default: uuidv1
-    },
-    authorsPublicID: String,
-    body: String,
-    seen: {
-        type: Number,
-        default: 0
-    },
-    likeVote: {
-        type: Schema.Types.ObjectId,
-        ref: 'likeVote'
-    },
-    numberOfComments: {
-        type: Number,
-        default: 0
-    },
-    trustVote: {
-        type: Schema.Types.ObjectId,
-        ref: 'trustvote'
-    },
-    comments: [{
-        type: Schema.Types.ObjectId,
-        ref: 'comment'
-    }],
-    date: { type: Date, default: Date.now },
-    /* difference is helping to calculate if someone who is voting has already vote
-    and what was his vote. More about this property can be read in 
-    controllers/blog.js in newBlogsLike     */
-    difference: {
-        type: Number,
-        default: 0
-    },
-    image: {
-        URL: String,
-        imageID: String,
-        galleryMongoID: String
-    },
+  _id: { type: String, default: uuidv1 },
+  authorsProfile: { type: objectIdType, ref: "userProfile" },
+  title: String,
+  description: String,
+  body: String,
+  imageUrl: String,
+  viewCount: { type: Number, default: 0 },
+  likeVote: { type: objectIdType, ref: "likeVote" },
+  likeCount: { type: Number, default: 0 },
+  comments: [{ type: objectIdType, ref: "comment" }],
+  commentsCount: { type: Number, default: 0 },
+  createdAt: { type: Date, default: Date.now }
 });
-
-/* Create a model */
-const Blog = mongoose.model('blog', blogSchema);
+blogSchema.index({ title: "text", description: "text" });
+const Blog = mongoose.model("blog", blogSchema);
 
 module.exports = Blog;
-
-

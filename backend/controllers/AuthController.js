@@ -3,7 +3,6 @@ const passport = require("passport");
 const passportSignIn = passport.authenticate("local", { session: false });
 const passportGoogle = passport.authenticate("googleToken", { session: false });
 const passportFacebook = passport.authenticate("facebookToken", { session: false });
-const passportJWT = passport.authenticate("jwt", { session: false });
 const router = require("express-promise-router")();
 const AuthService = require("../services/AuthService");
 const AuthValidation = require("../core/validation/AuthValidation");
@@ -32,9 +31,5 @@ router
 router
   .route("/facebook")
   .post(passportFacebook, AuthService.facebookOAuth);
-
-router
-  .route("/secret")
-  .get(passportJWT, AuthService.secret);
 
 module.exports = router;

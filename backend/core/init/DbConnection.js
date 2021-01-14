@@ -7,7 +7,8 @@ const initDbConnection = () =>
     process.env.MONGODB_URL,
     {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      useCreateIndex: true,
     },
     error => {
       if (error) throw error;

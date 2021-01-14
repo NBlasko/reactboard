@@ -54,6 +54,7 @@ module.exports = {
   schemas: {
     blogSchema: Joi.object().keys({
       title: Joi.string().required(),
+      description: Joi.string().required(),
       body: Joi.string().required(),
       imageId: Joi.string()
         .regex(/^[0-9a-fA-F]{24}$/)
@@ -103,7 +104,9 @@ module.exports = {
         .required()
     }),
     searchCriteriaSchema: Joi.object().keys({
-      searchText: Joi.string().required()
+      searchText: Joi.string().allow("", null),
+      sortBy: Joi.string().regex(/^(createdAt|likeCount|viewCount)$/),
+      perPage: Joi.number(),
     }),
     imageQueryIDpublicIDSchema: Joi.object().keys({
       imageQueryID: uuidRequired(),

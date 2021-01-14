@@ -89,6 +89,8 @@ const initAuthStrategies = () => {
             googleId: profile.id
           });
 
+          userProfile.userId = newUser.id;
+
           await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
           done(null, newUser);
         } catch (error) {
@@ -151,6 +153,8 @@ const initAuthStrategies = () => {
             email: profile.emails[0].value,
             facebookId: profile.id
           });
+
+          userProfile.userId = newUser.id;
 
           await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
 

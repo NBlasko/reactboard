@@ -5,7 +5,7 @@ const UserProfileService = require("../services/UserProfileService");
 const { validateBody, validateParam, validateQueryString, schemas } = require("../helpers/routeHelpers");
 
 router
-  .route("/getManyBlogs")
+  .route("/getManyBlogs")   //TODO,  put it in BlogService
   .get(passportJWT, validateQueryString(schemas.skipAuthorsPublicIDSchema), UserProfileService.getManyBlogs);
 
 router

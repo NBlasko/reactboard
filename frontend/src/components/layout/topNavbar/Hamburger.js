@@ -1,4 +1,4 @@
-import React, { useEffect, Fragment } from 'react';
+import React, { useEffect } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -21,7 +21,7 @@ function Hamburger() {
     useEffect(() => {
         if (isDesktopView)
             dispatch(toggleLeftSidebarAction(false))
-    }, [isDesktopView, dispatch, toggleLeftSidebarAction])
+    }, [isDesktopView, dispatch /*, toggleLeftSidebarAction*/])
 
     return (isDesktopView)
         ? null

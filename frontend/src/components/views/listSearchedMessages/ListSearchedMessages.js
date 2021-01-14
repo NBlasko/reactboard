@@ -27,9 +27,9 @@ function ListSearchedMessages(props) {
     const imageQueryID = useSelector(state => state.user.imageQueryID)
 
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [isEmptyAJAX, setIsEmptyAJAX] = useState(false);
-    const [numberOfmessages, setNumberOfmessages] = useState(-1);
+  //  const [isLoading, setIsLoading] = useState(false);
+    const [isEmptyAJAX/*, setIsEmptyAJAX*/] = useState(false);
+  //  const [numberOfmessages, setNumberOfmessages] = useState(-1);
 
     const { pathname } = props.location;
 

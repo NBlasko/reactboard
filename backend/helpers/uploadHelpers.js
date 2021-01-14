@@ -28,7 +28,7 @@ const uploadImage = async uploadValue => {
       if (error) throw error;
       image = {
         url: result.secure_url,
-        imageId: result.public_id
+        storageId: result.public_id
       };
     });
     return image;

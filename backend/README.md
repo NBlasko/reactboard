@@ -42,3 +42,9 @@
 [] blogs and profiles look almost the same. Add h1 names or different color to distinguish them
 
 [] deploy
+
+#Notes
+Images will be fetched via web server
+Strategy will be to confirm auth throug a specific endpoint, and based on response status image will be delivered
+Example.
+https://docs.nginx.com/nginx/admin-guide/security-controls/configuring-subrequest-authentication/

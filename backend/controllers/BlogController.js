@@ -1,77 +1,31 @@
-const passport = require('passport');
-//require('../core/auth/AuthStrategies');
-const passportJWT = passport.authenticate('jwt', { session: false });
+const passport = require("passport");
+const passportJWT = passport.authenticate("jwt", { session: false });
 
-const router = require('express-promise-router')();
-const BlogService = require('../services/BlogService');
-const {
-  validateBody,
-  validateParam,
-  validateQueryString,
-  schemas } = require('../helpers/routeHelpers')
+const router = require("express-promise-router")();
+const BlogService = require("../services/BlogService");
+const { validateBody, validateParam, validateQueryString, schemas } = require("../helpers/routeHelpers");
 
-// Always use data validation before mongodb, 
-// and I mean first thing after the request has been made.
-// Don't rely only on mongoose schema to validate your responds,
-// sometimes we will perform some calculations instead of saving the data
-// to mongodb and then we will miss that request to validate 
-// because it never went through schema
+router
+  .route("/create")
 
-router.route('/')
+  .post(passportJWT, validateBody(schemas.blogSchema), BlogService.create);
 
-  .get(
-    passportJWT,
-    validateQueryString(schemas.skipCriteriaSchema),
-    BlogService.index
-  )
-  .post(
-    passportJWT,
-    validateBody(schemas.blogSchema),
-    BlogService.newBlog
-  );
+router.route("/search").get(passportJWT, validateQueryString(schemas.searchCriteriaSchema), BlogService.search);
 
-router.route('/search')
-  .get(
-    passportJWT,
-    validateQueryString(schemas.searchCriteriaSchema),
-    BlogService.searchBlogs
-  );
+router
+  .route("/blogId/:blogId")
+  .get(passportJWT, validateParam(schemas.idSchema, "blogId"), BlogService.getOne)
+  .delete(passportJWT, validateParam(schemas.idSchema, "blogId"), BlogService.deleteOne);
 
-router.route('/:blogId')
-  .get(
-    passportJWT,
-    validateParam(schemas.idSchema, 'blogId'),
-    BlogService.getSingleBlog
-  )
-  .delete(
-    passportJWT,
-    validateParam(schemas.idSchema, 'blogId'),
-    BlogService.deleteSingleBlog
-  );
+router
+  .route("/blogId/:blogId/comments") // TODO put in BlogComment controller and services
+  .get(passportJWT, validateParam(schemas.idSchema, "blogId"), validateQueryString(schemas.skipSchema), BlogService.getBlogsComments)
+  .post(passportJWT, validateParam(schemas.idSchema, "blogId"), validateBody(schemas.commentSchema), BlogService.newBlogsComment);
 
-router.route('/:blogId/comments')
-  .get(
-    passportJWT,
-    validateParam(schemas.idSchema, 'blogId'),
-    validateQueryString(schemas.skipSchema),
-    BlogService.getBlogsComments
-  )
-  .post(
-    passportJWT,
-    validateParam(schemas.idSchema, 'blogId'),
-    validateBody(schemas.commentSchema),
-    BlogService.newBlogsComment
-  );
+router
+  .route("/blogId/:blogId/like") // TODO put in BlogLike Controller and services
 
-
-router.route('/:blogId/like')
-
-//hit a like/dislike on a blog
-  .post(
-    passportJWT,
-    validateParam(schemas.idSchema, 'blogId'),
-    validateBody(schemas.likeSchema),
-    BlogService.newBlogsLike
-  );   
+  //hit a like/dislike on a blog
+  .post(passportJWT, validateParam(schemas.idSchema, "blogId"), validateBody(schemas.likeSchema), BlogService.newBlogsLike);
 
 module.exports = router;

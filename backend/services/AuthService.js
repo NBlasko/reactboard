@@ -145,6 +145,7 @@ module.exports = {
       }
     });
 
+    userProfile.userId = newUser.id;
     await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
 
     sendEmail(email, newUser.name, accessCode);
@@ -163,20 +164,6 @@ module.exports = {
   facebookOAuth: async (req, res) => {
     res.status(200).json({ token: signToken(req.user) });
   },
-
-  secret: async (req, res) => {
-    const user = await User.findById(req.user.id).populate({ path: "userProfile" });
-    
-    res.json({
-      coins: user.coins.total,
-      imageUrl: user.userProfile.imageUrl,
-      id: user.userProfile._id,
-      trustVote: user.userProfile.trustVote, // todo return this populated
-      displayName: user.userProfile.displayName,
-      imagesGallery: user.userProfile.imagesGallery, // todo return this populated
-      imageQueryID: user.userProfile.imageQueryID,
-    });
-  }
 
   // changePassword service: TODO
 };
