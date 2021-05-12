@@ -6,24 +6,29 @@ const BlogService = require("../services/BlogService");
 const { validateBody, validateParam, validateQueryString, schemas } = require("../helpers/routeHelpers");
 
 router
-  .route("/create")
+  .route("/blog")
 
   .post(passportJWT, validateBody(schemas.blogSchema), BlogService.create);
 
-router.route("/search").get(passportJWT, validateQueryString(schemas.searchCriteriaSchema), BlogService.search);
+router
+  .route("/blog/search")
+
+  .get(passportJWT, validateQueryString(schemas.searchCriteriaSchema), BlogService.search);
 
 router
-  .route("/blogId/:blogId")
+  .route("/blog/:blogId")
+
   .get(passportJWT, validateParam(schemas.idSchema, "blogId"), BlogService.getOne)
   .delete(passportJWT, validateParam(schemas.idSchema, "blogId"), BlogService.deleteOne);
 
 router
-  .route("/blogId/:blogId/comments") // TODO put in BlogComment controller and services
+  .route("/blog/:blogId/comment") // TODO put in BlogComment controller and services
+
   .get(passportJWT, validateParam(schemas.idSchema, "blogId"), validateQueryString(schemas.skipSchema), BlogService.getBlogsComments)
   .post(passportJWT, validateParam(schemas.idSchema, "blogId"), validateBody(schemas.commentSchema), BlogService.newBlogsComment);
 
 router
-  .route("/blogId/:blogId/like") // TODO put in BlogLike Controller and services
+  .route("/blog/:blogId/like") // TODO put in BlogLike Controller and services
 
   //hit a like/dislike on a blog
   .post(passportJWT, validateParam(schemas.idSchema, "blogId"), validateBody(schemas.likeSchema), BlogService.newBlogsLike);

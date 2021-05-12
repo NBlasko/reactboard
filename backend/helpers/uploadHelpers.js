@@ -10,25 +10,30 @@ const storage = cloudinaryStorage({
   folder: "reactboard",
   allowedFormats: ["jpg", "png"],
   transformation: [{ width: 500, height: 500, crop: "limit" }],
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, Date.now() + path.extname(file.originalname));
-  }
+  },
 });
 
 const uploadCloudinaryOptions = {
   folder: "reactboard",
   allowedFormats: ["jpg", "png"],
-  transformation: [{ width: 500, height: 500, crop: "limit" }]
+  transformation: [{ width: 500, height: 500, crop: "limit" }],
 };
 
-const uploadImage = async uploadValue => {
+/**
+ *
+ * @param {string} uploadValue
+ * @returns {object} { url?: String; storageId?: String }
+ */
+const uploadImage = async (uploadValue) => {
   try {
     let image;
-    await cloudinary.v2.uploader.upload(uploadValue, uploadCloudinaryOptions, function(error, result) {
+    await cloudinary.v2.uploader.upload(uploadValue, uploadCloudinaryOptions, function (error, result) {
       if (error) throw error;
       image = {
         url: result.secure_url,
-        storageId: result.public_id
+        storageId: result.public_id,
       };
     });
     return image;

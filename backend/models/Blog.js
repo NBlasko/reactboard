@@ -12,12 +12,14 @@ const blogSchema = new Schema({
   imageUrl: String,
   viewCount: { type: Number, default: 0 },
   likeVote: { type: objectIdType, ref: "likeVote" },
-  likeCount: { type: Number, default: 0 },
+ // likeCount: { type: Number, default: 0 }, // TODO, probably will delete it
   comments: [{ type: objectIdType, ref: "comment" }],
   commentsCount: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
+
 blogSchema.index({ title: "text", description: "text" });
+
 const Blog = mongoose.model("blog", blogSchema);
 
 module.exports = Blog;

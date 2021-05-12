@@ -17,11 +17,11 @@ router
   .get(passportJWT, UserProfileService.getLoggedIn);
 
 router
-  .route("/userProfileId/:userProfileId")
+  .route("/userProfile/:userProfileId")
   .get(passportJWT, validateParam(schemas.idSchema, "userProfileId"), UserProfileService.getOne);
 
 router
-  .route("/userProfileId/:userProfileId/trust")
+  .route("/userProfile/:userProfileId/trust")
   .post(passportJWT, validateParam(schemas.idSchema, "userProfileId"), validateBody(schemas.trustSchema), UserProfileService.upsertTrust);
 
 module.exports = router;

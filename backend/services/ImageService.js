@@ -1,7 +1,7 @@
 /* Mongoose models  */
-const User = require('../models/auth');
-const Blog = require('../models/blog')
-const ImagesGallery = require('../models/imagesGallery');
+const User = require('../models/User');
+const Blog = require('../models/Blog')
+const Image = require('../models/Image');
 
 /* request fetches images via url and sends them to the client */
 const request = require('request');
@@ -26,7 +26,7 @@ module.exports = {
         };
 
         /* add uploaded image properties to ImagesGallery */
-        const galery = await ImagesGallery.findOne({ authorId: req.user.publicID })
+        const galery = await Image.findOne({ authorId: req.user.publicID })
         galery.images.push(image);
         await galery.save();
 
@@ -146,7 +146,7 @@ module.exports = {
 
         const { id } = req.value.params;
 
-        const gallery = await ImagesGallery.findOne({ authorId: req.user.publicID })
+        const gallery = await Image.findOne({ authorId: req.user.publicID })
         if (!gallery)
             return res.status(404).json({ error: "image doesn\'t exist or forbidden" });
 
@@ -183,7 +183,7 @@ module.exports = {
 
         const { param } = req.value.body;
 
-        const gallery = await ImagesGallery
+        const gallery = await Image
             .findOne({
                 authorId: req.user.publicID
             })

@@ -11,12 +11,12 @@ const userSchema = new Schema({
     In turn, he gets pageQueryID
     which determines for which page has clint paid for access */
 
-    pageQueryID: String
+    pageQueryID: String,
   },
 
   email: {
     type: String,
-    lowercase: true
+    lowercase: true,
   },
 
   local: {
@@ -24,8 +24,8 @@ const userSchema = new Schema({
     /* properties for verifying via email */
     isVerified: { type: Boolean, default: false },
     accessCode: { type: String },
-    accessCodeTime: { type: Date, default: Date.now },
-    accessNumberTry: { type: Number, default: 3 }
+    accessCodeTime: { type: Date },
+    accessNumberTry: { type: Number, default: 3 },
   },
 
   googleId: String,
@@ -33,8 +33,8 @@ const userSchema = new Schema({
 
   userProfile: {
     type: Schema.Types.ObjectId,
-    ref: "userProfile"
-  }
+    ref: "userProfile",
+  },
 });
 
 // Create a model

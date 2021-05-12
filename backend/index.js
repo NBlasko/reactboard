@@ -1,5 +1,8 @@
+const path = require("path");
 if (process.env.NODE_ENV !== "production") {
-  require("dotenv").load();
+  require("dotenv").config({
+    path: path.resolve(process.cwd(), ".env"),
+  });
 }
 
 const express = require("express");
@@ -7,7 +10,7 @@ const { errorHandler } = require("./helpers/ErrorHandler");
 //const cors = require('cors');
 const morgan = require("morgan");
 require("./core/init/DbConnection").initDbConnection();
-require("./core/init/StorageSetup").initStorageSetup()
+require("./core/init/StorageSetup").initStorageSetup();
 
 const app = express();
 
@@ -20,10 +23,14 @@ app.use(express.json());
 app.use(errorHandler);
 
 require("./core/init/AuthStrategies").initAuthStrategies();
+const API_PREFIX = "/api";
+app.use(
+  API_PREFIX,
+  require("./controllers/AuthController"),
+  require("./controllers/BlogController"),
+  require("./controllers/UserProfileController")
+);
 
-app.use("/api/auth", require("./controllers/AuthController"));
-app.use("/api/blog", require("./controllers/BlogController")); //todo /api/blog
-app.use("/api/profile", require("./controllers/UserProfileController")); //todo /api/profile
 app.use("/api/image", require("./controllers/ImageController")); // todo api/image
 
 // Catch 404 errors
@@ -31,7 +38,7 @@ app.use("/api/image", require("./controllers/ImageController")); // todo api/ima
 app.use((req, res, next) => {
   const error = new Error();
   error.status = 404;
-  error.message = 'Not found';
+  error.message = "Not found";
   next(error);
 });
 
@@ -41,7 +48,7 @@ app.use((err, req, res, next) => {
 
   const status = err.status || 500;
   res.status(status).json({
-    message: error.message
+    message: error.message,
   });
 
   console.error("Error in handler function", err);
@@ -50,7 +57,7 @@ app.use((err, req, res, next) => {
 //start the server
 const port = app.get("port") || 3001;
 
-process.on("uncaughtException", err => {
+process.on("uncaughtException", (err) => {
   console.log(err.name, err.message);
   console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
 

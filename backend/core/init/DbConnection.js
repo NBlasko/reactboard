@@ -10,7 +10,7 @@ const initDbConnection = () =>
       useUnifiedTopology: true,
       useCreateIndex: true,
     },
-    error => {
+    (error) => {
       if (error) throw error;
       console.log(`Successfully connected to database.`);
     }

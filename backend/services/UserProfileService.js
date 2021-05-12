@@ -1,6 +1,7 @@
-const Blog = require("../models/blog");
+const Blog = require("../models/Blog");
 const User = require("../models/User");
-
+const TrustVote = require("../models/TrustVote");
+const CommonVote = require("../models/CommonVote");
 const uuidv4 = require("uuid/v4");
 
 /*             **** NOTE TO MYSELF ****   
@@ -25,15 +26,15 @@ module.exports = {
     const result = {
       trustVote: {
         number: {
-          ...trustVote.number
-        }
+          ...trustVote.number,
+        },
       },
       name,
       admin,
       coins: {
         total: req.user.coins.total,
-        pageQueryID: publicID
-      }
+        pageQueryID: publicID,
+      },
     };
 
     /* remove coins from user profile, 
@@ -60,7 +61,7 @@ module.exports = {
     //kasnije cu izbaciti odredjene stvari za response, ne sme sve da se vrati
     //PublicID  zadrzavam u listi profila kako bih napravio link koji vodi ka profilu tog authora i da nabavim sliku
     let result = [];
-    profiles.forEach(function(v) {
+    profiles.forEach(function (v) {
       //   console.log("v", v)
       const { trustVote, name, publicID } = v;
 
@@ -108,7 +109,7 @@ module.exports = {
     //authorsPublicID  zadrzavam u blog kako bih napravio link koji vodi ka profilu tog authora
     let result = [],
       bodySliced;
-    blogs.forEach(function(v) {
+    blogs.forEach(function (v) {
       const { seen, numberOfComments, trustVote, likeVote, title, author, body, publicID, authorsPublicID, date, image } = v;
       if (body.length > 100) bodySliced = body.slice(0, 100) + "...";
       else bodySliced = body;
@@ -118,13 +119,13 @@ module.exports = {
         numberOfComments,
         trustVote: {
           number: {
-            ...trustVote.number
-          }
+            ...trustVote.number,
+          },
         },
         likeVote: {
           number: {
-            ...likeVote.number
-          }
+            ...likeVote.number,
+          },
         },
         title,
         author,
@@ -132,7 +133,7 @@ module.exports = {
         publicID,
         authorsPublicID,
         date,
-        image: imageId
+        image: imageId,
       });
     });
 
@@ -141,65 +142,73 @@ module.exports = {
   },
 
   upsertTrust: async (req, res) => {
-    const { publicID } = req.value.params; //izvadis iz url javni id bloga
-    let blog = await Blog.findOne({ publicID }).populate({ path: "trustVote" }); //nadjes taj blog
-    let trustVote = blog.trustVote; // await TrustVote.findOne({ authorId: blog.publicID })   //trazis da li je vec neko do sada dao trust , tj da li je kolekcija obrazovana kod tog Usera
+    const { userProfileId } = req.value.params;
+    const trustVote = await TrustVote.findById(userProfileId);
 
-    let UserVotedUp = 0,
-      UserVotedDown = 0;
-    const foundUp = trustVote.voterId.Up.find(element => {
-      return element.voterId === req.user.publicID;
-    });
-    const foundDown = trustVote.voterId.Down.find(element => {
-      return element.voterId === req.user.publicID;
-    });
-
-    if (req.value.body.trust === 1) {
-      if (foundUp) {
-        trustVote.number.Up--;
-        UserVotedUp = 0;
-        trustVote.voterId.Up = trustVote.voterId.Up.filter(item => item.voterId !== req.user.publicID);
-      } else {
-        trustVote.voterId.Up.push({ voterId: req.user.publicID });
-        trustVote.number.Up++;
-        UserVotedUp = 1;
-      }
-      if (foundDown) {
-        trustVote.number.Down--;
-        UserVotedDown = 0;
-        trustVote.voterId.Down = trustVote.voterId.Down.filter(item => item.voterId !== req.user.publicID);
-      }
+    if (!trustVote) {
+      return res.handleError(400, "User not found");
     }
-    if (req.value.body.trust === 0) {
-      if (foundDown) {
-        trustVote.number.Down--;
-        UserVotedDown = 0;
-        trustVote.voterId.Down = trustVote.voterId.Down.filter(item => item.voterId !== req.user.publicID);
-      } else {
-        trustVote.voterId.Down.push({ voterId: req.user.publicID });
-        trustVote.number.Down++;
-        UserVotedDown = 1;
-      }
-      if (foundUp) {
-        trustVote.number.Up--;
-        UserVotedUp = 0;
-        trustVote.voterId.Up = trustVote.voterId.Up.filter(item => item.voterId !== req.user.publicID);
-      }
-    }
-    await trustVote.save();
 
-    /*potrebno je srediti da
-            1. ne mogu da glasaju dva puta tj da undo svoj glas   Uradjeno
-            2. da se smanjuju coins
+    const commonVoteOptions = { voteCaseId: trustVote._id, voterId: userProfileId };
+
+    let commonVote = await CommonVote.findOne(commonVoteOptions);
+    if (!commonVote) {
+      commonVote = new CommonVote(commonVoteOptions);
+    }
+
+    const alreadyVotedUp = commonVote && commonVote.value === 1;
+    const alreadyVotedDown = commonVote && commonVote.value === -1;
+    const wantsToVoteUp = req.value.body.trust === 1;
+    const wantsToVoteDown = req.value.body.trust === -1;
+
+    if (wantsToVoteUp && alreadyVotedUp) {
+      commonVote.value = 0;
+      trustVote.voteCountUp--;
+    }
+
+    if (wantsToVoteUp && alreadyVotedDown) {
+      commonVote.value = 1;
+      trustVote.voteCountDown--;
+      trustVote.voteCountUp++;
+    }
+
+    if (wantsToVoteUp && !alreadyVotedDown && !alreadyVotedUp) {
+      commonVote.value = 1;
+      trustVote.voteCountUp++;
+    }
+
+    if (wantsToVoteDown && alreadyVotedDown) {
+      commonVote.value = 0;
+      trustVote.voteCountDown--;
+    }
+
+    if (wantsToVoteDown && alreadyVotedUp) {
+      commonVote.value = -1;
+      trustVote.voteCountDown++;
+      trustVote.voteCountUp--;
+    }
+
+    if (wantsToVoteDown && !alreadyVotedDown && !alreadyVotedUp) {
+      commonVote.value = -1;
+      trustVote.voteCountDown++;
+    }
+
+    if (commonVote.value === 0) {
+      await Promise.all([trustVote.save(), CommonVote.deleteOne(commonVoteOptions)]);
+    } else {
+      await Promise.all([trustVote.save(), await commonVote.save()]);
+    }
+
+    /*  
+          potrebno je videti ako povecavamo coins negde, onda da ne dozvolim da nekog glasa i undo, 
+          jer ce iznova dobijati coins, strategija oko toga je potrebna 
         */
-    const newTrustVote = {
-      number: trustVote.number //idea behind this object is tosend it like in the previous version, to not mess up reducers in redux and data in components
-    };
-    const result = { trustVote: newTrustVote, UserVotedUp, UserVotedDown };
-    //console.log("t", trustVote.difference)  //radi
 
-    // console.log("trustVote", result) response tested
-    res.status(200).json(result);
+    res.status(200).json({
+      voteValue: commonVote.value,
+      voteCountDown: trustVote.voteCountDown,
+      voteCountUp: trustVote.voteCountUp,
+    });
   },
 
   getLoggedIn: async (req, res) => {
@@ -214,5 +223,5 @@ module.exports = {
       imagesGallery: user.userProfile.imagesGallery, // todo return this populated
       imageQueryID: user.userProfile.imageQueryID,
     });
-  }
+  },
 };

@@ -21,7 +21,7 @@ export const userSigned = (bool) => ({
 //user Name
 
 export const addUserProfile = () => dispatch => {
-  const API_URL = SERVER_BASE_URL + 'api/profile/loggedIn';
+  const API_URL = SERVER_BASE_URL + 'api/loggedIn';
   axios(API_URL, {
     headers: {
       Authorization: `Bearer ${localStorage.reactBoardToken}`,
@@ -71,11 +71,11 @@ export const addMessageAction = ({ text, title, imageId }) => dispatch => {
       "body": text,
       "imageId": imageId
     },
-    url: SERVER_BASE_URL + 'api/blogs',
+    url: SERVER_BASE_URL + 'api/blog/create',
   })
     .then(res => {
       console.log(res);
-      dispatch({
+      dispatch({ 
         type: ADD_MESSAGE,
         payload: res.data
       })
@@ -87,21 +87,21 @@ export const addMessageAction = ({ text, title, imageId }) => dispatch => {
 
 
 export const getMessagesAction = (skip, criteria) => dispatch => {
-  const newCriteria = (criteria === "") ? "new" : criteria;
-  axios({
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${localStorage.reactBoardToken}`,
-      'Cache-Control': 'no-cache'
-    },
-    url: SERVER_BASE_URL + 'api/blogs?skip=' + skip + '&criteria=' + newCriteria,
-  }).then(res => {
-    dispatch({
-      type: GET_MESSAGES,
-      payload: res.data
-    })
-  })
-    .catch(error => console.log(error));
+  // const newCriteria = (criteria === "") ? "new" : criteria;
+  // axios({
+  //   method: 'GET',
+  //   headers: {
+  //     Authorization: `Bearer ${localStorage.reactBoardToken}`,
+  //     'Cache-Control': 'no-cache'
+  //   },
+  //   url: SERVER_BASE_URL + 'api/blogs?skip=' + skip + '&criteria=' + newCriteria,
+  // }).then(res => {
+  //   dispatch({
+  //     type: GET_MESSAGES,
+  //     payload: res.data
+  //   })
+  // })
+  //   .catch(error => console.log(error));
 };
 
 
@@ -125,21 +125,21 @@ export const searchBlogsAction = (searchText) => dispatch => {
 
 
 export const getNewMessagesAction = (skip, criteria) => dispatch => {
-  const newCriteria = (criteria === "") ? "new" : criteria;
-  axios({
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${localStorage.reactBoardToken}`,
-      'Cache-Control': 'no-cache'
-    },
-    url: SERVER_BASE_URL + 'api/blogs?skip=' + skip + '&criteria=' + newCriteria,
-  }).then(res => {
-    dispatch({
-      type: GET_NEW_MESSAGES,
-      payload: res.data
-    })
-  })
-    .catch(error => console.log(error));
+  // const newCriteria = (criteria === "") ? "new" : criteria;
+  // axios({
+  //   method: 'GET',
+  //   headers: {
+  //     Authorization: `Bearer ${localStorage.reactBoardToken}`,
+  //     'Cache-Control': 'no-cache'
+  //   },
+  //   url: SERVER_BASE_URL + 'api/blogs?skip=' + skip + '&criteria=' + newCriteria,
+  // }).then(res => {
+  //   dispatch({
+  //     type: GET_NEW_MESSAGES,
+  //     payload: res.data
+  //   })
+  // })
+  //   .catch(error => console.log(error));
 };
 
 export const deleteAllMessagesAction = () => ({

@@ -1,4 +1,3 @@
-// passport
 const passport = require("passport");
 const JwtStrategy = require("passport-jwt").Strategy;
 const { ExtractJwt } = require("passport-jwt");
@@ -8,10 +7,59 @@ const GooglePlusTokenStrategy = require("passport-google-token").Strategy;
 const enviromentSetup = require("./enviromentSetup");
 const User = require("../../models/User");
 const UserProfile = require("../../models/UserProfile");
-const TrustVote = require("../../models/trustVote");
-const ImagesGallery = require("../../models/imagesGallery");
+const TrustVote = require("../../models/TrustVote");
+const Image = require("../../models/Image");
 const bcrypt = require("bcryptjs");
 const { uploadImage } = require("../../helpers/uploadHelpers");
+const { v4: uuid } = require("uuid");
+
+const commonSocialSignUp = async ({ strategyIdName, profilePicture, displayName, email, externalProfileId }) => {
+  const userProfileId = uuid();
+  console.log("Ovde ne sme doci");
+  let imageDoc = {};
+  let imageUrl = "";
+
+  if (profilePicture) {
+    uploadedImage = await uploadImage(profilePicture);
+    if (uploadedImage && uploadedImage.url && uploadedImage.storageId) {
+      imageDoc.url = uploadedImage.url;
+      imageDoc.storageId = uploadedImage.storageId;
+      imageDoc.userProfileId = userProfileId;
+      imageDoc.imageId = uuid();
+      imageUrl = uploadedImage.url;
+    }
+  }
+
+  const image = new Image(imageDoc);
+
+  const trustVote = new TrustVote({
+    _id: userProfileId,
+  });
+
+  const userProfile = new UserProfile({
+    _id: userProfileId,
+    trustVote,
+    displayName,
+    imageUrl,
+  });
+
+  const newUser = new User({
+    userProfile,
+    email,
+    [strategyIdName]: externalProfileId,
+  });
+
+  userProfile.userId = newUser.id;
+
+  const promises = [trustVote.save(), userProfile.save(), newUser.save()];
+
+  if (imageUrl) {
+    promises.push(image.save());
+  }
+
+  await Promise.all(promises);
+  return newUser;
+};
 
 const initAuthStrategies = () => {
   // Json web token strategy
@@ -19,7 +67,7 @@ const initAuthStrategies = () => {
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: enviromentSetup.JWT_SECRET
+        secretOrKey: enviromentSetup.JWT_SECRET,
       },
       async (payload, done) => {
         try {
@@ -43,7 +91,7 @@ const initAuthStrategies = () => {
     new GooglePlusTokenStrategy(
       {
         clientID: enviromentSetup.oauth.google.clientID,
-        clientSecret: enviromentSetup.oauth.google.clientSecret
+        clientSecret: enviromentSetup.oauth.google.clientSecret,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
@@ -57,41 +105,20 @@ const initAuthStrategies = () => {
             return done({ message: "Email is not available", status: 403 }, null);
           }
 
-          const foundUserByEmail = await User.findOne({ email: profile.emails[0].value }).populate({ path: "userProfile" });
+          const foundUserByEmail = await User.findOne({ email: profile.emails[0].value }); //.populate({ path: "userProfile" });
           if (foundUserByEmail) {
-            foundUserByEmail.googleId = profile.id;
-            await Promise.all([foundUserByEmail.userProfile.save(), foundUserByEmail.save()]);
+            await foundUserByEmail.updateOne({ googleId: profile.id });
             return done(null, foundUserByEmail);
           }
 
-          let imagesGalleryDoc = {};
-          let imageUrl = "";
-          if (profile && profile._json && profile._json.picture) {
-            image = await uploadImage(profile._json.picture);
-            if (image && image.url) {
-              imagesGalleryDoc = { images: [image] };
-              imageUrl = image.url;
-            }
-          }
-
-          const imagesGallery = new ImagesGallery(imagesGalleryDoc);
-          const trustVote = new TrustVote();
-          const userProfile = new UserProfile({
-            trustVote,
+          const newUser = commonSocialSignUp({
+            strategyIdName: "googleId",
+            profilePicture: profile && profile._json && profile._json.picture,
             displayName: profile.displayName,
-            imageUrl,
-            imagesGallery
-          });
-
-          const newUser = new User({
-            userProfile,
             email: profile.emails[0].value,
-            googleId: profile.id
+            externalProfileId: profile.id,
           });
 
-          userProfile.userId = newUser.id;
-
-          await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
           done(null, newUser);
         } catch (error) {
           done(error, false, error.message);
@@ -107,11 +134,10 @@ const initAuthStrategies = () => {
       {
         clientID: enviromentSetup.oauth.facebook.clientID,
         clientSecret: enviromentSetup.oauth.facebook.clientSecret,
-        profileFields: ["id", "displayName", "emails", "picture.type(normal)"]
+        profileFields: ["id", "displayName", "emails", "picture.type(normal)"],
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          console.log("profile", profile);
           const foundUserByFacebookId = await User.findOne({ facebookId: profile.id });
 
           if (foundUserByFacebookId) {
@@ -122,41 +148,20 @@ const initAuthStrategies = () => {
             return done({ message: "Email is not available", status: 403 }, null);
           }
 
-          const foundUserByEmail = await User.findOne({ email: profile.emails[0].value }).populate({ path: "userProfile" });
+          const foundUserByEmail = await User.findOne({ email: profile.emails[0].value })//.populate({ path: "userProfile" });
+
           if (foundUserByEmail) {
-            foundUserByEmail.facebookId = profile.id;
-            await Promise.all([foundUserByEmail.userProfile.save(), foundUserByEmail.save()]);
+            await foundUserByEmail.updateOne({ "facebookId": profile.id });
             return done(null, foundUserByEmail);
           }
 
-          let imagesGalleryDoc = {};
-          let imageUrl = "";
-          const image = await uploadImage(
-            `https://graph.facebook.com/${profile.id}/picture?width=200&height=200&access_token=${accessToken}`
-          );
-          if (image && image.url) {
-            imagesGalleryDoc = { images: [image] };
-            imageUrl = image.url;
-          }
-
-          const imagesGallery = new ImagesGallery(imagesGalleryDoc);
-          const trustVote = new TrustVote();
-          const userProfile = new UserProfile({
-            trustVote,
+          const newUser = commonSocialSignUp({
+            strategyIdName: "facebookId",
+            profilePicture: `https://graph.facebook.com/${profile.id}/picture?width=200&height=200&access_token=${accessToken}`,
             displayName: profile.displayName,
-            imageUrl,
-            imagesGallery
-          });
-
-          const newUser = new User({
-            userProfile,
             email: profile.emails[0].value,
-            facebookId: profile.id
+            externalProfileId: profile.id,
           });
-
-          userProfile.userId = newUser.id;
-
-          await Promise.all([trustVote.save(), userProfile.save(), newUser.save(), imagesGallery.save()]);
 
           done(null, newUser);
         } catch (error) {
@@ -200,5 +205,5 @@ const initAuthStrategies = () => {
 };
 
 module.exports = {
-  initAuthStrategies
+  initAuthStrategies,
 };

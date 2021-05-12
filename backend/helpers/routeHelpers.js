@@ -5,17 +5,9 @@ const uuidRequired = () =>
     .regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
     .required();
 
-const nonNegativeInteger = () =>
-  Joi.number()
-    .integer()
-    .min(0);
+const nonNegativeInteger = () => Joi.number().integer().min(0);
 
-const vote = () =>
-  Joi.number()
-    .integer()
-    .min(0)
-    .max(1)
-    .required();
+const vote = () => Joi.number().integer().min(-1).max(1).invalid(0).required();
 
 module.exports = {
   validateParam: (schema, name) => {
@@ -30,7 +22,7 @@ module.exports = {
       next();
     };
   },
-  validateBody: schema => {
+  validateBody: (schema) => {
     return (req, res, next) => {
       const result = Joi.validate(req.body, schema);
       if (result.error) return res.status(400).json({ message: result.error.details[0].message });
@@ -40,7 +32,7 @@ module.exports = {
       next();
     };
   },
-  validateQueryString: schema => {
+  validateQueryString: (schema) => {
     return (req, res, next) => {
       const result = Joi.validate(req.query, schema);
       if (result.error) return res.status(400).json({ message: result.error.details[0].message });
@@ -59,49 +51,40 @@ module.exports = {
       imageId: Joi.string()
         .regex(/^[0-9a-fA-F]{24}$/)
         .allow("", null)
-        .required()
+        .required(),
     }),
     idSchema: Joi.object().keys({
-      param: uuidRequired() // param, becuse I named it like that above, in validateParam method
+      param: uuidRequired(), // param, becuse I named it like that above, in validateParam method
     }),
     mongoIdSchema: Joi.object().keys({
       param: Joi.string()
         .regex(/^[0-9a-fA-F]{24}$/)
-        .required()
+        .required(),
     }),
     commentSchema: Joi.object().keys({
       author: Joi.string().required(),
       authorsPublicID: uuidRequired(),
-      body: Joi.string().required()
+      body: Joi.string().required(),
     }),
     trustSchema: Joi.object().keys({
-      trust: vote()
+      trust: vote(),
     }),
     likeSchema: Joi.object().keys({
-      like: vote()
+      like: vote(),
     }),
     skipCriteriaSchema: Joi.object().keys({
-      skip: Joi.number()
-        .integer()
-        .min(0)
-        .required(),
+      skip: Joi.number().integer().min(0).required(),
       searchText: Joi.string(),
       criteria: Joi.string()
         .regex(/^(new|mostlikedblogs|mostseenblogs|profile)$/)
-        .required()
+        .required(),
     }),
     skipAuthorsPublicIDSchema: Joi.object().keys({
-      skip: Joi.number()
-        .integer()
-        .min(0)
-        .required(),
-      authorsPublicID: uuidRequired()
+      skip: Joi.number().integer().min(0).required(),
+      authorsPublicID: uuidRequired(),
     }),
     skipSchema: Joi.object().keys({
-      skip: Joi.number()
-        .integer()
-        .min(0)
-        .required()
+      skip: Joi.number().integer().min(0).required(),
     }),
     searchCriteriaSchema: Joi.object().keys({
       searchText: Joi.string().allow("", null),
@@ -111,7 +94,7 @@ module.exports = {
     imageQueryIDpublicIDSchema: Joi.object().keys({
       imageQueryID: uuidRequired(),
       publicID: uuidRequired(),
-      refreshID: nonNegativeInteger()
+      refreshID: nonNegativeInteger(),
     }),
     singleGalleryImageSchema: Joi.object().keys({
       imageQueryID: uuidRequired(),
@@ -119,7 +102,7 @@ module.exports = {
       singleImageID: Joi.string()
         .regex(/^[0-9a-fA-F]{24}$/)
         .required(),
-      refreshID: nonNegativeInteger()
-    })
-  }
+      refreshID: nonNegativeInteger(),
+    }),
+  },
 };

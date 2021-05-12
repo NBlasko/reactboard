@@ -9,27 +9,33 @@ const AuthValidation = require("../core/validation/AuthValidation");
 const { validateBody } = require("../core/validation");
 
 router
-  .route("/signup")
+  .route("/auth/signup")
+
   .post(validateBody(AuthValidation.signUp), AuthService.signUp);
 
 router
-  .route("/verify-mail")
+  .route("/auth/verify-mail")
+
   .post(validateBody(AuthValidation.verifyMail), AuthService.verifyMail);
 
 router
-  .route("/resend-verification-mail")
+  .route("/auth/resend-verification-mail")
+
   .post(validateBody(AuthValidation.resendVerificationMail), AuthService.resendVerificationMail);
 
 router
-  .route("/signin")
+  .route("/auth/signin")
+
   .post(validateBody(AuthValidation.signIn), passportSignIn, AuthService.signIn);
 
 router
-  .route("/google")
+  .route("/auth/google")
+
   .post(passportGoogle, AuthService.googleOAuth);
 
 router
-  .route("/facebook")
+  .route("/auth/facebook")
+
   .post(passportFacebook, AuthService.facebookOAuth);
 
 module.exports = router;

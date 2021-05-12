@@ -1,24 +1,17 @@
-const Blog = require("../models/blog");
+const Blog = require("../models/Blog");
+const BlogRepository = require("../repositories/BlogRepository");
 const Comment = require("../models/comment");
-const LikeVote = require("../models/likeVote");
-const ImagesGallery = require("../models/imagesGallery");
+const LikeVote = require("../models/LikeVote");
+const CommonVote = require("../models/CommonVote");
+const Image = require("../models/Image");
 const User = require("../models/User");
-const uuidv4 = require("uuid/v4");
+const { v4: uuid } = require("uuid");
+const TrustVote = require("../models/TrustVote");
 
 module.exports = {
-
   search: async (req, res, next) => {
-    let { searchText, sortBy, perPage } = req.value.query;
-    const searchConditions = {};
-    if (searchText && searchText.length > 2) {
-      searchConditions["$text"] = { $search: searchText };
-    }
-   // const skip = parseInt(perPage);
-    const blogs = await Blog.find(searchConditions, "title description imageUrl viewCount likeCount commentsCount createdAt")
-      .populate({ path: "authorsProfile", select: "displayName imageUrl trustCount _id" })
-      .skip(perPage)
-      .limit(10)
-      .sort({ [sortBy]: -1 });
+    let { searchText, perPage, sortBy } = req.value.query;
+    const blogs = await BlogRepository.findMany(searchText, perPage, sortBy);
 
     res.status(200).json({ blogs });
   },
@@ -29,30 +22,34 @@ module.exports = {
       path: "userProfile",
       populate: {
         path: "imagesGallery",
-        match: {
-          "images._id": imageId
-        }
-      }
+        // match: {
+        //   "images._id": imageId,
+        // },
+      },
     });
 
-    const likeVote = new LikeVote({ userProfileId: user.userProfile._id });
-    await likeVote.save();
+    /* TODO MAKE query on DB level with new Models  */
 
-    const imageObject = user.userProfile.imagesGallery && user.userProfile.imagesGallery.images && user.userProfile.imagesGallery.images[0];
-
-    const blog = new Blog({
+    let imageObject = null;
+    if (user.userProfile.imagesGallery && user.userProfile.imagesGallery.images && user.userProfile.imagesGallery.images.length) {
+      imageObject = user.userProfile.imagesGallery.images.filter((image) => image._id !== imageId);
+    }
+    const blogId = uuid();
+    const likeVote = new LikeVote({ _id: blogId });
+    const blog = BlogRepository.newEntity({
+      _id: blogId,
       title: req.value.body.title,
       description: req.value.body.description,
       body: req.value.body.body,
-      authorsProfile: user.userProfile
+      authorsProfile: user.userProfile,
+      likeVote,
     });
 
     if (imageObject) {
       blog.imageUrl = imageObject.url;
     }
 
-    blog.likeVote = likeVote.id;
-    await blog.save();
+    await Promise.all([blog.save(), likeVote.save()]);
 
     user.coins.total += 10;
     await user.save();
@@ -60,89 +57,42 @@ module.exports = {
     res.status(200).json({ blogId: blog._id, authorsProfileId: user.userProfile._id });
   },
 
-  getOne: async (req, res, next) => {
-    const { blogId } = req.value.params; //value is new added property created with module helpers/routeHelpers
-    let blog = await Blog.findOne({ publicID: blogId }).populate({ path: "trustVote likeVote" /*, select: "number"*/ });
+  getOne: async (req, res) => {
+    const { blogId } = req.value.params;
+    let blog = await BlogRepository.findOne(blogId);
+    const loggedInUser = req.user._id === blog.authorsProfile.userId;
 
-    const admin = req.user.publicID === blog.authorsPublicID;
-
-    if (req.user.coins.total < 3 && !admin) return res.status(403).json({ error: "You don't have enough coins" });
-
-    blog.seen += 1;
-    await blog.save();
-    const { trustVote, likeVote, numberOfComments, seen, title, author, body, authorsPublicID, publicID, date } = blog;
-
-    let Up = 0,
-      Down = 0,
-      number = { Up: 0, Down: 0 },
-      Like = 0,
-      Dislike = 0;
-    //  likeNumber = { Like: 0, Dislike: 0 };
-    if (trustVote) {
-      Up = trustVote.voterId.Up;
-      Down = trustVote.voterId.Down;
-      Up = Up.find(function(element) {
-        return element.voterId === req.user.publicID;
-      });
-      if (Up) Up = 1;
-      else Up = 0;
-      Down = Down.find(function(element) {
-        return element.voterId === req.user.publicID;
-      });
-      if (Down) Down = 1;
-      else Down = 0;
-      number = trustVote.number;
+    if (req.user.coins.total < 3 && !loggedInUser) {
+      return res.status(403).json({ error: "You don't have enough coins" });
     }
 
-    if (likeVote) {
-      Like = likeVote.voterId.Up;
-      Dislike = likeVote.voterId.Down;
-      Like = Like.find(function(element) {
-        return element.voterId === req.user.publicID;
-      });
-      if (Like) Like = 1;
-      else Like = 0;
-      Dislike = Dislike.find(function(element) {
-        return element.voterId === req.user.publicID;
-      });
-      if (Dislike) Dislike = 1;
-      else Dislike = 0;
-      //    likeNumber = likeVote.number;
-    }
+    blog.viewCount += 1;
 
-    const result = {
-      numberOfComments,
-      seen,
-      likeVote: { number: likeVote.number },
-      trustVote: { number },
-      title,
-      author,
-      body,
-      authorsPublicID,
-      publicID,
-      date,
-      UserVotedUp: Up,
-      UserVotedDown: Down,
-      Like,
-      Dislike,
-      coins: {
-        ...req.user.coins,
-        pageQueryID: blogId
-      }
-    };
-    //   result.coins.pageQueryID = blogId;
-    if (blog.image) result.image = blog.image.galleryMongoID;
+    const [commonBlogVote, commonTrustVote] = await Promise.all([
+      CommonVote.findOne({ voteCaseId: blogId, voterId: req.user._id }),
+      CommonVote.findOne({ voteCaseId: blog.authorsProfile.userId, voterId: req.user._id }),
+      blog.save(),
+    ]);
 
-    //remove coins from user profile
-    if (!admin) {
-      const user = await User.findOne({ publicID: req.user.publicID });
-      user.coins.total -= 3;
-      user.coins.pageQueryID = blogId;
-      result.coins = user.coins;
-      await user.save();
-    }
+    blog.likeVote._doc.voteValue = commonBlogVote && commonBlogVote.value ? commonBlogVote.value : 0;
+    blog.authorsProfile.trustVote._doc.voteValue = commonTrustVote && commonTrustVote.value ? commonTrustVote.value : 0;
+    delete blog.authorsProfile._doc.userId;
 
-    res.status(200).json(result);
+    // TODO update later or find transaction update
+
+    // //   result.coins.pageQueryID = blogId;
+    // if (blog.image) result.image = blog.image.galleryMongoID;
+
+    // //remove coins from user profile
+    // if (!logedInUser) {
+    //   const user = await User.findOne({ publicID: req.user.publicID });
+    //   user.coins.total -= 3;
+    //   user.coins.pageQueryID = blogId;
+    //   result.coins = user.coins;
+    //   await user.save();
+    // }
+
+    res.status(200).json({ blog });
   },
 
   newBlogsComment: async (req, res, next) => {
@@ -189,10 +139,7 @@ module.exports = {
 
     if (!chargedForPage && !admin) return res.status(403).json({ error: "You don't have enough coins" });
 
-    const comments = await Comment.find({ blogsPublicID: blogId })
-      .skip(skip)
-      .limit(5)
-      .sort({ date: -1 });
+    const comments = await Comment.find({ blogsPublicID: blogId }).skip(skip).limit(5).sort({ date: -1 });
     res.status(200).json(comments);
   },
 
@@ -203,10 +150,10 @@ module.exports = {
 
     let UserLiked = 0,
       UserDisliked = 0;
-    const foundUp = likeVote.voterId.Up.find(element => {
+    const foundUp = likeVote.voterId.Up.find((element) => {
       return element.voterId === req.user.publicID;
     });
-    const foundDown = likeVote.voterId.Down.find(element => {
+    const foundDown = likeVote.voterId.Down.find((element) => {
       return element.voterId === req.user.publicID;
     });
 
@@ -215,7 +162,7 @@ module.exports = {
         likeVote.number.Up--;
         blog.difference--;
         UserLiked = 0;
-        likeVote.voterId.Up = likeVote.voterId.Up.filter(item => item.voterId !== req.user.publicID);
+        likeVote.voterId.Up = likeVote.voterId.Up.filter((item) => item.voterId !== req.user.publicID);
       } else {
         likeVote.voterId.Up.push({ voterId: req.user.publicID });
         likeVote.number.Up++;
@@ -226,7 +173,7 @@ module.exports = {
         likeVote.number.Down--;
         blog.difference++;
         UserDisliked = 0;
-        likeVote.voterId.Down = likeVote.voterId.Down.filter(item => item.voterId !== req.user.publicID);
+        likeVote.voterId.Down = likeVote.voterId.Down.filter((item) => item.voterId !== req.user.publicID);
       }
     }
     if (req.value.body.like === 0) {
@@ -234,7 +181,7 @@ module.exports = {
         likeVote.number.Down--;
         blog.difference++;
         UserDisliked = 0;
-        likeVote.voterId.Down = likeVote.voterId.Down.filter(item => item.voterId !== req.user.publicID);
+        likeVote.voterId.Down = likeVote.voterId.Down.filter((item) => item.voterId !== req.user.publicID);
       } else {
         likeVote.voterId.Down.push({ voterId: req.user.publicID });
         likeVote.number.Down++;
@@ -245,16 +192,19 @@ module.exports = {
         likeVote.number.Up--;
         blog.difference--;
         UserLiked = 0;
-        likeVote.voterId.Up = likeVote.voterId.Up.filter(item => item.voterId !== req.user.publicID);
+        likeVote.voterId.Up = likeVote.voterId.Up.filter((item) => item.voterId !== req.user.publicID);
       }
     }
     await likeVote.save();
     await blog.save();
 
-    /*potrebno je srediti da se smanjuju coins
-     */
+    /*
+    
+    potrebno je srediti da se smanjuju coins
+    
+    */
     const newLikeVote = {
-      number: likeVote.number //idea behind this object is to send it like in the previous version, to not mess up reducers in redux and data in components
+      number: likeVote.number, //idea behind this object is to send it like in the previous version, to not mess up reducers in redux and data in components
     };
     const result = { likeVote: newLikeVote, UserLiked, UserDisliked };
     res.status(200).json(result);
@@ -274,5 +224,5 @@ module.exports = {
     await Blog.deleteOne({ publicID: blogId, authorsPublicID: req.user.publicID });
 
     res.status(200).json({ result: "successful deletion" });
-  }
+  },
 };
