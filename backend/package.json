@@ -19,6 +19,12 @@
   },
   "homepage": "https://github.com/NBlasko/reactboard#readme",
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/passport": "^1.0.6",
+    "@types/passport-facebook-token": "^0.4.34",
+    "@types/passport-jwt": "^3.0.5",
+    "@types/passport-local": "^1.0.33",
+    "@types/uuid": "^8.3.0",
     "nodemon": "^1.18.9"
   },
   "dependencies": {

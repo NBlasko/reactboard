@@ -4,8 +4,8 @@ const Schema = mongoose.Schema;
 /* Create a schema */
 const userSchema = new Schema({
   coins: {
-    date: { type: Date, default: Date.now },
-    total: { type: Number, default: 30 },
+    date: { type: Date, default: Date.now, required: true },
+    total: { type: Number, default: 30, required: true },
 
     /* when client want's to acces profile or blog, he is being charged.
     In turn, he gets pageQueryID

@@ -13,10 +13,10 @@ const bcrypt = require("bcryptjs");
 const { uploadImage } = require("../../helpers/uploadHelpers");
 const { v4: uuid } = require("uuid");
 
-const commonSocialSignUp = async ({ strategyIdName, profilePicture, displayName, email, externalProfileId }) => {
+const initialSocialSignUp = async ({ strategyIdName, profilePicture, displayName, email, externalProfileId }) => {
   const userProfileId = uuid();
-  console.log("Ovde ne sme doci");
-  let imageDoc = {};
+
+  const imageDoc = {};
   let imageUrl = "";
 
   if (profilePicture) {
@@ -25,7 +25,6 @@ const commonSocialSignUp = async ({ strategyIdName, profilePicture, displayName,
       imageDoc.url = uploadedImage.url;
       imageDoc.storageId = uploadedImage.storageId;
       imageDoc.userProfileId = userProfileId;
-      imageDoc.imageId = uuid();
       imageUrl = uploadedImage.url;
     }
   }
@@ -71,6 +70,8 @@ const initAuthStrategies = () => {
       },
       async (payload, done) => {
         try {
+          // TODO validate exp time
+
           const user = await User.findById(payload.sub);
 
           if (!user) {
@@ -111,7 +112,7 @@ const initAuthStrategies = () => {
             return done(null, foundUserByEmail);
           }
 
-          const newUser = commonSocialSignUp({
+          const newUser = await initialSocialSignUp({
             strategyIdName: "googleId",
             profilePicture: profile && profile._json && profile._json.picture,
             displayName: profile.displayName,
@@ -148,14 +149,14 @@ const initAuthStrategies = () => {
             return done({ message: "Email is not available", status: 403 }, null);
           }
 
-          const foundUserByEmail = await User.findOne({ email: profile.emails[0].value })//.populate({ path: "userProfile" });
+          const foundUserByEmail = await User.findOne({ email: profile.emails[0].value }); //.populate({ path: "userProfile" });
 
           if (foundUserByEmail) {
-            await foundUserByEmail.updateOne({ "facebookId": profile.id });
+            await foundUserByEmail.updateOne({ facebookId: profile.id });
             return done(null, foundUserByEmail);
           }
 
-          const newUser = commonSocialSignUp({
+          const newUser = await initialSocialSignUp({
             strategyIdName: "facebookId",
             profilePicture: `https://graph.facebook.com/${profile.id}/picture?width=200&height=200&access_token=${accessToken}`,
             displayName: profile.displayName,

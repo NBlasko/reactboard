@@ -2,13 +2,65 @@ const Blog = require("../models/Blog");
 const User = require("../models/User");
 const TrustVote = require("../models/TrustVote");
 const CommonVote = require("../models/CommonVote");
-const uuidv4 = require("uuid/v4");
 
 /*             **** NOTE TO MYSELF ****   
  req.value is new added property created with module helpers/routeHelpers
  allways extract properies from req.value, and not req, because, everything
  in req.value is validated
 */
+
+// TODO pass to helpers and reuse it for LikeVote
+const vote = async (commonVoteOptions, caseVote, wantsToVoteValue) => {
+  let commonVote = await CommonVote.findOne(commonVoteOptions);
+  if (!commonVote) {
+    commonVote = new CommonVote(commonVoteOptions);
+  }
+
+  const alreadyVotedUp = commonVote && commonVote.value === 1;
+  const alreadyVotedDown = commonVote && commonVote.value === -1;
+  const wantsToVoteUp = wantsToVoteValue === 1;
+  const wantsToVoteDown = wantsToVoteValue === -1;
+
+  if (wantsToVoteUp && alreadyVotedUp) {
+    commonVote.value = 0;
+    caseVote.voteCountUp--;
+  }
+
+  if (wantsToVoteUp && alreadyVotedDown) {
+    commonVote.value = 1;
+    caseVote.voteCountDown--;
+    caseVote.voteCountUp++;
+  }
+
+  if (wantsToVoteUp && !alreadyVotedDown && !alreadyVotedUp) {
+    commonVote.value = 1;
+    caseVote.voteCountUp++;
+  }
+
+  if (wantsToVoteDown && alreadyVotedDown) {
+    commonVote.value = 0;
+    caseVote.voteCountDown--;
+  }
+
+  if (wantsToVoteDown && alreadyVotedUp) {
+    commonVote.value = -1;
+    caseVote.voteCountDown++;
+    caseVote.voteCountUp--;
+  }
+
+  if (wantsToVoteDown && !alreadyVotedDown && !alreadyVotedUp) {
+    commonVote.value = -1;
+    caseVote.voteCountDown++;
+  }
+
+  if (commonVote.value === 0) {
+    await Promise.all([caseVote.save(), CommonVote.deleteOne(commonVoteOptions)]);
+  } else {
+    await Promise.all([caseVote.save(), await commonVote.save()]);
+  }
+
+  return [commonVote, caseVote];
+};
 
 module.exports = {
   getOne: async (req, res) => {
@@ -151,53 +203,7 @@ module.exports = {
 
     const commonVoteOptions = { voteCaseId: trustVote._id, voterId: userProfileId };
 
-    let commonVote = await CommonVote.findOne(commonVoteOptions);
-    if (!commonVote) {
-      commonVote = new CommonVote(commonVoteOptions);
-    }
-
-    const alreadyVotedUp = commonVote && commonVote.value === 1;
-    const alreadyVotedDown = commonVote && commonVote.value === -1;
-    const wantsToVoteUp = req.value.body.trust === 1;
-    const wantsToVoteDown = req.value.body.trust === -1;
-
-    if (wantsToVoteUp && alreadyVotedUp) {
-      commonVote.value = 0;
-      trustVote.voteCountUp--;
-    }
-
-    if (wantsToVoteUp && alreadyVotedDown) {
-      commonVote.value = 1;
-      trustVote.voteCountDown--;
-      trustVote.voteCountUp++;
-    }
-
-    if (wantsToVoteUp && !alreadyVotedDown && !alreadyVotedUp) {
-      commonVote.value = 1;
-      trustVote.voteCountUp++;
-    }
-
-    if (wantsToVoteDown && alreadyVotedDown) {
-      commonVote.value = 0;
-      trustVote.voteCountDown--;
-    }
-
-    if (wantsToVoteDown && alreadyVotedUp) {
-      commonVote.value = -1;
-      trustVote.voteCountDown++;
-      trustVote.voteCountUp--;
-    }
-
-    if (wantsToVoteDown && !alreadyVotedDown && !alreadyVotedUp) {
-      commonVote.value = -1;
-      trustVote.voteCountDown++;
-    }
-
-    if (commonVote.value === 0) {
-      await Promise.all([trustVote.save(), CommonVote.deleteOne(commonVoteOptions)]);
-    } else {
-      await Promise.all([trustVote.save(), await commonVote.save()]);
-    }
+    const [commonVote, updatedTrustVote] = await vote(commonVoteOptions, trustVote, req.value.body.trust);
 
     /*  
           potrebno je videti ako povecavamo coins negde, onda da ne dozvolim da nekog glasa i undo, 
@@ -206,8 +212,8 @@ module.exports = {
 
     res.status(200).json({
       voteValue: commonVote.value,
-      voteCountDown: trustVote.voteCountDown,
-      voteCountUp: trustVote.voteCountUp,
+      voteCountDown: updatedTrustVote.voteCountDown,
+      voteCountUp: updatedTrustVote.voteCountUp,
     });
   },
 

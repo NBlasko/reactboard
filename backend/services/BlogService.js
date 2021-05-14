@@ -1,15 +1,12 @@
 const Blog = require("../models/Blog");
-const BlogRepository = require("../repositories/BlogRepository");
+const { BlogRepository, UserRepository, ImageRepository, LikeVoteRepository, CommonVoteRepository } = require("../repositories");
 const Comment = require("../models/comment");
 const LikeVote = require("../models/LikeVote");
-const CommonVote = require("../models/CommonVote");
-const Image = require("../models/Image");
 const User = require("../models/User");
 const { v4: uuid } = require("uuid");
-const TrustVote = require("../models/TrustVote");
 
 module.exports = {
-  search: async (req, res, next) => {
+  search: async (req, res) => {
     let { searchText, perPage, sortBy } = req.value.query;
     const blogs = await BlogRepository.findMany(searchText, perPage, sortBy);
 
@@ -18,24 +15,14 @@ module.exports = {
 
   create: async (req, res) => {
     const { imageId } = req.value.body;
-    const user = await User.findById(req.user._id).populate({
-      path: "userProfile",
-      populate: {
-        path: "imagesGallery",
-        // match: {
-        //   "images._id": imageId,
-        // },
-      },
-    });
 
-    /* TODO MAKE query on DB level with new Models  */
+    const [user, blogImage] = await Promise.all([
+      UserRepository.findOneWithOnlyCoinsAndProfile(req.user._id),
+      ImageRepository.findOne(imageId),
+    ]);
 
-    let imageObject = null;
-    if (user.userProfile.imagesGallery && user.userProfile.imagesGallery.images && user.userProfile.imagesGallery.images.length) {
-      imageObject = user.userProfile.imagesGallery.images.filter((image) => image._id !== imageId);
-    }
     const blogId = uuid();
-    const likeVote = new LikeVote({ _id: blogId });
+    const likeVote = LikeVoteRepository.newEntity({ _id: blogId });
     const blog = BlogRepository.newEntity({
       _id: blogId,
       title: req.value.body.title,
@@ -45,8 +32,12 @@ module.exports = {
       likeVote,
     });
 
-    if (imageObject) {
-      blog.imageUrl = imageObject.url;
+    if (blogImage) {
+      blog.imageUrl = blogImage.url;
+    }
+
+    if (blogImage && blogImage.userProfileId !== user.userProfile._id) {
+      return res.handleError(400, "Using other user image failed");
     }
 
     await Promise.all([blog.save(), likeVote.save()]);
@@ -59,18 +50,24 @@ module.exports = {
 
   getOne: async (req, res) => {
     const { blogId } = req.value.params;
-    let blog = await BlogRepository.findOne(blogId);
-    const loggedInUser = req.user._id === blog.authorsProfile.userId;
+    const blog = await BlogRepository.findOne(blogId);
+
+    if (!blog) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
+
+    const loggedInUser = req.user.id === blog.authorsProfile.userId;
 
     if (req.user.coins.total < 3 && !loggedInUser) {
       return res.status(403).json({ error: "You don't have enough coins" });
     }
 
     blog.viewCount += 1;
+    findOneByCaseAndVoter;
 
     const [commonBlogVote, commonTrustVote] = await Promise.all([
-      CommonVote.findOne({ voteCaseId: blogId, voterId: req.user._id }),
-      CommonVote.findOne({ voteCaseId: blog.authorsProfile.userId, voterId: req.user._id }),
+      CommonVoteRepository.findOneByCaseAndVoter(blogId, req.user.id),
+      CommonVoteRepository.findOneByCaseAndVoter(blog.authorsProfile.userId, req.user.id),
       blog.save(),
     ]);
 
@@ -78,21 +75,17 @@ module.exports = {
     blog.authorsProfile.trustVote._doc.voteValue = commonTrustVote && commonTrustVote.value ? commonTrustVote.value : 0;
     delete blog.authorsProfile._doc.userId;
 
-    // TODO update later or find transaction update
+    // result.coins.pageQueryID = blogId;
+    if (!loggedInUser) {
+      req.user.coins.total -= 3;
 
-    // //   result.coins.pageQueryID = blogId;
-    // if (blog.image) result.image = blog.image.galleryMongoID;
+      // user.coins.pageQueryID = blogId;
+      await req.user.updateOne({
+        coins: req.user.coins,
+      });
+    }
 
-    // //remove coins from user profile
-    // if (!logedInUser) {
-    //   const user = await User.findOne({ publicID: req.user.publicID });
-    //   user.coins.total -= 3;
-    //   user.coins.pageQueryID = blogId;
-    //   result.coins = user.coins;
-    //   await user.save();
-    // }
-
-    res.status(200).json({ blog });
+    res.status(200).json({ blog, coins: req.user.coins.total });
   },
 
   newBlogsComment: async (req, res, next) => {
