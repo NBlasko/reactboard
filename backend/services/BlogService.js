@@ -4,6 +4,7 @@ const Comment = require("../models/comment");
 const LikeVote = require("../models/LikeVote");
 const User = require("../models/User");
 const { v4: uuid } = require("uuid");
+const { calculateAndSaveVote } = require("../helpers/voteHelpers");
 
 module.exports = {
   search: async (req, res) => {
@@ -63,7 +64,6 @@ module.exports = {
     }
 
     blog.viewCount += 1;
-    findOneByCaseAndVoter;
 
     const [commonBlogVote, commonTrustVote] = await Promise.all([
       CommonVoteRepository.findOneByCaseAndVoter(blogId, req.user.id),
@@ -76,6 +76,9 @@ module.exports = {
     delete blog.authorsProfile._doc.userId;
 
     // result.coins.pageQueryID = blogId;
+    // TODO add new model Schema for viewed blogs 
+    // that will be erased with chron jobs
+    // so users will not lose coins every time they look into the same blog
     if (!loggedInUser) {
       req.user.coins.total -= 3;
 
@@ -136,72 +139,30 @@ module.exports = {
     res.status(200).json(comments);
   },
 
-  newBlogsLike: async (req, res, next) => {
-    const { blogId } = req.value.params; //izvadis iz url javni id bloga
-    let blog = await Blog.findOne({ publicID: blogId }).populate({ path: "likeVote" }); //nadjes taj blog
-    let likeVote = blog.likeVote; // await LikeVote.findOne({ authorId: blog.publicID })   //trazis da li je vec neko do sada dao trust , tj da li je kolekcija obrazovana kod tog Usera
+  upsertLike: async (req, res) => {
+    const { blogId } = req.value.params;
+    const likeVote = await LikeVoteRepository.findVote(blogId);
 
-    let UserLiked = 0,
-      UserDisliked = 0;
-    const foundUp = likeVote.voterId.Up.find((element) => {
-      return element.voterId === req.user.publicID;
-    });
-    const foundDown = likeVote.voterId.Down.find((element) => {
-      return element.voterId === req.user.publicID;
-    });
-
-    if (req.value.body.like === 1) {
-      if (foundUp) {
-        likeVote.number.Up--;
-        blog.difference--;
-        UserLiked = 0;
-        likeVote.voterId.Up = likeVote.voterId.Up.filter((item) => item.voterId !== req.user.publicID);
-      } else {
-        likeVote.voterId.Up.push({ voterId: req.user.publicID });
-        likeVote.number.Up++;
-        blog.difference++;
-        UserLiked = 1;
-      }
-      if (foundDown) {
-        likeVote.number.Down--;
-        blog.difference++;
-        UserDisliked = 0;
-        likeVote.voterId.Down = likeVote.voterId.Down.filter((item) => item.voterId !== req.user.publicID);
-      }
+    if (!likeVote) {
+      return res.status(404).json({ error: "LikeVote not found" });
     }
-    if (req.value.body.like === 0) {
-      if (foundDown) {
-        likeVote.number.Down--;
-        blog.difference++;
-        UserDisliked = 0;
-        likeVote.voterId.Down = likeVote.voterId.Down.filter((item) => item.voterId !== req.user.publicID);
-      } else {
-        likeVote.voterId.Down.push({ voterId: req.user.publicID });
-        likeVote.number.Down++;
-        blog.difference--;
-        UserDisliked = 1;
-      }
-      if (foundUp) {
-        likeVote.number.Up--;
-        blog.difference--;
-        UserLiked = 0;
-        likeVote.voterId.Up = likeVote.voterId.Up.filter((item) => item.voterId !== req.user.publicID);
-      }
-    }
-    await likeVote.save();
-    await blog.save();
 
-    /*
-    
-    potrebno je srediti da se smanjuju coins
-    
-    */
-    const newLikeVote = {
-      number: likeVote.number, //idea behind this object is to send it like in the previous version, to not mess up reducers in redux and data in components
-    };
-    const result = { likeVote: newLikeVote, UserLiked, UserDisliked };
-    res.status(200).json(result);
+    const [commonVote, updatedLikeVote] = await calculateAndSaveVote({
+      caseVote: likeVote,
+      wantsToVoteValue: req.value.body.like,
+      userId: req.user.id,
+    });
+
+    //potrebno je srediti da se smanjuju coins ili dodaju na osnovu 
+    // dodatog glasa ili ponistavanja glasa
+
+    res.status(200).json({
+      voteValue: commonVote.value,
+      voteCountDown: updatedLikeVote.voteCountDown,
+      voteCountUp: updatedLikeVote.voteCountUp,
+    });
   },
+
   deleteOne: async (req, res, next) => {
     const { blogId } = req.value.params;
     const blog = await Blog.findOne({ publicID: blogId });

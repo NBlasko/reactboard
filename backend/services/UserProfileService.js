@@ -1,8 +1,7 @@
 const Blog = require("../models/Blog");
 const User = require("../models/User");
 const TrustVote = require("../models/TrustVote");
-const CommonVote = require("../models/CommonVote");
-
+const { calculateAndSaveVote } = require("../helpers/voteHelpers");
 /*             **** NOTE TO MYSELF ****   
  req.value is new added property created with module helpers/routeHelpers
  allways extract properies from req.value, and not req, because, everything
@@ -10,57 +9,6 @@ const CommonVote = require("../models/CommonVote");
 */
 
 // TODO pass to helpers and reuse it for LikeVote
-const vote = async (commonVoteOptions, caseVote, wantsToVoteValue) => {
-  let commonVote = await CommonVote.findOne(commonVoteOptions);
-  if (!commonVote) {
-    commonVote = new CommonVote(commonVoteOptions);
-  }
-
-  const alreadyVotedUp = commonVote && commonVote.value === 1;
-  const alreadyVotedDown = commonVote && commonVote.value === -1;
-  const wantsToVoteUp = wantsToVoteValue === 1;
-  const wantsToVoteDown = wantsToVoteValue === -1;
-
-  if (wantsToVoteUp && alreadyVotedUp) {
-    commonVote.value = 0;
-    caseVote.voteCountUp--;
-  }
-
-  if (wantsToVoteUp && alreadyVotedDown) {
-    commonVote.value = 1;
-    caseVote.voteCountDown--;
-    caseVote.voteCountUp++;
-  }
-
-  if (wantsToVoteUp && !alreadyVotedDown && !alreadyVotedUp) {
-    commonVote.value = 1;
-    caseVote.voteCountUp++;
-  }
-
-  if (wantsToVoteDown && alreadyVotedDown) {
-    commonVote.value = 0;
-    caseVote.voteCountDown--;
-  }
-
-  if (wantsToVoteDown && alreadyVotedUp) {
-    commonVote.value = -1;
-    caseVote.voteCountDown++;
-    caseVote.voteCountUp--;
-  }
-
-  if (wantsToVoteDown && !alreadyVotedDown && !alreadyVotedUp) {
-    commonVote.value = -1;
-    caseVote.voteCountDown++;
-  }
-
-  if (commonVote.value === 0) {
-    await Promise.all([caseVote.save(), CommonVote.deleteOne(commonVoteOptions)]);
-  } else {
-    await Promise.all([caseVote.save(), await commonVote.save()]);
-  }
-
-  return [commonVote, caseVote];
-};
 
 module.exports = {
   getOne: async (req, res) => {
@@ -201,10 +149,13 @@ module.exports = {
       return res.handleError(400, "User not found");
     }
 
-    const commonVoteOptions = { voteCaseId: trustVote._id, voterId: userProfileId };
+    const [commonVote, updatedTrustVote] = await calculateAndSaveVote({
+      caseVote: trustVote,
+      wantsToVoteValue: req.value.body.trust,
+      userId: req.user.id,
+    });
 
-    const [commonVote, updatedTrustVote] = await vote(commonVoteOptions, trustVote, req.value.body.trust);
-
+    //  calculateAndSaveVote(commonVoteOptions, trustVote, req.value.body.trust, req.user.id);
     /*  
           potrebno je videti ako povecavamo coins negde, onda da ne dozvolim da nekog glasa i undo, 
           jer ce iznova dobijati coins, strategija oko toga je potrebna 

@@ -31,6 +31,6 @@ router
   .route("/blog/:blogId/like") // TODO put in BlogLike Controller and services
 
   //hit a like/dislike on a blog
-  .post(passportJWT, validateParam(schemas.idSchema, "blogId"), validateBody(schemas.likeSchema), BlogService.newBlogsLike);
+  .post(passportJWT, validateParam(schemas.idSchema, "blogId"), validateBody(schemas.likeSchema), BlogService.upsertLike);
 
 module.exports = router;
