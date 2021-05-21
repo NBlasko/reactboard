@@ -53,8 +53,6 @@ console.log({ caseVote, wantsToVoteValue, userId })
       caseVote.voteCountDown++;
     }
 
-    console.log("Posle",{ caseVote, wantsToVoteValue, userId })
-
     if (commonVote.value === 0) {
       await Promise.all([caseVote.save(), CommonVote.deleteOne(commonVoteOptions)]);
     } else {

@@ -28,6 +28,7 @@ app.use(
   API_PREFIX,
   require("./controllers/AuthController"),
   require("./controllers/BlogController"),
+  require("./controllers/BlogCommentsController"),
   require("./controllers/UserProfileController")
 );
 

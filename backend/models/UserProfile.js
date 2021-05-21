@@ -6,7 +6,6 @@ const userProfileSchema = new Schema({
   _id: { type: String, required: true },
   displayName: String,
   trustVote: { type: objectIdType, ref: "trustVote" },
- // trustCount: { type: Number, default: 0 }, TODO delete
   imageUrl: { type: String, default: "" },
   //imageQueryID is send via URL query instead jwt to authorize images
   // TODO, WILL be removed, strategy will be different
@@ -15,8 +14,10 @@ const userProfileSchema = new Schema({
   //   default: uuidv4
   // },
   userId: String,
+  createdAt: { type: Date, default: Date.now },
 });
 
+userProfileSchema.index({ displayName: "text" });
 const UserProfile = mongoose.model("userProfile", userProfileSchema);
 
 module.exports = UserProfile;

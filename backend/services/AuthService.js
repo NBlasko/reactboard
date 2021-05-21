@@ -143,6 +143,7 @@ module.exports = {
 
     const newUser = new User({
       userProfile,
+      userProfileId,
       email,
       local: {
         passwordHash,

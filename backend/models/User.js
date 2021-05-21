@@ -35,6 +35,7 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "userProfile",
   },
+  userProfileId: { type: String, required: true },
 });
 
 // Create a model

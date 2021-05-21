@@ -5,8 +5,7 @@ const passportGoogle = passport.authenticate("googleToken", { session: false });
 const passportFacebook = passport.authenticate("facebookToken", { session: false });
 const router = require("express-promise-router")();
 const AuthService = require("../services/AuthService");
-const AuthValidation = require("../core/validation/AuthValidation");
-const { validateBody } = require("../core/validation");
+const { AuthValidation, validateBody } = require("../core/validation");
 
 router
   .route("/auth/signup")

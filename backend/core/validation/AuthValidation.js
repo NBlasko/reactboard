@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const validator = require("./constants");
+const validator = require("./validator");
 module.exports = {
   signUp: Joi.object().keys({
     email: validator.emailRequired(),

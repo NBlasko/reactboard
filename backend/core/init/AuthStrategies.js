@@ -44,6 +44,7 @@ const initialSocialSignUp = async ({ strategyIdName, profilePicture, displayName
 
   const newUser = new User({
     userProfile,
+    userProfileId,
     email,
     [strategyIdName]: externalProfileId,
   });
@@ -75,12 +76,12 @@ const initAuthStrategies = () => {
           const user = await User.findById(payload.sub);
 
           if (!user) {
-            return done({ message: "User is not found", status: 400 }, false);
+            return done({ message: "User is not found", status: 452 }, false);
           }
 
           done(null, user);
         } catch (error) {
-          done({ message: "Bad request", status: 400 }, false);
+          done({ message: "Bad request", status: 452 }, false);
         }
       }
     )

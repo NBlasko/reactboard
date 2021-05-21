@@ -12,7 +12,7 @@ module.exports = {
     };
   },
 
-  validateBody: schema => {
+  validateBody: (schema) => {
     return (req, res, next) => {
       const result = Joi.validate(req.body, schema);
       if (result.error) return res.handleError(400, result.error.details[0].message);
@@ -22,7 +22,7 @@ module.exports = {
     };
   },
 
-  validateQueryString: schema => {
+  validateQueryString: (schema) => {
     return (req, res, next) => {
       const result = Joi.validate(req.query, schema);
       if (result.error) return res.handleError(400, result.error.details[0].message);
@@ -30,5 +30,9 @@ module.exports = {
       req.value["query"] = result.value;
       next();
     };
-  }
+  },
+  AuthValidation: require("./AuthValidation"),
+  BlogValidation: require("./BlogValidation"),
+  BlogCommentValidation: require("./BlogCommentValidation"),
+  UserProfileValidation: require("./UserProfileValidation"),
 };

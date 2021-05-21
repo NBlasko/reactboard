@@ -43,10 +43,16 @@ export const baseHttp = ({
       if (successValue && typeof successValue === "string") toast.success(successValue);
     })
     .catch(error => {
+      const errorStatus = error && error.response && error.response.status;
+      if (errorStatus === 452) {
+        // TODO check should we go with reload, or with redirect and cleaning redux
+        localStorage.removeItem('reactBoardToken');
+        window.location.reload()
+      }
       const errorMessage = error && error.response && error.response.data && error.response.data.message;
       const errorValue = onError((typeof errorMessage === "string" && errorMessage) || "Ooops! Something went wrong");
       if (errorValue) toast.error(errorValue);
-      console.log(error);
+      console.log(error)
     })
     .finally(onFinally);
 };

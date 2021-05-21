@@ -7,8 +7,6 @@ const uuidRequired = () =>
 
 const nonNegativeInteger = () => Joi.number().integer().min(0);
 
-const vote = () => Joi.number().integer().min(-1).max(1).invalid(0).required();
-
 module.exports = {
   validateParam: (schema, name) => {
     return (req, res, next) => {
@@ -44,52 +42,16 @@ module.exports = {
   },
 
   schemas: {
-    blogSchema: Joi.object().keys({
-      title: Joi.string().required(),
-      description: Joi.string().required(),
-      body: Joi.string().required(),
-      imageId: Joi.string()
-        .regex(/^[0-9a-fA-F]{24}$/)
-        .allow("", null)
-        .required(),
-    }),
     idSchema: Joi.object().keys({
-      param: uuidRequired(), // param, becuse I named it like that above, in validateParam method
+      param: uuidRequired(), // TODO, this one is repeating alot, put it in common validators or similar
     }),
     mongoIdSchema: Joi.object().keys({
       param: Joi.string()
         .regex(/^[0-9a-fA-F]{24}$/)
         .required(),
     }),
-    commentSchema: Joi.object().keys({
-      author: Joi.string().required(),
-      authorsPublicID: uuidRequired(),
-      body: Joi.string().required(),
-    }),
-    trustSchema: Joi.object().keys({
-      trust: vote(),
-    }),
-    likeSchema: Joi.object().keys({
-      like: vote(),
-    }),
-    skipCriteriaSchema: Joi.object().keys({
-      skip: Joi.number().integer().min(0).required(),
-      searchText: Joi.string(),
-      criteria: Joi.string()
-        .regex(/^(new|mostlikedblogs|mostseenblogs|profile)$/)
-        .required(),
-    }),
-    skipAuthorsPublicIDSchema: Joi.object().keys({
-      skip: Joi.number().integer().min(0).required(),
-      authorsPublicID: uuidRequired(),
-    }),
     skipSchema: Joi.object().keys({
       skip: Joi.number().integer().min(0).required(),
-    }),
-    searchCriteriaSchema: Joi.object().keys({
-      searchText: Joi.string().allow("", null),
-      sortBy: Joi.string().regex(/^(createdAt|likeCount|viewCount)$/),
-      perPage: Joi.number(),
     }),
     imageQueryIDpublicIDSchema: Joi.object().keys({
       imageQueryID: uuidRequired(),
